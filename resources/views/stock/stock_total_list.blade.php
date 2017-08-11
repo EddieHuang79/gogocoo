@@ -1,0 +1,31 @@
+<section class="content-header">
+	<h1>{{ $txt["stock_total_list"] }}</h1>
+</section>
+<section class="content">
+	@include('webbase.search_tool')
+
+	<table class="table table-stroped">
+		<thead>
+			<tr>
+				<th>{{ $txt['product_name'] }}</th>
+				@if($has_spec)
+				<th>{{ $txt['product_spec'] }}</th>
+				@endif
+				<th>{{ $txt['stock'] }}</th>
+			</tr>							
+		</thead>
+		<tbody>
+			@foreach($stock_list as $row)
+			<tr>
+				<th>{{ $row['product_name'] }}</th>
+				@if($has_spec)
+				<th>{{ $row['spec_data'] }}</th>
+				@endif
+				<th>{{ $row['stock'] }}</th>
+			</tr>
+			@endforeach													
+		</tbody>
+	</table>
+	{{-- $stock_data->links() --}}
+
+</section>
