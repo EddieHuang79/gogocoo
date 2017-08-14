@@ -2,7 +2,7 @@
 <!-- Logo -->
 <a href="/index" class="logo">
   <!-- mini logo for sidebar mini 50x50 pixels -->
-  <span class="logo-mini"><b>A</b>LT</span>
+  <span class="logo-mini"><b>Go</b></span>
   <!-- logo for regular state and mobile devices -->
   <span class="logo-lg"><b>{{ $txt['Site'] }}</b></span>
 </a>
@@ -30,9 +30,6 @@
                 @foreach($msg_list as $row)
                 <li>
                   <a href="#">
-                    <div class="pull-left">
-                      <img src="dist/img/user2-160x160.jpg" class="img-circle" alt="User Image">
-                    </div>
                     <h4>
                       {{ $row->subject }}
                       <small><i class="fa fa-clock-o"></i> {{ $row->updated_at }} </small>
@@ -51,7 +48,7 @@
 
             </ul>
           </li>
-          <li class="footer"><a href="#">See All Messages</a></li>
+          <li class="footer"><a href="/msg?type=1">See All Messages</a></li>
         </ul>
       </li>
       <!-- Notifications: style can be found in dropdown.less -->
@@ -84,7 +81,7 @@
 
             </ul>
           </li>
-          <li class="footer"><a href="#">View all</a></li>
+          <li class="footer"><a href="/msg?type=2">View all</a></li>
         </ul>
       </li>
       <!-- User Account: style can be found in dropdown.less -->
@@ -125,10 +122,6 @@
             </div>
           </li>
         </ul>
-      </li>
-      <!-- Control Sidebar Toggle Button -->
-      <li>
-        <a href="#" data-toggle="control-sidebar"><i class="fa fa-gears"></i></a>
       </li>
     </ul>
   </div>

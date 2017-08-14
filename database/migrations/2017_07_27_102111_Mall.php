@@ -40,6 +40,19 @@ class Mall extends Migration
             $table->engine = 'InnoDB';
         });        
 
+        // insert msg
+
+        DB::table($this->mall_product_table)->insert(
+            array(
+                'product_name'  => '購買店舖',
+                'content'       => '購買店舖',
+                'pic'           => '/product_image/',
+                'public'        => 1,
+                'created_at'    => date("Y-m-d H:i:s"),
+                'updated_at'    => date("Y-m-d H:i:s")
+            )
+        );
+
         #   date_spec - unit: month
 
         Schema::create($this->mall_product_spec_table, function (Blueprint $table) {

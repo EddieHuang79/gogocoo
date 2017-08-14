@@ -162,8 +162,12 @@ class Msg_logic extends Basetool
 		$msg_type = $_this->msg_type;
 		$role_data = $_this->role_data;
 
+		$option = array(
+						"type" => isset($data['type']) ? intval($data['type']) : 0 
+					);
+
 		// 訊息
-		$msg = Msg::get_all_msg( $data );
+		$msg = Msg::get_all_msg( $option );
 
 
 		foreach ($msg as &$row) 

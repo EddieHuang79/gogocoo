@@ -6,7 +6,7 @@
 </section>
 <section class="content">
 
-	@if( empty($store_status) || $store_status["free"] > 0 || $store_status["buy"] > 0 )
+	@if( $store_status["left"] > 0 )
 	
 	<form action="/store" method="POST">				    
 		<table class="table table-stroped" style="width: 50%;">
@@ -54,7 +54,7 @@
 			<br />
 			<br />
 			<br />
-			<button class="btn btn-lg btn-primary btn-block" type="button">{{ $txt['go_to_store'] }}</button>
+			<button class="btn btn-lg btn-primary btn-block" type="button" onclick="location.href='/buy';">{{ $txt['go_to_store'] }}</button>
 		</div>
 	</div>
 

@@ -146,4 +146,20 @@ class Shop_logic extends Basetool
 
     }
 
+   public static function get_shop_record_by_id( $id )
+   {
+
+      $Login_user = Session::get('Login_user');
+
+      $data = array(
+                       "user_id"        => intval($Login_user["user_id"]),
+                       "service_id"     => intval($id)
+                 );
+
+      $result = Shop::get_shop_record_by_id( $data );
+
+      return $result->number;
+
+   }
+
 }

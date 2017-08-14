@@ -118,4 +118,22 @@ class Shop extends Model
 
 	}
 
+	public static function get_shop_record_by_id( $data )
+	{
+
+		$_this = new self();
+
+		$data = DB::table($_this->record_table)
+					->select(\DB::raw('SUM(number) as number'))
+					->leftJoin($_this->table, $_this->record_table.'.mall_product_id', '=', $_this->table.'.id')
+					->where($_this->record_table.".user_id", "=", $data["user_id"])
+					->where($_this->record_table.".mall_product_id", "=", $data["service_id"])
+					->where($_this->record_table.".deadline", ">=", date("Y-m-d H:i:s"))
+					->groupBy($_this->record_table.".mall_product_id")
+					->first();
+
+		return $data;
+
+	}
+
 }

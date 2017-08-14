@@ -6,6 +6,7 @@ use App\model\Store;
 use Illuminate\Support\Facades\Session;
 use App\logic\Option_logic;
 use App\logic\Admin_user_logic;
+use App\logic\Shop_logic;
 
 class Store_logic extends Basetool
 {
@@ -32,20 +33,23 @@ class Store_logic extends Basetool
 
 		$store_cnt = Store::get_store_cnt( $_this->user_id );
 
-
 		// 已購買的店鋪數
 
-		$buy_store_cnt = 0;
-
+		$buy_store_cnt = Shop_logic::get_shop_record_by_id( 1 );
 
 		// 免費帳號可以有2間的額度
 
-		$create_status = 2 - $store_cnt + $buy_store_cnt;
+		$free_store = 2 - $store_cnt ;
+
+		// 剩餘額度
+
+		$left = $free_store + $buy_store_cnt;
 
 		// return
 		$result = array(
-						"free" 	=> $buy_store_cnt == 0 && $create_status >= 1 && $store_cnt < 2 ? 1 : 0,
-						"buy" 	=> $buy_store_cnt
+						"free" 	=> $free_store > 0 ? $free_store : 0,
+						"buy" 	=> $buy_store_cnt,
+						"left" 	=> $left
 					);
 
 
