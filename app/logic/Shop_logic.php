@@ -158,7 +158,9 @@ class Shop_logic extends Basetool
 
       $result = Shop::get_shop_record_by_id( $data );
 
-      return $result->number;
+      $result = !empty($result) ? $result->number : 0 ;
+
+      return $result;
 
    }
 
