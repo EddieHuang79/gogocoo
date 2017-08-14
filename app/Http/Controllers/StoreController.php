@@ -132,6 +132,10 @@ class StoreController extends Controller
     public function edit( $id )
     {
 
+        $store_status = array("left" => 1);
+
+        $edit = 1;
+
         $store = Store_logic::get_single_store( $id ); 
 
         // 第一間店舖的資訊
@@ -140,7 +144,7 @@ class StoreController extends Controller
 
         $assign_page = "store/store_input";
 
-        $data = compact('assign_page', 'store', 'store_info');
+        $data = compact('assign_page', 'store', 'store_info', 'store_status', 'edit');
 
         return view('webbase/content', $data);
 

@@ -19,7 +19,7 @@
 
 				<tr>
 					<th width="10%">{{ $txt["store_code"] }}</th>
-					<td><input type="text" id="inputStoreCode" name="StoreCode" class="form-control" value="@if(!empty($store)){{ $store->store_code }}@endif" placeholder="{{ $txt['store_code_input'] }}" maxlength="3"></td>
+					<td><input type="text" id="inputStoreCode" name="StoreCode" class="form-control" value="@if(!empty($store)){{ $store->store_code }}@endif" placeholder="{{ $txt['store_code_input'] }}" maxlength="3" @if(!empty($edit)) readonly="true" @endif ></td>
 				</tr>
 
 				<tr>
