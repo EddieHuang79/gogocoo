@@ -95,8 +95,7 @@
           <li class="user-header">
             <img src="{{ URL::asset($data->photo) }}" class="img-circle" alt="User Image">
             <p>
-              Kiv Wu - CEO/Founder
-              <small>Member since Nov. 2016</small>
+              {{ $user['real_name'] }}
             </p>
           </li>
           <!-- Menu Body -->
