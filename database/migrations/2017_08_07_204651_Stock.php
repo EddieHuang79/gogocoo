@@ -107,7 +107,7 @@ class Stock extends Migration
         );
 
          // role_service
-        $service_data = DB::table('service')->select('id')->where('name', 'like', '%進貨%')->get();
+        $service_data = DB::table('service')->select('id')->where('name', 'like', '%庫存%')->get();
         foreach ($service_data as $row) 
         {
             DB::table($this->role_service_table)->insert(

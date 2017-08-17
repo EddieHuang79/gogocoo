@@ -45,7 +45,7 @@ class Mall extends Migration
         DB::table($this->mall_product_table)->insert(
             array(
                 'product_name'  => '購買店舖',
-                'content'       => '購買店舖',
+                'description'   => '購買店舖',
                 'pic'           => '/product_image/',
                 'public'        => 1,
                 'created_at'    => date("Y-m-d H:i:s"),
