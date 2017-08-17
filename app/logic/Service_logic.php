@@ -16,7 +16,7 @@ class Service_logic extends Basetool
 
       $result = array(
                      "name"       	 => isset($data["name"]) ? $_this->strFilter($data["name"]) : "",
-                     "link"          => isset($data["link"]) ? $_this->strFilter($data["link"]) : "",
+                     "link"          => isset($data["link"]) ? trim($data["link"]) : "",
                      "parents_id"    => isset($data["parents_id"]) ? intval($data["parents_id"]) : 0,
                      "status"        => isset($data["active"]) ? intval($data["active"]) : 0,
                      "sort"          => 0,
@@ -35,7 +35,7 @@ class Service_logic extends Basetool
 
       $result = array(
                      "name"          => isset($data["name"]) ? $_this->strFilter($data["name"]) : "",
-                     "link"          => isset($data["link"]) ? $_this->strFilter($data["link"]) : "",
+                     "link"          => isset($data["link"]) ? trim($data["link"]) : "",
                      "parents_id"    => isset($data["parents_id"]) ? intval($data["parents_id"]) : 0,
                      "status"        => isset($data["active"]) ? intval($data["active"]) : 0,
                      "updated_at"    => date("Y-m-d H:i:s")
