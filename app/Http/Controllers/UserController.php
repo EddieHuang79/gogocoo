@@ -198,7 +198,7 @@ class UserController extends Basetool
 
         $role_list = Role_logic::get_active_role();
  
-        $role_list = Role_logic::filter_admin_role($role_list);
+        // $role_list = Role_logic::filter_admin_role($role_list);
  
         $assign_page = "admin_user/admin_input";
 
