@@ -93,8 +93,6 @@ class ForgotPassword extends Basetool
 		catch(\Exception $e)
 		{
 
-			dd($e);
-
 			$result = $_this->show_error_to_user( json_decode($e->getMessage() ,true) );
 
 		}   	
