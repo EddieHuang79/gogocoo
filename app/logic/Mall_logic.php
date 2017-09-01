@@ -56,9 +56,33 @@ class Mall_logic extends Basetool
 		for ($i=0; $i < $cnt; $i++) 
 		{ 
 			$result[] = array(
-				"mall_product_id"   => isset($data["mall_product_id"]) ? intval($data["mall_product_id"]) : "",
+				"mall_shop_id"   	=> isset($data["mall_shop_id"]) ? intval($data["mall_shop_id"]) : "",
 				"cost"          	=> isset($data["cost"][$i]) ? intval($data["cost"][$i]) : "",
 				"date_spec"         => isset($data["date_range"][$i]) ? intval($data["date_range"][$i]) : "",
+				);
+		}
+
+		return $result;
+
+	}
+
+	// 新增商品關聯
+	public static function insert_child_product_format( $data )
+	{
+
+		$_this = new self();
+
+		$result = array();
+
+		$data["service"] = array_filter($data["service"], "intval");
+
+		$cnt = count($data["service"]);
+
+		for ($i=0; $i < $cnt; $i++) 
+		{ 
+			$result[] = array(
+					"mall_shop_id"   	=> isset($data["mall_shop_id"]) ? intval($data["mall_shop_id"]) : "",
+					"mall_product_id"   => isset($data["service"][$i]) ? intval($data["service"][$i]) : "",
 				);
 		}
 
@@ -91,18 +115,18 @@ class Mall_logic extends Basetool
 	}
 
 	// 新增產品
-	public static function add_mall_product( $data )
+	public static function add_mall_shop( $data )
 	{
 
-		return Mall::add_mall_product( $data );
+		return Mall::add_mall_shop( $data );
 
 	}
 
 	// 修改訊息
-	public static function edit_mall_product( $data, $mall_product_id )
+	public static function edit_mall_shop( $data, $mall_shop_id )
 	{
 
-		return Mall::edit_mall_product( $data, $mall_product_id );
+		return Mall::edit_mall_shop( $data, $mall_shop_id );
 
 	}
 
@@ -115,10 +139,26 @@ class Mall_logic extends Basetool
 	}
 
 	// 刪除規格
-	public static function del_mall_product_spec( $mall_product_id )
+	public static function del_mall_product_spec( $mall_shop_id )
 	{
 
-		return Mall::del_mall_product_spec( $mall_product_id );
+		return Mall::del_mall_product_spec( $mall_shop_id );
+
+	}
+
+	// 新增子商品
+	public static function add_child_product( $data )
+	{
+
+		return Mall::add_child_product( $data );
+
+	}
+
+	// 刪除子商品
+	public static function del_child_product( $mall_shop_id )
+	{
+
+		return Mall::del_child_product( $mall_shop_id );
 
 	}
 
@@ -130,6 +170,7 @@ class Mall_logic extends Basetool
 
 		$txt = $_this->txt;
 
+		$mall_shop_id = array();
 		$spec = array();
 		$result = array();
 
@@ -139,12 +180,16 @@ class Mall_logic extends Basetool
 		foreach ($mall as &$row) 
 		{
 
-			$spec[$row->id][] = $txt["cost_unit"] . $row->cost . "/" . $row->date_spec . $txt["month_unit"] ; 
+			$mall_shop_id[] = $row->id;
+			$spec[$row->id][] = $txt["cost_unit"] . $row->cost . "/" . $row->date_spec . $txt["day_unit"] ; 
 			$row->public_txt = $row->public > 0 ? $txt["yes"] : $txt["no"] ;
 			$row->start_date_desc = strtotime($row->start_date) > 0 ? $row->start_date : $txt["product_on_right_now"] ;
-			$row->end_date_desc = strtotime($row->end_date) > 0 ? $row->end_date : $txt["product_on_forever"] ;
+			$row->end_date_desc = strtotime($row->end_date) > strtotime("1970-01-01 23:59:59") ? $row->end_date : $txt["product_on_forever"] ;
 
 		}
+
+		// 關聯服務
+		$mall_rel = $_this->get_mall_service_rel( $mall_shop_id );
 
 		foreach ($mall as &$row) 
 		{
@@ -155,6 +200,8 @@ class Mall_logic extends Basetool
 			{
 				$result[$row->id] = $row;
 			}
+
+			$row->include_service = isset($mall_rel[$row->id]) ? $mall_rel[$row->id] : array() ;
 		
 		}
 
@@ -175,6 +222,54 @@ class Mall_logic extends Basetool
 
 		// 產品
 		$result = Mall::get_single_mall( $mall_id );
+
+		return $result;
+
+	}
+
+
+	// 取得服務清單
+	public static function get_mall_service_list()
+	{
+
+		$_this = new self();
+
+		$result = array();
+
+		$data = Mall::get_mall_service_list();
+
+		foreach ($data as $row) 
+		{
+			
+			$result[$row->id] = $row->product_name;
+
+		}
+
+		return $result;
+
+	}
+
+	// 取得商品服務關聯
+	public static function get_mall_service_rel( $mall_shop_id )
+	{
+
+		$_this = new self();
+
+		$result = array();
+
+		$data = Mall::get_mall_service_rel( $mall_shop_id );
+
+		if ( $data->count() > 0 ) 
+		{
+
+			foreach ($data as $row) 
+			{
+				
+				$result[$row->mall_shop_id][$row->mall_product_id] = $row->product_name;
+
+			}
+
+		}
 
 		return $result;
 

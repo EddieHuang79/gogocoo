@@ -1,6 +1,6 @@
 <header class="main-header">
 <!-- Logo -->
-<a href="/index" class="logo">
+<a href="/admin_index" class="logo">
   <!-- mini logo for sidebar mini 50x50 pixels -->
   <span class="logo-mini"><b>Go</b></span>
   <!-- logo for regular state and mobile devices -->

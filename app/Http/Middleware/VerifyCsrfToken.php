@@ -12,6 +12,6 @@ class VerifyCsrfToken extends BaseVerifier
      * @var array
      */
     protected $except = [
-        'photo_upload_process'
+        'photo_upload_process','sendmail'
     ];
 }

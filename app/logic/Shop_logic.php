@@ -5,6 +5,7 @@ namespace App\logic;
 use App\model\Shop;
 use Illuminate\Support\Facades\Session;
 use App\logic\Web_cht;
+use App\logic\mall_logic;
 
 class Shop_logic extends Basetool
 {
@@ -45,22 +46,36 @@ class Shop_logic extends Basetool
 
    }
 
-    public static function get_mall_product( $mall_product_id )
+    public static function get_mall_product( $mall_shop_id )
     {
 
         $spec = array();
+        $include_service = array();
+        $mall_shop_id = intval($mall_shop_id);
 
-        $mall_product_id = intval($mall_product_id);
-
-        $data = Shop::get_mall_product( $mall_product_id );
+        $data = Shop::get_mall_product( $mall_shop_id );
 
         foreach ($data as $row) 
         {
+
           $spec[$row->id][] = array(
                                 "id"        => $row->spec_id,
                                 "cost"      => $row->cost,
                                 "date_spec" => $row->date_spec
                               );
+
+        }
+
+
+        // 關聯服務
+
+        $mall_rel = mall_logic::get_mall_service_rel( array($mall_shop_id) );
+
+        foreach ($mall_rel[$mall_shop_id] as $key => $value) 
+        {
+
+          $include_service[$key] = $value;
+        
         }
 
         foreach ($data as $row) 
@@ -70,8 +85,10 @@ class Shop_logic extends Basetool
                           "mall_product_id"           => $row->id,
                           "mall_product_name"         => $row->product_name,
                           "mall_product_description"  => $row->description,
-                          "mall_product_pic"          => $row->pic,
+                          // "mall_product_pic"          => $row->pic,
+                          "mall_rel"                  => $include_service,
                           "mall_product_spec"         => $spec[$row->id],
+                          "include_service"           => $include_service,
                         );
 
         }
@@ -113,9 +130,8 @@ class Shop_logic extends Basetool
         $Login_user = Session::get('Login_user');
 
         $result = array(
-                      "mall_product_id"       => $data->mall_product_id,
-                      "mall_product_spec_id"  => $data->id,
-                      "deadline"              => date("Y-m-d H:i:s", mktime(23,59,59,date("m")+$data->date_spec,date("d"),date("Y"))),
+                      "mall_shop_id"          => $data->mall_shop_id,
+                      "mall_shop_spec_id"     => $data->id,
                       "user_id"               => $Login_user["user_id"],
                       "cost"                  => $data->cost,
                       "number"                => $data->buy_number,
@@ -146,22 +162,63 @@ class Shop_logic extends Basetool
 
     }
 
-   public static function get_shop_record_by_id( $id )
-   {
+    public static function get_shop_record_by_id( $action_key )
+    {
 
-      $Login_user = Session::get('Login_user');
+        $result = 0;
 
-      $data = array(
-                       "user_id"        => intval($Login_user["user_id"]),
-                       "service_id"     => intval($id)
-                 );
+        $Login_user = Session::get('Login_user');
 
-      $result = Shop::get_shop_record_by_id( $data );
+        $data = array(
+                         "user_id"        => intval($Login_user["user_id"])
+                   );
 
-      $result = !empty($result) ? $result->number : 0 ;
+        $data = Shop::get_shop_record_by_id( $data );
 
-      return $result;
+        foreach ($data as $row) 
+        {
 
-   }
+            $result+= $row->action_key == $action_key ? $row->number : 0 ;
+
+        }
+
+        return $result;
+
+    }
+
+    public static function get_mall_shop_id( $action_key )
+    {
+
+        $Login_user = Session::get('Login_user');
+
+        $data = array(
+                         "user_id"        => intval($Login_user["user_id"]),
+                         "action_key"     => $action_key,
+                   );
+
+        return Shop::get_mall_shop_id( $data );
+
+    }
+
+    // public static function add_use_record( $action_key )
+    // {
+
+    //     $_this = new self();
+
+    //     $data = $_this->get_mall_shop_id( $action_key );
+
+    //     $Login_user = Session::get('Login_user');
+
+    //     $data = array(
+    //                      "user_id"        => intval($Login_user["user_id"]),
+    //                      "mall_shop_id"   => intval($mall_shop_id),
+    //                      "action_key"     => $action_key,
+    //                      "use_time"       => date("Y-m-d H:i:s"),
+    //                );
+
+    //     Shop::add_use_record( $data );
+
+    // }
+
 
 }

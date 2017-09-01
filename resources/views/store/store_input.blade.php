@@ -3,6 +3,7 @@
 	@if(!empty($store_status["free"]))
 		<h5>{{ $txt["store_input_desc"] }}</h5>
 	@endif
+	@include('webbase.breadcrumb')
 </section>
 <section class="content">
 

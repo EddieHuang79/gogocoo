@@ -71,7 +71,7 @@ class LoginController extends Controller
 
         $result = Login::login_verify($data);
 
-        return empty($result) ? redirect("/index") : back()->with('ErrorMsg', $result);
+        return empty($result) ? redirect("/admin_index") : back()->with('ErrorMsg', $result);
 
     }
 
@@ -80,7 +80,7 @@ class LoginController extends Controller
 
         Login::logout();
 
-        return redirect("/login");
+        return redirect("/index");
 
     }
 

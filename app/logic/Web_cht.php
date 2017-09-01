@@ -135,8 +135,8 @@ class Web_cht
                               "end_date_input"        => "請輸入產品下架時間(非必填)",
                               "product_spec"          => "產品規格",
                               "cost_input"            => "請輸入價格",
-                              "date_range_input"      => "請輸入月數",
-                              "month_unit"            => "個月",
+                              "date_range_input"      => "請輸入天數",
+                              "day_unit"              => "天",
                               "cost_unit"             => "NT.",
                               "remove_block"          => "移除",
                               "add_spec"              => "新增規格",
@@ -224,6 +224,12 @@ class Web_cht
                               "order_upload"                            => "訂單上傳",
                               "order_upload_format_download"            => "訂單上傳格式下載",
                               "order_upload_format"                     => "訂單上傳格式",
+                              "web_index"             => "首頁",
+                              "include_service"       => "包含服務",
+                              "add_service"           => "新增服務",
+                              "mall_list"             => "商城產品列表",
+                              "create_account_disable"                  => "無法建立子帳號",
+                              "create_account_disable_desc"             => "您的建立的子帳號數量已達上限，若要擴充請前往商城購買子帳號額度",
 
    				);
 

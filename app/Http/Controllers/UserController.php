@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Storage;
 
 class UserController extends Basetool
 {
+
     /**
      * Display a listing of the resource.
      *
@@ -61,16 +62,13 @@ class UserController extends Basetool
     public function create()
     {
 
+        $_this = new self();
+
         // 計算子帳數量
 
         $Login_user = Session::get('Login_user');
 
-        $child_cnt = Admin_user_logic::cnt_child_account( $Login_user["user_id"] );
-
-        if ( $child_cnt >= 5) 
-        {        
-            return back();
-        }
+        $account_status = Admin_user_logic::cnt_child_account();
 
         $user = Admin_user_logic::get_user();
 
@@ -82,7 +80,7 @@ class UserController extends Basetool
 
         $ErrorMsg = Session::get('ErrorMsg');
 
-        $data = compact('user', 'role_list', 'assign_page', 'ErrorMsg');
+        $data = compact('user', 'role_list', 'assign_page', 'ErrorMsg', 'account_status');
 
         return view('webbase/content', $data);
 

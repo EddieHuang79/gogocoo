@@ -54,17 +54,15 @@ class ForgotPasswordController extends Controller
     {
 
         // 轉格式
-        $data = ForgotPassword::password_reset_format($_POST);
+        $data = ForgotPassword::password_reset_format( $_POST );
 
         // 驗證
-        $ErrorMsg = ForgotPassword::password_reset_verify($data);
+        $ErrorMsg = ForgotPassword::password_reset_verify( $data );
 
         // 成功: 產生密碼 更新db 寄信 
 
         if (empty($ErrorMsg)) 
         {
-
-            // 寄信
 
             return redirect("/reset");
 

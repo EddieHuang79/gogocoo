@@ -1,5 +1,6 @@
 <section class="content-header">
 	<h1>{{ $txt["service_input"] }}</h1>
+	@include('webbase.breadcrumb')
 </section>
 <section class="content">
 	<form action="/service" method="POST">

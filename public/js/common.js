@@ -101,7 +101,14 @@ var Show_current_position = function(){
 
 	},
 	show_shop_div = function(){
-		var mall_product_id = $(this).attr("MallProductId");
+
+		var mall_product_id = $(this).attr("MallProductId"),
+			mall_product_lightbox_width = ( $(".mall_product_lightbox").width() / 2 ) * -1;
+		
+		$(".mall_product_lightbox").css( "margin-left", mall_product_lightbox_width );
+
+		$(".mall_child_product").find("div").remove();
+
 		$.ajax({
 			url: "/get_mall_product",
 			data: "mall_product_id="+mall_product_id,
@@ -110,15 +117,19 @@ var Show_current_position = function(){
 				var data = JSON.parse(response);
 				$(".mall_product_name").text(data.mall_product_name);
 				$(".mall_product_description").text(data.mall_product_description);
-				$(".mall_product_pic").find("img").attr("src",data.mall_product_pic);
+				// $(".mall_product_pic").find("img").attr("src",data.mall_product_pic);
 				$(".mall_product_cost").text("NT. 0");
 				$('.mall_product_spec>select').find("option[classkey='append']").remove();
 				$('[name="mall_product_number"]').val("1");
+				$.map(data.include_service, function(value, index) {
+					var dom = "<div>"+value+"</div>";
+					$(".mall_child_product").append(dom);
+				});
 				data.mall_product_spec.forEach(function(value, key){
 					$('.mall_product_spec>select').append($('<option>', {
 					    value: value.id,
 					    spec: value.cost+'/'+value.date_spec,
-					    text: 'NT.'+value.cost+' / '+value.date_spec+'個月',
+					    text: 'NT.'+value.cost+' / '+value.date_spec+'天',
 					    classkey: "append"
 					}));
 				});
@@ -328,12 +339,17 @@ var Show_current_position = function(){
 				$('[name="spec_id"]').val(spec_id);
 			}
 		});	
+	},
+	count_lightbox_width = function(){
+		var lightbox_width = ( $(".lightbox").width() / 2 ) * -1;
+		$(".lightbox").css( "margin-left", lightbox_width );
 	};
 
 
 Show_current_position();
 Ajax_init();
 get_product_spec();
+count_lightbox_width();
 
 $(".addbtn").on("click", AddBtn);
 $(document).on("click", ".removeLabel", RemoveBtn);

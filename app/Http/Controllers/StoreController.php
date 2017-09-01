@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\logic\Option_logic;
 use App\logic\Store_logic;
 use App\logic\Msg_logic;
+use App\logic\Shop_logic;
 use Illuminate\Support\Facades\Session;
 
 class StoreController extends Controller
@@ -98,11 +99,22 @@ class StoreController extends Controller
         else
         {
 
+            $store_cnt = Store_logic::get_store_cnt();
+
+            $_POST["is_free"] = $store_cnt["free"] > 0 ? 1 : 2 ;
+
             $data = Store_logic::insert_format( $_POST );
 
             // 店鋪代號若為空 隨機產生
 
             Store_logic::add_store( $data );
+
+            // if ( $_POST["is_free"] > 1 ) 
+            // {
+
+            //     Shop_logic::add_use_record( "create_shop" );
+
+            // }
 
         }
 
@@ -198,7 +210,7 @@ class StoreController extends Controller
             Msg_logic::add_notice_msg( $subject, $content, $Login_user["user_id"] );
         }
 
-        return redirect("/index");
+        return redirect("/admin_index");
 
     }
 

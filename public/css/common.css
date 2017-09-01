@@ -102,11 +102,12 @@
 
 .lightbox{
 	position: fixed;
-	left: calc(100%/3.5);
+	left: 50%;
 	top: 30%;
 	background-color: #FFF;
 	width: 40%;
-	min-width: 300px;
+	min-width: 400px;
+	max-width: 600px;
 	height: 300px;
 	border-radius: 10px;
 	box-shadow: 0px 0px 3px #888888;
@@ -217,6 +218,7 @@
 .mall_product{
 	float: left;
 	border: 1px solid #CCC;
+	margin: 5px;
 }
 
 .mall_product>img{
@@ -225,8 +227,8 @@
 }
 
 .mall_product_lightbox{
-	overflow: auto;
-	height: 500px;
+	/*overflow: auto;*/
+	height: 600px;
 	top: 20%;
 	display: none;
 }
@@ -236,7 +238,8 @@
 }
 
 .mall_product_lightbox>form>div{
-	float: left;
+	/*float: left;*/
+	width: 100%;
 }
 
 .mall_product_pic{
@@ -245,10 +248,10 @@
 	border: 1px solid #CCC;
 }
 
-.mall_product_pic>img{
+/*.mall_product_pic>img{
 	width: 100%;
 	margin-top: calc(40%);
-}
+}*/
 
 .mall_product_info{
 	width: 60%;

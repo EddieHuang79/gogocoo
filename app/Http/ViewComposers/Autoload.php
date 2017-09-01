@@ -44,11 +44,13 @@ class Autoload extends Basetool
 
         $auth_check = $service_id > 0 ? Service_logic::auth_check($service_id, $service_list) : true;
 
-        !$auth_check ? header("Location: /index") : "" ;
+        $breadcrumb = Service_logic::breadcrumb( $service_id, $service_list );
+
+        !$auth_check ? header("Location: /admin_index") : "" ;
 
         Session::put('service_id', $service_id);
 
-        $data = compact('service_list', 'service_id');
+        $data = compact('service_list', 'service_id', 'breadcrumb');
 
     	$view->with($data);
 
@@ -82,7 +84,7 @@ class Autoload extends Basetool
             
         }else
         {
-            header("Location: /login");
+            header("Location: /index");
             exit();
         }
 

@@ -1,5 +1,6 @@
 <section class="content-header">
 	<h1>{{ $txt["role_list"] }}</h1>
+	@include('webbase.breadcrumb')
 </section>
 <section class="content">
 	@include('webbase.search_tool')

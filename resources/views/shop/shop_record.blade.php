@@ -1,5 +1,6 @@
 <section class="content-header">
 	<h1>{{ $txt["service_buy_record"] }}</h1>
+	@include('webbase.breadcrumb')
 </section>
 <section class="content">
 	@include('webbase.search_tool')
@@ -18,7 +19,7 @@
 				@foreach($shop_record as $row)
 					<tr>
 						<th>{{ $row->product_name }}</th>
-						<th>{{ $txt["cost_unit"] }}{{ $row->cost }}/{{ $row->date_spec }}{{ $txt["month_unit"] }}</th>
+						<th>{{ $txt["cost_unit"] }}{{ $row->cost }}/{{ $row->date_spec }}{{ $txt["day_unit"] }}</th>
 						<th>{{ $row->number }}</th>
 						<th>{{ $row->deadline }}</th>
 						<th>{{ $row->paid_at }}</th>

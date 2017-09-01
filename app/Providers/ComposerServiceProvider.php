@@ -14,7 +14,7 @@ class ComposerServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        View::composer('webbase.menu', 'App\Http\ViewComposers\Autoload@GetMenu');
+        View::composer('webbase.content', 'App\Http\ViewComposers\Autoload@GetMenu');
         View::composer('webbase.menu', 'App\Http\ViewComposers\Autoload@CheckLogin');
         View::composer('webbase.content', 'App\Http\ViewComposers\Autoload@GetTxt');
         View::composer('webbase.header', 'App\Http\ViewComposers\Autoload@GetTxt');

@@ -15,6 +15,10 @@ Route::resource('/', 'IndexController');
 
 Route::get('index', ['as'=>'index','uses'=>'IndexController@index']);
 
+Route::post('sendmail', ['as'=>'index.sendmail','uses'=>'IndexController@sendmail']);
+
+Route::get('admin_index', ['as'=>'admin_index','uses'=>'IndexController@admin_index']);
+
 Route::get('login', ['as'=>'login.index','uses'=>'Auth\LoginController@index']);
 
 Route::get('logout', ['as'=>'login.index','uses'=>'Auth\LoginController@logout']);
@@ -136,5 +140,3 @@ Route::get('order_upload', ['as'=>'upload.order_upload','uses'=>'UploadControlle
 Route::post('order_upload_process', ['as'=>'upload.order_upload_process','uses'=>'UploadController@order_upload_process']);
 
 Route::get('order_upload_format_download', ['as'=>'upload.order_upload_format_download','uses'=>'UploadController@order_upload_format_download']);
-
-

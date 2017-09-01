@@ -1,5 +1,6 @@
 <section class="content-header">
-	<h1>{{ $txt["msg_list"] }}</h1>
+	<h1>{{ $txt["mall_list"] }}</h1>
+	@include('webbase.breadcrumb')
 </section>
 <section class="content">
 	@include('webbase.search_tool')
@@ -10,6 +11,7 @@
 				<th>{{ $txt['product_name'] }}</th>
 				<th>{{ $txt['product_image'] }}</th>
 				<th>{{ $txt['product_spec'] }}</th>
+				<th>{{ $txt['include_service'] }}</th>
 				<th>{{ $txt['public'] }}</th>
 				<th>{{ $txt['start_date_input'] }}</th>
 				<th>{{ $txt['end_date_input'] }}</th>
@@ -30,6 +32,13 @@
 					@foreach($row->spec as $spec)
 					<div>{{ $spec }}</div>
 					@endforeach	
+				</td>
+				<td>
+					@if( !empty($row->include_service) )
+						@foreach($row->include_service as $service)
+						<div>{{ $service }}</div>
+						@endforeach	
+					@endif					
 				</td>
 				<td>{{ $row->public_txt }}</td>
 				<td>{{ $row->start_date_desc }}</td>

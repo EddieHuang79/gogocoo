@@ -1,5 +1,6 @@
 <section class="content-header">
 	<h1>{{ $txt["record_list"] }}</h1>
+	@include('webbase.breadcrumb')
 </section>
 <section class="content">
 	

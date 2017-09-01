@@ -1,5 +1,6 @@
 <section class="content-header">
 	<h1>{{ $txt["service_buy"] }}</h1>
+	@include('webbase.breadcrumb')
 </section>
 <section class="content">
 	
@@ -21,14 +22,15 @@
 
 	<div class="lightbox mall_product_lightbox">
 		<form method="POST" action="/shop_buy_process" id="ShopForm">
-			<div class="mall_product_pic">
+<!-- 			<div class="mall_product_pic">
 				<img src="" alt="">
-			</div>
-			<div class="mall_product_info">
+			</div> -->
+			<!-- <div class="mall_product_info"> -->
 				<label class="close_btn"> X </label>
 				<div class="mall_product_name">mall_product_name</div>
 				<hr />
-				<div class="mall_product_description">mall_product_description</div>			
+				<!-- <div class="mall_product_description">mall_product_description</div>			 -->
+				<div class="mall_child_product">{{ $txt['include_service'] }}</div>			
 				<div class="mall_product_option">
 					<div class="mall_product_spec">
 					    <select name="mall_product_spec" required autofocus>
@@ -45,7 +47,7 @@
 					<input type="button" value="{{ $txt['back'] }}" onclick="ClosePopup();">
 					<input type="hidden" name="_token" value="{{ csrf_token() }}">
 				</div>			
-			</div>
+			<!-- </div> -->
 		</form>
 	</div>
 

@@ -266,4 +266,55 @@ class Service_logic extends Basetool
 
    }
 
+   public static function breadcrumb( $service_id, $service_data )
+   {
+
+      $result = array();
+
+      $child_parents = array();
+
+      $targer_parents_id = 0 ;
+
+      foreach ($service_data as $parents_id => $parents_data) 
+      {
+         
+         foreach ($parents_data["child"] as $child_id => $child_data)
+         {
+
+            $child_parents[$parents_id][] = $child_id;
+         
+         }
+
+      }
+
+      foreach ($child_parents as $parents_id => $child) 
+      {
+
+         if ( in_array($service_id, $child) ) 
+         {
+
+            $targer_parents_id = $parents_id;
+
+         }
+
+      }
+
+      if ( $targer_parents_id > 0 ) 
+      {
+         $result[] = array(
+                        "name" => $service_data[$targer_parents_id]["name"],
+                        "link" => $service_data[$targer_parents_id]["link"]
+                     );
+
+         $result[] = array(
+                        "name" => $service_data[$targer_parents_id]["child"][$service_id]["name"],
+                        "link" => $service_data[$targer_parents_id]["child"][$service_id]["link"]
+                     );
+      }
+
+
+      return $result;
+
+   }
+
 }

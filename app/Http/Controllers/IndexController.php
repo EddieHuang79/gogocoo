@@ -5,15 +5,24 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use App\logic\Login;
+use Mail;
 
 class IndexController extends Controller
 {
+
+    public function index()
+    {
+
+        return view('frontpage/index');
+
+    }
+
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function admin_index()
     {
 
         // Login::is_user_login();
@@ -28,69 +37,32 @@ class IndexController extends Controller
 
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+    public function sendmail()
     {
-        //
+
+        $name = isset($_POST['name']) ? trim($_POST['name']) : "" ;
+
+        $email = isset($_POST['email']) ? trim($_POST['email']) : "" ;
+
+        $phone = isset($_POST['phone']) ? trim($_POST['phone']) : "" ;
+
+        $msg = isset($_POST['message']) ? trim($_POST['message']) : "" ;
+
+        if ( !empty( $name ) && !empty( $email ) && !empty( $phone ) && !empty( $msg ) ) 
+        {
+
+            $msg = explode("\r\n", $msg);
+
+            $data = [ 'name' => $name, 'email' => $email, 'phone' => $phone, 'msg' => $msg ];
+
+            Mail::send('frontpage.custom_mail', $data, function($message) {
+                $message->to('faith790829@gmail.com')->subject('From GoGoCoo - 客戶來信');
+            });
+
+        }
+
+        exit();
+        
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
-    }
 }

@@ -5,8 +5,11 @@
         @endforeach
     @endif
 	<h1>{{ $txt["admin_user_input"] }}</h1>
+	@include('webbase.breadcrumb')
 </section>
 <section class="content">
+
+	@if( $account_status["left"] > 0 )
 
 	<form action="/user" method="POST">
 		<table class="table table-stroped">
@@ -55,4 +58,21 @@
 		</table>
 		<input type="hidden" name="_token" value="{{ csrf_token() }}">
 	</form>
+
+	@else
+
+	<div class="lightbox">
+		<div class="subject">{{ $txt["create_account_disable"] }} <label class="close_btn"> X </label> </div>
+		<hr>
+		<div class="content">
+			{{ $txt["create_account_disable_desc"] }} 
+			<br />
+			<br />
+			<br />
+			<button class="btn btn-lg btn-primary btn-block" type="button" onclick="location.href='/buy';">{{ $txt['go_to_store'] }}</button>
+		</div>
+	</div>
+
+	@endif
+
 </section>

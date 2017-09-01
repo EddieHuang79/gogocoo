@@ -107,16 +107,16 @@ class Role_logic extends Basetool
    public static function get_active_role()
    {
 
-         $result = Redis_tool::get_active_role();
+         // $result = Redis_tool::get_active_role();
 
-         if (empty($result))
-         {
+         // if (empty($result))
+         // {
             
             $result = Role::get_active_role();
             
-            Redis_tool::set_active_role( $result );
+            // Redis_tool::set_active_role( $result );
          
-         }
+         // }
 
          return $result;
 

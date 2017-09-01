@@ -1,5 +1,6 @@
 <section class="content-header">
 	<h1>{{ $txt["order_upload"] }}</h1>
+	@include('webbase.breadcrumb')
 </section>
 <section class="content">
 	<form action="/order_upload_process" method="POST" enctype="multipart/form-data">

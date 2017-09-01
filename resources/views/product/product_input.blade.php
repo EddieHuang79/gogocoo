@@ -1,5 +1,6 @@
 <section class="content-header">
 	<h1>{{ $txt["product_input"] }}</h1>
+	@include('webbase.breadcrumb')
 </section>
 <section class="content">
 	<form action="/product" method="POST">

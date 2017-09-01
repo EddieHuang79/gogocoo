@@ -11,11 +11,14 @@ class Mall extends Migration
 
     protected $user_table = "user";
     protected $service_table = "service";
-    protected $mall_product_table = "mall_product";
-    protected $mall_product_spec_table = "mall_product_spec";
-    protected $mall_record_table = "mall_record";
     protected $role_service_table = "role_service_relation";
-
+    protected $mall_product_table = "mall_product";
+    protected $mall_shop_spec_table = "mall_shop_spec";
+    protected $mall_record_table = "mall_record";
+    protected $mall_shop_table = "mall_shop";
+    protected $mall_product_rel_table = "mall_product_rel";
+    protected $mall_product_use_table = "mall_product_use";
+    
     /**
      * Run the migrations.
      *
@@ -24,11 +27,12 @@ class Mall extends Migration
     public function up()
     {
 
-        // 商城管理
 
-        #   public - 1:yes,2:no
+        // 商品清單
 
-        Schema::create($this->mall_product_table, function (Blueprint $table) {
+        #   date_spec - unit: month
+
+        Schema::create($this->mall_shop_table, function (Blueprint $table) {
             $table->increments('id');
             $table->string('product_name');
             $table->text('description');
@@ -38,38 +42,32 @@ class Mall extends Migration
             $table->dateTime('end_date');
             $table->timestamps();
             $table->engine = 'InnoDB';
-        });        
+        });   
 
-        // insert msg
-
-        DB::table($this->mall_product_table)->insert(
-            array(
-                'product_name'  => '購買店舖',
-                'description'   => '購買店舖',
-                'pic'           => '/product_image/',
-                'public'        => 1,
-                'created_at'    => date("Y-m-d H:i:s"),
-                'updated_at'    => date("Y-m-d H:i:s")
-            )
-        );
+        // 商品規格
 
         #   date_spec - unit: month
 
-        Schema::create($this->mall_product_spec_table, function (Blueprint $table) {
+        Schema::create($this->mall_shop_spec_table, function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('mall_product_id')->unsigned();
+            $table->integer('mall_shop_id')->unsigned();
             $table->integer('cost');
             $table->integer('date_spec');
             $table->engine = 'InnoDB';
         });    
 
+        Schema::table($this->mall_shop_spec_table, function($table) {
+           $table->foreign('mall_shop_id')->references('id')->on($this->mall_shop_table);
+        });
+
+        // 購買紀錄
+
         #   status - 0:未付,1:付,2:退
 
         Schema::create($this->mall_record_table, function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('mall_product_id')->unsigned();
-            $table->integer('mall_product_spec_id')->unsigned();
-            $table->dateTime('deadline');
+            $table->integer('mall_shop_id')->unsigned();
+            $table->integer('mall_shop_spec_id')->unsigned();
             $table->integer('user_id')->unsigned();
             $table->integer('cost');
             $table->integer('number');
@@ -80,16 +78,110 @@ class Mall extends Migration
             $table->engine = 'InnoDB';
         });    
 
-
-        Schema::table($this->mall_product_spec_table, function($table) {
-           $table->foreign('mall_product_id')->references('id')->on($this->mall_product_table);
-        });
-
         Schema::table($this->mall_record_table, function($table) {
-           $table->foreign('mall_product_id')->references('id')->on($this->mall_product_table);
-           $table->foreign('mall_product_spec_id')->references('id')->on($this->mall_product_spec_table);
+           $table->foreign('mall_shop_id')->references('id')->on($this->mall_shop_table);
+           $table->foreign('mall_shop_spec_id')->references('id')->on($this->mall_shop_spec_table);
            $table->foreign('user_id')->references('id')->on($this->user_table);
         });
+
+
+        // 商城管理
+
+        #   public - 1:yes,2:no
+
+        Schema::create($this->mall_product_table, function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('product_name');
+            $table->text('description');
+            $table->string('action_key');
+            $table->engine = 'InnoDB';
+        });    
+
+        // insert product
+
+        DB::table($this->mall_product_table)->insert(
+            array(
+                'product_name'  => '購買店舖',
+                'description'   => '購買店舖',
+                'action_key'    => 'create_shop'
+            )
+        );
+
+        DB::table($this->mall_product_table)->insert(
+            array(
+                'product_name'  => '延長展期',
+                'description'   => '延長展期',
+                'action_key'    => 'extend_deadline'
+            )
+        );
+
+        DB::table($this->mall_product_table)->insert(
+            array(
+                'product_name'  => '子帳數目擴充',
+                'description'   => '子帳數目擴充',
+                'action_key'    => 'child_account'
+            )
+        );
+
+        DB::table($this->mall_product_table)->insert(
+            array(
+                'product_name'  => '簡訊通知',
+                'description'   => '簡訊通知 - 安全庫存',
+                'action_key'    => 'safe_amount_sms_notice'
+            )
+        );
+
+        DB::table($this->mall_product_table)->insert(
+            array(
+                'product_name'  => '數據分析',
+                'description'   => '數據分析',
+                'action_key'    => 'data_anlaysis'
+            )
+        );
+
+        DB::table($this->mall_product_table)->insert(
+            array(
+                'product_name'  => '進階報表',
+                'description'   => '進階報表',
+                'action_key'    => 'advance_report'
+            )
+        );
+
+        // 商品關聯
+
+        #   public - 1:yes,2:no
+
+        Schema::create($this->mall_product_rel_table, function (Blueprint $table) {
+            $table->increments('id');
+            $table->integer('mall_shop_id')->unsigned();
+            $table->integer('mall_product_id')->unsigned();
+            $table->engine = 'InnoDB';
+        });    
+
+        Schema::table($this->mall_product_rel_table, function($table) {
+           $table->foreign('mall_shop_id')->references('id')->on($this->mall_shop_table);
+           $table->foreign('mall_product_id')->references('id')->on($this->mall_product_table);
+        });
+
+
+        // 商城商品使用紀錄
+
+        #   public - 1:yes,2:no
+
+        Schema::create($this->mall_product_use_table, function (Blueprint $table) {
+            $table->increments('id');
+            $table->integer('user_id')->unsigned();
+            $table->integer('mall_shop_id')->unsigned();
+            $table->string('action_key');
+            $table->dateTime('use_time');
+            $table->engine = 'InnoDB';
+        });    
+
+        Schema::table($this->mall_product_use_table, function($table) {
+           $table->foreign('mall_shop_id')->references('id')->on($this->mall_shop_table);
+           $table->foreign('user_id')->references('id')->on($this->user_table);
+        });
+
 
         // service
 
@@ -159,12 +251,14 @@ class Mall extends Migration
     public function down()
     {
         
-        Schema::dropIfExists($this->mall_record_table);
-        Schema::dropIfExists($this->mall_product_spec_table);
+        Schema::dropIfExists($this->mall_product_use_table);
+        Schema::dropIfExists($this->mall_product_rel_table);
         Schema::dropIfExists($this->mall_product_table);
-    
+        Schema::dropIfExists($this->mall_record_table);
+        Schema::dropIfExists($this->mall_shop_spec_table);
+        Schema::dropIfExists($this->mall_shop_table);
 
-         // role_service
+        // role_service
         $service_data = DB::table('service')->select('id')->whereIn('name', array('商城管理','建立產品','產品列表'))->get();
         foreach ($service_data as $row) 
         {

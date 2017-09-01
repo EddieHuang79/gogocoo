@@ -4,9 +4,25 @@ namespace App\logic;
 
 use App\model\Admin_user;
 use Illuminate\Support\Facades\Session;
+use App\logic\Shop_logic;
 
 class Admin_user_logic extends Basetool
 {
+
+   protected $user_id;
+
+   protected $free_user_limit = 5;
+
+   public function __construct()
+   {
+
+      $Login_user = Session::get('Login_user');
+
+      // user_id
+
+      $this->user_id = $Login_user["user_id"];
+
+   }
 
    public static function insert_format( $data )
    {
@@ -45,40 +61,6 @@ class Admin_user_logic extends Basetool
             $result["password"] = bcrypt($_this->strFilter($data["password"]));
          }
 
-
-         return $result;
-
-   }
-
-   public static function insert_store_format( $data )
-   {
-         
-         $_this = new self();
-
-         $result = array(
-                        "user_id"       => isset($data["user_id"]) ? intval($data["user_id"]) : "",
-                        "store_name"    => isset($data["store_name"]) ? $_this->strFilter($data["store_name"]) : "",
-                        "store_code"    => isset($data["store_code"]) ? $_this->strFilter($data["store_code"]) : "",
-                        "store_type"    => isset($data["store_type"]) ? intval($data["store_type"]) : "",
-                        "created_at"    => date("Y-m-d H:i:s"),
-                        "updated_at"    => date("Y-m-d H:i:s")
-                     );
-
-         return $result;
-
-   }
-
-
-   public static function update_store_format( $data )
-   {
-
-         $_this = new self();
-
-         $result = array(
-                        "store_name"     => isset($data["store_name"]) ? $_this->strFilter($data["store_name"]) : "",
-                        "store_type"     => isset($data["store_type_id"]) ? intval($data["store_type_id"]) : "",
-                        "updated_at"     => date("Y-m-d H:i:s")
-                     );
 
          return $result;
 
@@ -244,9 +226,41 @@ class Admin_user_logic extends Basetool
 
    }
 
-   public static function cnt_child_account( $user_id )
+   public static function cnt_child_account()
    {
-         return Admin_user::cnt_child_account( $user_id );     
+
+         $_this = new self();
+
+         $user_id = $_this->user_id;
+
+         // 免費額度
+
+         $free_user_limit = $_this->free_user_limit;
+
+         // 已創造帳號數
+
+         $total = Admin_user::cnt_child_account( $user_id );
+
+         // 剩餘免費帳號數
+
+         $left_free_account = $free_user_limit - $total;
+
+         // 已購買的子帳數
+
+         $buy_account_cnt = Shop_logic::get_shop_record_by_id( "child_account" );
+
+         // 剩餘額度
+
+         $left = $left_free_account + $buy_account_cnt;
+
+
+         $result = array(
+                     "free"   => $left_free_account > 0 ? $left_free_account : 0,
+                     "buy"    => $buy_account_cnt,
+                     "left"   => $left
+                  );
+
+         return $result;     
    }
 
    public static function is_admin( $data )
@@ -263,7 +277,7 @@ class Admin_user_logic extends Basetool
 
          $data = Admin_user::is_sub_admin( $data["user_id"] );
 
-         $result = $data->parents_id > 0 ? false : true; 
+         $result = !empty($data) && $data->parents_id > 0 ? false : true; 
 
          return $result;   
 

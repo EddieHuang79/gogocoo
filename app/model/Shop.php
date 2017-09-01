@@ -9,9 +9,12 @@ use Illuminate\Support\Facades\Session;
 class Shop extends Model
 {
 
-	protected $table = "mall_product";
-	protected $spec_table = "mall_product_spec";
+	protected $table = "mall_shop";
+	protected $spec_table = "mall_shop_spec";
 	protected $record_table = "mall_record";
+	protected $mall_product_table = "mall_product";
+	protected $mall_product_rel_table = "mall_product_rel";
+
 
 	public static function shop_product_list()
 	{
@@ -71,9 +74,9 @@ class Shop extends Model
 		$_this = new self();
 
 		$data = DB::table($_this->record_table)
-					->select($_this->spec_table.".*",$_this->table.'.product_name',$_this->record_table.'.deadline',$_this->record_table.'.paid_at',$_this->record_table.'.number')
-					->leftJoin($_this->table, $_this->record_table.'.mall_product_id', '=', $_this->table.'.id')
-					->leftJoin($_this->spec_table, $_this->record_table.'.mall_product_spec_id', '=', $_this->spec_table.'.id')
+					->select($_this->spec_table.".*",$_this->table.'.product_name',$_this->record_table.'.paid_at',$_this->record_table.'.number')
+					->leftJoin($_this->table, $_this->record_table.'.mall_shop_id', '=', $_this->table.'.id')
+					->leftJoin($_this->spec_table, $_this->record_table.'.mall_shop_spec_id', '=', $_this->spec_table.'.id')
 					->where($_this->record_table.".user_id", "=", $data["user_id"])
 					->paginate(15);
 
@@ -81,15 +84,15 @@ class Shop extends Model
 
 	}
 
-	public static function get_mall_product( $mall_product_id )
+	public static function get_mall_product( $mall_shop_id )
 	{
 
 		$_this = new self();
 
 		$data = DB::table($_this->table)
 					->select( $_this->table.".id", $_this->table.".product_name", $_this->table.".description", $_this->table.".pic", $_this->spec_table.".cost", $_this->spec_table.".date_spec", $_this->spec_table.".id as spec_id" )
-					->leftJoin($_this->spec_table, $_this->table.'.id', '=', $_this->spec_table.'.mall_product_id')
-					->where($_this->table.".id", "=", $mall_product_id)
+					->leftJoin($_this->spec_table, $_this->table.'.id', '=', $_this->spec_table.'.mall_shop_id')
+					->where($_this->table.".id", "=", $mall_shop_id)
 					->get();
 
 		return $data;
@@ -124,13 +127,39 @@ class Shop extends Model
 		$_this = new self();
 
 		$data = DB::table($_this->record_table)
-					->select(\DB::raw('SUM(number) as number'))
-					->leftJoin($_this->table, $_this->record_table.'.mall_product_id', '=', $_this->table.'.id')
+					->select(
+							// \DB::raw('SUM(number) as number')
+							"action_key",
+							"number"
+						)
+					->leftJoin($_this->table, $_this->record_table.'.mall_shop_id', '=', $_this->table.'.id')
+					->leftJoin($_this->mall_product_rel_table, $_this->mall_product_rel_table.'.mall_shop_id', '=', $_this->table.'.id')
+					->leftJoin($_this->mall_product_table, $_this->mall_product_rel_table.'.mall_product_id', '=', $_this->mall_product_table.'.id')
 					->where($_this->record_table.".user_id", "=", $data["user_id"])
-					->where($_this->record_table.".mall_product_id", "=", $data["service_id"])
-					->where($_this->record_table.".deadline", ">=", date("Y-m-d H:i:s"))
-					->groupBy($_this->record_table.".mall_product_id")
-					->first();
+					// ->groupBy($_this->record_table.".mall_shop_id")
+					->get();
+
+		return $data;
+
+	}
+
+	public static function get_mall_shop_id( $data )
+	{
+
+		$_this = new self();
+
+		$data = DB::table($_this->record_table)
+					->select(
+							$_this->record_table.".mall_shop_id",
+							"action_key",
+							"number"
+						)
+					->leftJoin($_this->table, $_this->record_table.'.mall_shop_id', '=', $_this->table.'.id')
+					->leftJoin($_this->mall_product_rel_table, $_this->mall_product_rel_table.'.mall_shop_id', '=', $_this->table.'.id')
+					->leftJoin($_this->mall_product_table, $_this->mall_product_rel_table.'.mall_product_id', '=', $_this->mall_product_table.'.id')
+					->where($_this->record_table.".user_id", "=", $data["user_id"])
+					->where($_this->mall_product_table.".action_key", "=", $data["action_key"])
+					->get();
 
 		return $data;
 

@@ -42,7 +42,9 @@ class MallController extends Controller
  
         $assign_page = "mall/mall_input";
 
-        $data = compact('assign_page', 'mall');
+        $child_product = Mall_logic::get_mall_service_list();
+
+        $data = compact('assign_page', 'mall', 'child_product');
 
         return view('webbase/content', $data);
 
@@ -58,7 +60,9 @@ class MallController extends Controller
     public function store(Request $request)
     {
 
-        if (!empty($_POST["mall_product_id"])) 
+      
+
+        if (!empty($_POST["mall_shop_id"])) 
         {
             
             // 存圖
@@ -72,30 +76,46 @@ class MallController extends Controller
             
             }
 
-            $mall_product_id = intval($_POST["mall_product_id"]);
+            $mall_shop_id = intval($_POST["mall_shop_id"]);
 
             // 主表資料
 
             $data = Mall_logic::update_format( $_POST );
 
-            Mall_logic::edit_mall_product( $data, $mall_product_id );
+            Mall_logic::edit_mall_shop( $data, $mall_shop_id );
 
 
             // 規格資料
 
-            Mall_logic::del_mall_product_spec( $mall_product_id );
+            Mall_logic::del_mall_product_spec( $mall_shop_id );
 
             $data = Mall_logic::insert_spec_format( $_POST );
 
             if (!empty($data)) 
             {
+
                 Mall_logic::add_mall_product_spec( $data );
+
+            }
+
+
+            // 子商品資料
+
+            Mall_logic::del_child_product( $mall_shop_id );
+
+            $data = Mall_logic::insert_child_product_format( $_POST );
+
+            if (!empty($data)) 
+            {
+
+                Mall_logic::add_child_product( $data );
+                
             }
 
         }
         else
         {
-            
+
             // 存圖
 
             if ($request->hasFile('product_image')) 
@@ -111,7 +131,7 @@ class MallController extends Controller
 
             $data = Mall_logic::insert_format( $_POST );
 
-            $_POST["mall_product_id"] = Mall_logic::add_mall_product( $data );
+            $_POST["mall_shop_id"] = Mall_logic::add_mall_shop( $data );
 
 
             // 規格資料
@@ -120,7 +140,20 @@ class MallController extends Controller
 
             if (!empty($data)) 
             {
+
                 Mall_logic::add_mall_product_spec( $data );
+
+            }
+
+            // 子商品資料
+
+            $data = Mall_logic::insert_child_product_format( $_POST );
+
+            if (!empty($data)) 
+            {
+
+                Mall_logic::add_child_product( $data );
+
             }
 
         }
@@ -151,11 +184,17 @@ class MallController extends Controller
     public function edit( $id )
     {
 
+        $child_product = Mall_logic::get_mall_service_list();
+
+        $mall_product_rel = Mall_logic::get_mall_service_rel( array($id) ); 
+
+        $mall_product_rel = $mall_product_rel[$id]; 
+
         $mall = Mall_logic::get_single_mall( $id ); 
 
         $assign_page = "mall/mall_input";
 
-        $data = compact('assign_page', 'mall');
+        $data = compact('assign_page', 'mall', 'child_product', 'mall_product_rel');
 
         return view('webbase/content', $data);
 

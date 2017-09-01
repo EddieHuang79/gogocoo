@@ -1,5 +1,6 @@
 <section class="content-header">
 	<h1>{{ $txt["role_input"] }}</h1>
+	@include('webbase.breadcrumb')
 </section>
 <section class="content">
 	<form action="/role" method="POST">
@@ -33,8 +34,8 @@
 				<tr>
 					<th>{{ $txt["status"] }}</th>
 					<td>
-						<input type="radio" value="1" name="active" @if( !empty($role) && $role->status == 1 ) checked  @endif />{{ $txt["enable"] }}
-						<input type="radio" value="2" name="active" @if( !empty($role) && $role->status == 2 ) checked  @endif />{{ $txt["disable"] }}
+						<input type="radio" value="1" name="active" @if( !empty($role) && $role->status == 1 ) checked  @endif required/>{{ $txt["enable"] }}
+						<input type="radio" value="2" name="active" @if( !empty($role) && $role->status == 2 ) checked  @endif required/>{{ $txt["disable"] }}
 					</td>
 				</tr>
 				<tr>

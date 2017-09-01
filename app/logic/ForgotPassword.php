@@ -3,6 +3,9 @@
 namespace App\logic;
 
 use App\logic\Admin_user_logic;
+use Mail;
+use App\Mail\ForgetPassword_notice;
+use Illuminate\Support\Facades\Session;
 
 class ForgotPassword extends Basetool
 {
@@ -67,22 +70,30 @@ class ForgotPassword extends Basetool
 
 			}
 
-			
             // 產生密碼
 
             $new_password = Admin_user_logic::get_rand_string( 12 );
             $new_password_hash = array( "password" => bcrypt( $new_password ));
 
 
+            Session::forget("new_pwd");
+
+            Session::put("new_pwd", $new_password);
+
+
 			// 更新資料庫
 
 			Admin_user_logic::edit_user( $new_password_hash, $user_id );
 
-			
+            // 寄信
+
+            $aa = Mail::to($data["account"])->send(new ForgetPassword_notice());			
 
 		}
 		catch(\Exception $e)
 		{
+
+			dd($e);
 
 			$result = $_this->show_error_to_user( json_decode($e->getMessage() ,true) );
 

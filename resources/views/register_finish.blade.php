@@ -12,7 +12,7 @@
 			</tr>
 			<tr>
 				<th>{{ $txt["store_code"] }}</th>
-				<td>{{ $Register_user["store_code"] }}</td>
+				<td>{{ $Register_user["StoreCode"] }}</td>
 			</tr>
 			<tr>
 				<th>{{ $txt["mobile"] }}</th>
@@ -20,5 +20,5 @@
 			</tr>												
 		</tbody>
 	</table>	
-	<button class="btn btn-lg btn-primary btn-block" onclick="location.href='/index';">{{ $txt['enter_website'] }}</button>
+	<button class="btn btn-lg btn-primary btn-block" onclick="location.href='/admin_index';">{{ $txt['enter_website'] }}</button>
 </div>

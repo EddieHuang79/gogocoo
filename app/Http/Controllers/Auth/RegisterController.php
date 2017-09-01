@@ -10,6 +10,7 @@ use App\logic\Register;
 use App\logic\Verifycode;
 use App\logic\Login;
 use App\logic\Msg_logic;
+use App\logic\Store_logic;
 
 class RegisterController extends Controller
 {
@@ -50,7 +51,7 @@ class RegisterController extends Controller
 
         $ErrorMsg = Register::register_process($register_data);
 
-        $register_data["store_code"] = empty( $register_data["store_code"] ) ? Admin_user_logic::get_rand_string() : $register_data["store_code"] ;
+        $register_data["StoreCode"] = empty( $register_data["StoreCode"] ) ? Admin_user_logic::get_rand_string() : $register_data["StoreCode"] ;
 
 
         // 成功: 寫db + 登入
@@ -74,11 +75,18 @@ class RegisterController extends Controller
             Admin_user_logic::add_user_role( $data );
 
 
+            // 登入
+
+            $Session_data = Login::login_session_format( $register_data["user_id"], $register_data );
+
+            Session::put( 'Login_user', $Session_data );
+            
+
             // store 
 
-            $insert_store_data = Admin_user_logic::insert_store_format( $register_data );
+            $insert_store_data = Store_logic::insert_format( $register_data );
 
-            Admin_user_logic::insert_store( $insert_store_data );
+            Store_logic::add_store( $insert_store_data );
 
 
             // welcome msg
@@ -89,12 +97,6 @@ class RegisterController extends Controller
 
             Msg_logic::add_normal_msg( $subject, $content, $register_data["user_id"] );
             
-
-            // 登入
-
-            $Session_data = Login::login_session_format( $register_data["user_id"], $register_data );
-
-            Session::put( 'Login_user', $Session_data );
 
             return redirect("/register_finish");
 
@@ -153,7 +155,7 @@ class RegisterController extends Controller
             Session::put( 'Social_login', $data );
         }
 
-        $path = $user_id > 0 ? "/index" : "/register" ;
+        $path = $user_id > 0 ? "/admin_index" : "/register" ;
 
         $result = json_encode(array("path" => $path));
 

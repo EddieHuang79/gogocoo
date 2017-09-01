@@ -35,7 +35,7 @@ class Store_logic extends Basetool
 
 		// 已購買的店鋪數
 
-		$buy_store_cnt = Shop_logic::get_shop_record_by_id( 1 );
+		$buy_store_cnt = Shop_logic::get_shop_record_by_id( "create_shop" );
 
 		// 免費帳號可以有2間的額度
 
@@ -125,6 +125,8 @@ class Store_logic extends Basetool
 		            "store_code"        => isset($data["StoreCode"]) && !empty($data["StoreCode"]) ? strtoupper($_this->strFilter($data["StoreCode"])) : Admin_user_logic::get_rand_string(),
 		            "store_type"     	=> isset($data["store_type_id"]) ? intval($data["store_type_id"]) : "",
 		            "user_id"     		=> isset($_this->user_id) ? intval($_this->user_id) : "",
+		            "deadline"    		=> date("Y-m-d", mktime( 0, 0, 0, date("m"), date("d")+30, date("Y") )),
+		            "is_free"    		=> isset($data["is_free"]) ? intval($data["is_free"]) : 1,
 		            "created_at"    	=> date("Y-m-d H:i:s"),
 		            "updated_at"    	=> date("Y-m-d H:i:s")
 		         );

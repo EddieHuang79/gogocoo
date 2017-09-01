@@ -39,6 +39,7 @@ class InitialBaseSite extends Migration
             $table->string('photo')->default('');
             $table->integer('parents_id')->default(0);
             $table->integer('status')->index();
+            $table->integer('is_free')->default(1);
             $table->timestamps();
             $table->engine = 'InnoDB';
         });
@@ -51,6 +52,8 @@ class InitialBaseSite extends Migration
             $table->string('store_name');
             $table->string('store_code')->unique();
             $table->integer('store_type');
+            $table->date('deadline');
+            $table->integer('is_free')->default(1);
             $table->timestamps();
             $table->engine = 'InnoDB';
         });
@@ -145,6 +148,7 @@ class InitialBaseSite extends Migration
                 'mobile'        => '0900123456',
                 'parents_id'    => 0,
                 'status'        => 1,
+                'is_free'       => 1,
                 'created_at'    => date("Y-m-d H:i:s"),
                 'updated_at'    => date("Y-m-d H:i:s")
             )
@@ -157,6 +161,8 @@ class InitialBaseSite extends Migration
                 'store_name'    => 'Coo管理者',
                 'store_code'    => 'ADM',
                 'store_type'    => 2,
+                'deadline'      => "2050-12-31",
+                'is_free'       => 1,
                 'created_at'    => date("Y-m-d H:i:s"),
                 'updated_at'    => date("Y-m-d H:i:s")
             )

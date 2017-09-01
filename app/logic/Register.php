@@ -21,9 +21,9 @@ class register extends Basetool
                         "re_check_pwd"       => isset($data["ReCheckPassword"]) && !empty($data["ReCheckPassword"]) ? $_this->strFilter($data["ReCheckPassword"]) : "",
                         "mobile"             => isset($data["Mobile"]) && !empty($data["Mobile"]) ? $_this->strFilter($data["Mobile"]) : "",
                         "real_name"          => isset($data["RealName"]) && !empty($data["RealName"]) ? $_this->strFilter($data["RealName"]) : "",
-                        "store_name"         => isset($data["StoreName"]) && !empty($data["StoreName"]) ? $_this->strFilter($data["StoreName"]) : "",
-                        "store_type"      => isset($data["store_type_id"]) && !empty($data["store_type_id"]) ? intval($data["store_type_id"]) : "",
-                        "store_code"         => isset($data["StoreCode"]) && !empty($data["StoreCode"]) ? strtoupper($_this->strFilter($data["StoreCode"])) : "",
+                        "StoreName"          => isset($data["StoreName"]) && !empty($data["StoreName"]) ? $_this->strFilter($data["StoreName"]) : "",
+                        "store_type_id"      => isset($data["store_type_id"]) && !empty($data["store_type_id"]) ? intval($data["store_type_id"]) : "",
+                        "StoreCode"          => isset($data["StoreCode"]) && !empty($data["StoreCode"]) ? strtoupper($_this->strFilter($data["StoreCode"])) : "",
                         "verify_code"        => isset($data["verify"]) && !empty($data["verify"]) ? intval($data["verify"]) : 0,
                         "token"              => isset($data["_token"]) && !empty($data["_token"]) ? $_this->strFilter($data["_token"]) : "",
                         "social_register"    => isset($data["social_register"]) && !empty($data["social_register"]) ? intval($data["social_register"]) : 0,
@@ -108,7 +108,7 @@ class register extends Basetool
 
                // 店名
 
-               if ( !$_this->strFilter( $data["store_name"] ) ) 
+               if ( !$_this->strFilter( $data["StoreName"] ) ) 
                {
                   $error_msg[] = $txt["store_name_fail"];
                }
@@ -116,7 +116,7 @@ class register extends Basetool
 
                // 行業別
 
-               if ( intval( $data["store_type"] ) < 1 ) 
+               if ( intval( $data["store_type_id"] ) < 1 ) 
                {
                   $error_msg[] = $txt["store_type_fail"];
                }
@@ -124,7 +124,7 @@ class register extends Basetool
 
                // 商家代號產生
 
-               if ( !empty( $data["store_code"] ) && Admin_user_logic::check_store_code_repeat( $data["store_code"] ) > 0 )
+               if ( !empty( $data["StoreCode"] ) && Admin_user_logic::check_store_code_repeat( $data["store_code"] ) > 0 )
                {
                   $error_msg[] = $txt["Store_code_fail"];
                }
@@ -150,7 +150,7 @@ class register extends Basetool
          }
          catch(\Exception $e)
          {
-
+dd($e);
             $result = $_this->show_error_to_user( json_decode($e->getMessage() ,true) );
 
          }
