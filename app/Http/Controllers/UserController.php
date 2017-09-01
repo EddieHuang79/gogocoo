@@ -188,6 +188,8 @@ class UserController extends Basetool
 
         $_this = new self;
 
+        $account_status = "";
+
         $user = Admin_user_logic::get_user( $id );
 
         $user_role = $id > 0 ? Admin_user_logic::get_user_role_by_id( $id ) : "" ;
@@ -200,7 +202,7 @@ class UserController extends Basetool
  
         $assign_page = "admin_user/admin_input";
 
-        $data = compact('user', 'role_list', 'user_role', 'assign_page');
+        $data = compact('user', 'role_list', 'user_role', 'assign_page', 'account_status');
 
         return view('webbase/content', $data);
 

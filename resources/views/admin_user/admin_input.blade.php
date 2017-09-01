@@ -9,7 +9,7 @@
 </section>
 <section class="content">
 
-	@if( $account_status["left"] > 0 )
+	@if( !isset($account_status["left"]) || $account_status["left"] > 0 )
 
 	<form action="/user" method="POST">
 		<table class="table table-stroped">
