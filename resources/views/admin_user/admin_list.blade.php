@@ -21,7 +21,7 @@
 					<th>{{ $row->account }}</th>
 					<td>{{ $row->real_name }}</td>
 					<td>{{ $row->mobile }}</td>
-					<td> @foreach($row->auth as $role) {{$role}} <br /> @endforeach </td>
+					<td> @if( !empty($row->auth) ) @foreach($row->auth as $role) {{$role}} <br /> @endforeach  @endif </td>
 					<td>{{ $active_to_text[$row->status] }}</td>
 					<td><input type="button" value="{{ $txt['edit'] }}" onClick="location.href='/user/{{ $row->id }}/edit?';"/></td>
 				</tr>
