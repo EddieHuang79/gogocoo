@@ -915,7 +915,7 @@ class InitialBaseSite extends Migration
         DB::table($this->service_table)->insert(
             array(
                 'name'          => '首頁',
-                'link'          => '/index',
+                'link'          => '/admin/index',
                 'parents_id'    => 0,
                 'status'        => 1,
                 'public'        => 4,
