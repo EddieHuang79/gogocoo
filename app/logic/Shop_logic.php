@@ -5,7 +5,7 @@ namespace App\logic;
 use App\model\Shop;
 use Illuminate\Support\Facades\Session;
 use App\logic\Web_cht;
-use App\logic\mall_logic;
+use App\logic\Mall_logic;
 
 class Shop_logic extends Basetool
 {
@@ -66,7 +66,7 @@ class Shop_logic extends Basetool
 
       // 關聯服務
 
-      $mall_rel = mall_logic::get_mall_service_rel( $mall_shop_id );
+      $mall_rel = Mall_logic::get_mall_service_rel( $mall_shop_id );
 
       foreach ($data as $row) 
       {
@@ -128,7 +128,7 @@ class Shop_logic extends Basetool
 
         // 關聯服務
 
-        $mall_rel = mall_logic::get_mall_service_rel( array($mall_shop_id) );
+        $mall_rel = Mall_logic::get_mall_service_rel( array($mall_shop_id) );
 
         foreach ($mall_rel[$mall_shop_id] as $shop_id => $include_data) 
         {
