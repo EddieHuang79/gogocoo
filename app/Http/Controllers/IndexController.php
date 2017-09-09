@@ -73,7 +73,7 @@ class IndexController extends Controller
             $data = [ 'name' => $name, 'email' => $email, 'phone' => $phone, 'msg' => $msg ];
 
             Mail::send('frontpage.custom_mail', $data, function($message) {
-                $message->to('faith790829@gmail.com')->subject('From GoGoCoo - 客戶來信');
+                $message->to('jkcs0616@gmail.com')->subject('From GoGoCoo - 客戶來信');
             });
 
         }
