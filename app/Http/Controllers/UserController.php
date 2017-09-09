@@ -7,6 +7,8 @@ use Illuminate\Support\Collection;
 use App\logic\Admin_user_logic;
 use App\logic\Role_logic;
 use App\logic\Service_logic;
+use App\logic\Shop_logic;
+use App\logic\Web_cht;
 use App\logic\Basetool;
 use App\logic\Redis_tool;
 use Illuminate\Support\Facades\Session;
@@ -64,9 +66,11 @@ class UserController extends Basetool
 
         $_this = new self();
 
-        // 計算子帳數量
+        $txt = Web_cht::get_txt();
 
         $Login_user = Session::get('Login_user');
+
+        // 計算子帳數量
 
         $account_status = Admin_user_logic::cnt_child_account();
 
@@ -74,13 +78,29 @@ class UserController extends Basetool
 
         $role_list = Role_logic::get_active_role();
 
-        $role_list = Role_logic::filter_admin_role($role_list);
+        // $role_list = Role_logic::filter_admin_role($role_list);
+
+        $buy_spec_data = array();
+
+        if ( !empty($account_status["buy_spec_data"]) ) 
+        {
+
+            foreach ($account_status["buy_spec_data"] as $index => $spec_data) 
+            {
+
+                $buy_spec_data[$index] = $spec_data.$txt["buy_date_spec_desc"].date("Y-m-d", strtotime("+".$spec_data." days"));
+
+            }
+
+        }
+
+        $deadline = !empty($account_status['free']) ? date("Y-m-d", strtotime("+30 days")) : $buy_spec_data ;
 
         $assign_page = "admin_user/admin_input";
 
         $ErrorMsg = Session::get('ErrorMsg');
 
-        $data = compact('user', 'role_list', 'assign_page', 'ErrorMsg', 'account_status');
+        $data = compact('user', 'role_list', 'assign_page', 'ErrorMsg', 'account_status', 'deadline');
 
         return view('webbase/content', $data);
 
@@ -147,6 +167,17 @@ class UserController extends Basetool
                 $data = Admin_user_logic::add_user_role_format( $user_id, $_POST["auth"] );
 
                 Admin_user_logic::add_user_role( $data );
+
+                $date_spec = isset($_POST["date_spec"]) && !empty($_POST["date_spec"]) ? trim($_POST["date_spec"]) : "" ;
+
+                // 紀錄價值服務啟用列表，免費不紀錄
+
+                if ( !empty($date_spec) ) 
+                {
+
+                    Shop_logic::add_use_record( $user_id, $date_spec, $type = 1 );
+
+                }
 
             }
 
@@ -290,6 +321,27 @@ class UserController extends Basetool
             exit();
         
         }
+
+    }
+
+    /**
+     * extend_user_process 擴展帳號期限
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function extend_user_process(Request $request)
+    {
+
+        $user_id = isset($_POST["user_id"]) ? intval($_POST["user_id"]) : 0 ;
+
+        $date_spec = isset($_POST["date_spec"]) ? trim($_POST["date_spec"]) : "" ;
+
+        $result = Admin_user_logic::extend_user_deadline( $user_id, $date_spec );
+
+        echo json_encode($result);
+
+        exit();
 
     }
 

@@ -90,8 +90,8 @@ class Mall
 		$_this = new self();
 
 		$result = DB::table($_this->mall_shop_table)
-					->select($_this->mall_shop_table.".*", $_this->mall_shop_spec_table.".cost", $_this->mall_shop_spec_table.".date_spec")
-					->leftJoin($_this->mall_shop_spec_table, $_this->mall_shop_table.'.id', '=', $_this->mall_shop_spec_table.'.mall_shop_id');
+					->select($_this->mall_shop_table.".*", $_this->mall_shop_table.".cost");
+					// ->leftJoin($_this->mall_product_rel_table, $_this->mall_shop_table.'.id', '=', $_this->mall_product_rel_table.'.mall_shop_id');
 
 		// $result = isset($data["id"]) && !empty($data["id"]) ? $result->where($_this->mall_shop_table.".id", "=", $data["id"]) : $result ;
 		$result = $result->orderBy($_this->mall_shop_table.".id","desc")->get();
@@ -109,7 +109,7 @@ class Mall
 
 		$result = DB::table($_this->mall_shop_table)->find( $mall_shop_id );
 
-		$spec = DB::table($_this->mall_shop_spec_table)->select("cost", "date_spec")->where( "mall_shop_id", "=", $mall_shop_id )->get();
+		$spec = DB::table($_this->mall_product_rel_table)->select("number", "date_spec")->where( "mall_shop_id", "=", $mall_shop_id )->get();
 
 		foreach ($spec as $row) 
 		{	
@@ -142,11 +142,26 @@ class Mall
 					->select(
 								$_this->mall_product_rel_table.".mall_shop_id",
 								$_this->mall_product_rel_table.".mall_product_id",
-								$_this->mall_product_table.".product_name"
+								$_this->mall_product_table.".product_name",
+								$_this->mall_product_rel_table.".date_spec",
+								$_this->mall_product_rel_table.".number"
 							)
 					->leftJoin($_this->mall_product_rel_table, $_this->mall_product_table.'.id', '=', $_this->mall_product_rel_table.'.mall_product_id')
 					->whereIn("mall_shop_id", $mall_shop_id)
 					->get();
+
+		return $result;
+
+	}
+
+	public static function get_mall_image( $mall_shop_id )
+	{
+
+		$_this = new self();
+
+		$result = DB::table($_this->mall_shop_table)
+					->select("pic")
+					->find( $mall_shop_id );
 
 		return $result;
 

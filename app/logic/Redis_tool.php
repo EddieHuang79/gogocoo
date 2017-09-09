@@ -17,6 +17,20 @@ class Redis_tool
 	protected $Active_role_key = "Active_role";
 
 	protected $msg_key = "msg_";
+
+	protected $week_order_cnt_key = "week_order_cnt_";
+
+	protected $week_cancel_order_cnt_key = "week_cancel_order_cnt_";
+
+	protected $today_in_ws_cnt_key = "today_in_ws_cnt_";
+
+	protected $today_out_ws_cnt_key = "today_out_ws_cnt_";
+
+	protected $month_order_view_key = "month_order_view_";
+
+	protected $year_stock_view_key = "year_stock_view_";
+
+	protected $year_product_top5_key = "year_product_top5_";
     
 	public static function set_search_tool( $data )
 	{
@@ -186,6 +200,233 @@ class Redis_tool
 		$data = isset($data) ? json_decode($data, true) : array() ;
 
 		return $data;
+
+	}
+
+	public static function set_week_order_cnt( $key, $cnt )
+	{
+
+		$_this = new self;
+
+		$_this->del_key_by_keyword( $_this->week_order_cnt_key );
+
+		$week_order_cnt_key = $_this->week_order_cnt_key.$key;
+
+		Redis::set( $week_order_cnt_key, $cnt ) ;
+
+	}
+
+	public static function get_week_order_cnt( $key )
+	{
+
+		$_this = new self;
+
+		$week_order_cnt_key = $_this->week_order_cnt_key.$key;
+
+		$data = Redis::get( $week_order_cnt_key );
+
+		$result = !empty($data) ? $data : "" ;
+
+		return $result;
+
+	}
+
+	public static function set_week_cancel_order_cnt( $key, $cnt )
+	{
+
+		$_this = new self;
+
+		$_this->del_key_by_keyword( $_this->week_cancel_order_cnt_key );
+
+		$week_cancel_order_cnt_key = $_this->week_cancel_order_cnt_key.$key;
+
+		Redis::set( $week_cancel_order_cnt_key, $cnt ) ;
+
+	}
+
+	public static function get_week_cancel_order_cnt( $key )
+	{
+
+		$_this = new self;
+
+		$week_cancel_order_cnt_key = $_this->week_cancel_order_cnt_key.$key;
+
+		$data = Redis::get( $week_cancel_order_cnt_key );
+
+		$result = !empty($data) ? $data : "" ;
+
+		return $result;
+
+	}
+
+	public static function set_today_in_ws_cnt( $key, $cnt )
+	{
+
+		$_this = new self;
+
+		$_this->del_key_by_keyword( $_this->today_in_ws_cnt_key );
+
+		$today_in_ws_cnt_key = $_this->today_in_ws_cnt_key.$key;
+
+		Redis::set( $today_in_ws_cnt_key, $cnt ) ;
+
+	}
+
+	public static function get_today_in_ws_cnt( $key )
+	{
+
+		$_this = new self;
+
+		$today_in_ws_cnt_key = $_this->today_in_ws_cnt_key.$key;
+
+		$data = Redis::get( $today_in_ws_cnt_key );
+
+		$result = !empty($data) ? $data : "" ;
+
+		return $result;
+
+	}
+
+	public static function set_today_out_ws_cnt( $key, $cnt )
+	{
+
+		$_this = new self;
+
+		$_this->del_key_by_keyword( $_this->today_out_ws_cnt_key );
+
+		$today_out_ws_cnt_key = $_this->today_out_ws_cnt_key.$key;
+
+		Redis::set( $today_out_ws_cnt_key, $cnt ) ;
+
+	}
+
+	public static function get_today_out_ws_cnt( $key )
+	{
+
+		$_this = new self;
+
+		$today_out_ws_cnt_key = $_this->today_out_ws_cnt_key.$key;
+
+		$data = Redis::get( $today_out_ws_cnt_key );
+
+		$result = !empty($data) ? $data : "" ;
+
+		return $result;
+
+	}
+
+	public static function set_month_order_view( $key, $cnt )
+	{
+
+		$_this = new self;
+
+		$_this->del_key_by_keyword( $_this->month_order_view_key );
+
+		$month_order_view_key = $_this->month_order_view_key.$key;
+
+		$cnt = json_encode($cnt);
+
+		Redis::set( $month_order_view_key, $cnt ) ;
+
+		return $cnt;
+
+	}
+
+	public static function get_month_order_view( $key )
+	{
+
+		$_this = new self;
+
+		$month_order_view_key = $_this->month_order_view_key.$key;
+
+		$data = Redis::get( $month_order_view_key );
+
+		$result = !empty($data) ? $data : "" ;
+
+		return $result;
+
+	}
+
+	public static function set_year_stock_view( $key, $cnt )
+	{
+
+		$_this = new self;
+
+		$_this->del_key_by_keyword( $_this->year_stock_view_key );
+
+		$year_stock_view_key = $_this->year_stock_view_key.$key;
+
+		$cnt = json_encode($cnt);
+
+		Redis::set( $year_stock_view_key, $cnt ) ;
+
+		return $cnt;
+
+	}
+
+	public static function get_year_stock_view( $key )
+	{
+
+		$_this = new self;
+
+		$year_stock_view_key = $_this->year_stock_view_key.$key;
+
+		$data = Redis::get( $year_stock_view_key );
+
+		$result = !empty($data) ? $data : "" ;
+
+		return $result;
+
+	}
+
+	public static function set_year_product_top5( $key, $cnt )
+	{
+
+		$_this = new self;
+
+		$_this->del_key_by_keyword( $_this->year_product_top5_key );
+
+		$year_product_top5_key = $_this->year_product_top5_key.$key;
+
+		$cnt = json_encode($cnt);
+
+		Redis::set( $year_product_top5_key, $cnt ) ;
+
+		return $cnt;
+
+	}
+
+	public static function get_year_product_top5( $key )
+	{
+
+		$_this = new self;
+
+		$year_product_top5_key = $_this->year_product_top5_key.$key;
+
+		$data = Redis::get( $year_product_top5_key );
+
+		$result = !empty($data) ? $data : "" ;
+
+		return $result;
+
+	}
+
+	protected function del_key_by_keyword( $keyword )
+	{
+
+		$data = Redis::keys( $keyword . "*" );
+
+		if ( !empty($data) ) 
+		{
+
+			foreach ($data as $row) 
+			{
+
+				Redis::del( $row );
+			
+			}
+
+		}
 
 	}
 

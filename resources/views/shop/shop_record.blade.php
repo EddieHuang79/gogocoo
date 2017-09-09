@@ -8,21 +8,29 @@
 		<thead>
 			<tr>
 				<th>{{ $txt['product_name'] }}</th>
-				<th>{{ $txt['product_spec'] }}</th>
+				<th>{{ $txt['include_service'] }}</th>
 				<th>{{ $txt['number'] }}</th>
-				<th>{{ $txt['deadline'] }}</th>
+				<th>{{ $txt['price'] }}</th>
+				<th>{{ $txt['total'] }}</th>
 				<th>{{ $txt['paid_at'] }}</th>
 			</tr>							
 		</thead>
 		<tbody>
 			@if(!empty($shop_record))
-				@foreach($shop_record as $row)
+				@foreach($shop_record['result'] as $row)
 					<tr>
-						<th>{{ $row->product_name }}</th>
-						<th>{{ $txt["cost_unit"] }}{{ $row->cost }}/{{ $row->date_spec }}{{ $txt["day_unit"] }}</th>
-						<th>{{ $row->number }}</th>
-						<th>{{ $row->deadline }}</th>
-						<th>{{ $row->paid_at }}</th>
+						<th>{{ $row['mall_product_name'] }}</th>
+						<th>
+							@if( !empty($row['include_service']) )
+								@foreach($row['include_service'] as $service)
+								<div>{{ $service["product_name"] }} / {{ $service["number"] }}{{ $txt['service_unit'] }} / {{ $service["date_spec"] }}{{ $txt['day_unit'] }}</div>
+								@endforeach	
+							@endif								
+						</th>
+						<th>{{ $row['number'] }}</th>
+						<th>{{ $txt["cost_unit"] }}{{ $row['cost'] }}</th>
+						<th>{{ $txt["cost_unit"] }}{{ $row['total']  }}</th>
+						<th>{{ $row['paid_at'] }}</th>
 					</tr>
 				@endforeach
 			@else
@@ -33,6 +41,6 @@
 		</tbody>
 	</table>
 	@if(!empty($shop_record))
-		{{ $shop_record->links() }}
+		{{ $shop_record['data']->links() }}
 	@endif
 </section>

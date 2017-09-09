@@ -263,7 +263,7 @@
 	border: 1px solid #CCC;
 }
 
-.mall_product_name{
+.mall_product_name,.popup_title{
 	text-align: center;
 	line-height: calc(250%);
 	font-weight: bold;
@@ -278,20 +278,20 @@
 	height: 15%;
 }
 
-.mall_product_option{
+.mall_product_option,.popup_option{
 	overflow: auto;
 }
 
-.mall_product_option>div{
+.mall_product_option>div,.popup_option>div{
 	margin-top: calc(3%);
 }
 
-div.mall_product_spec{
+div.mall_product_spec,.popup_option_left{
 	float: left;
 	margin-left: 50px;
 }
 
-div.mall_product_number{
+div.mall_product_number,.popup_option_right{
 	overflow: auto;
 	float: right;
 	margin-right: 50px;
@@ -312,6 +312,7 @@ div.mall_product_number{
 }
 
 .mall_product_btn{
+	margin-top: 30px;
 	text-align: center;
 }
 
@@ -373,3 +374,70 @@ img {
 .upload_image_preview{
 	max-width: 800px;
 }
+
+.date_spec_div{
+	text-align: center;
+}
+
+.extend_lightbox{
+	display: none;
+}
+
+.Report{
+	position: relative;
+	width: 80%;
+	height: auto;
+	/*border: 1px solid #000;*/
+	margin: 0px auto;
+	margin-top: 50px;
+	padding: 5px;
+}
+.DataRow{
+	overflow: auto;
+	/*padding: 40px auto;*/
+	/*border: 1px solid #000;*/
+}
+.ChildRow{
+	overflow: auto;
+	float: left;
+	/*border: 1px solid #000;*/
+	margin: 20px 20px;
+}
+.ChildRow>div{
+	width: 280px;
+	height: 180px;
+	border: 2px solid #CCC;
+	float: left;
+	margin: 10px;
+	
+}
+.ChildRow>div:hover{
+	/*border: 2px solid #000;*/
+}
+.ChildRow>div>div{
+	padding: 35px;
+}
+.ChildRow>div>div>h1{
+	width: 80%;
+	text-align: right;
+}
+.ReportrRow{
+	overflow: auto;
+	/*border: 1px solid #000;*/
+	width: 100%;
+	margin: 20px auto;	
+}
+.ReportrRow>div{
+	width: 600px;
+	height: 500px;
+	border: 1px solid #CCC;
+	float: left;
+	margin: 10px 20px;
+}
+.ReportrRow>div:hover{
+	/*border: 2px solid #000;*/
+}
+.content-header{
+	overflow: auto;
+}
+

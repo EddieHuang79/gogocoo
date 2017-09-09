@@ -60,7 +60,6 @@ class MallController extends Controller
     public function store(Request $request)
     {
 
-      
 
         if (!empty($_POST["mall_shop_id"])) 
         {
@@ -73,6 +72,15 @@ class MallController extends Controller
                 Storage::makeDirectory("product_image");
 
                 $_POST["product_image_path"] = $request->file('product_image')->store('product_image');
+
+                $ori_image = Mall_logic::get_mall_image( $_POST["mall_shop_id"] );
+
+                if ( !empty($ori_image->pic) && file_exists( $ori_image->pic ) ) 
+                {
+                 
+                    unlink( $ori_image->pic );
+
+                }
             
             }
 
@@ -87,16 +95,16 @@ class MallController extends Controller
 
             // 規格資料
 
-            Mall_logic::del_mall_product_spec( $mall_shop_id );
+            // Mall_logic::del_mall_product_spec( $mall_shop_id );
 
-            $data = Mall_logic::insert_spec_format( $_POST );
+            // $data = Mall_logic::insert_spec_format( $_POST );
 
-            if (!empty($data)) 
-            {
+            // if (!empty($data)) 
+            // {
 
-                Mall_logic::add_mall_product_spec( $data );
+            //     Mall_logic::add_mall_product_spec( $data );
 
-            }
+            // }
 
 
             // 子商品資料
@@ -136,14 +144,14 @@ class MallController extends Controller
 
             // 規格資料
 
-            $data = Mall_logic::insert_spec_format( $_POST );
+            // $data = Mall_logic::insert_spec_format( $_POST );
 
-            if (!empty($data)) 
-            {
+            // if (!empty($data)) 
+            // {
 
-                Mall_logic::add_mall_product_spec( $data );
+            //     Mall_logic::add_mall_product_spec( $data );
 
-            }
+            // }
 
             // 子商品資料
 
@@ -191,6 +199,8 @@ class MallController extends Controller
         $mall_product_rel = $mall_product_rel[$id]; 
 
         $mall = Mall_logic::get_single_mall( $id ); 
+
+        // dd($mall_product_rel);
 
         $assign_page = "mall/mall_input";
 

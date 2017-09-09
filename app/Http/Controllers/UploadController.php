@@ -15,7 +15,7 @@ class UploadController extends Controller
 
     public function product_upload()
     {
- 
+
         $assign_page = "upload/product_upload";
 
         $data = compact('assign_page');

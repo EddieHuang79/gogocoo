@@ -51,7 +51,7 @@
 		<ul class="search_block list-unstyled">
 			<li class="item"><a href="#">{{ $txt['role_name'] }}</a></li>
 			<li class="tool">
-				<select name="role_id">
+				<select name="role_id" class="form-control">
 					<option value=""> {{ $txt['select_default'] }} </option>
 					@foreach($active_role_list as $row)
 						<option value="{{ $row->id }}" @if( isset($_GET['role_id']) && $_GET['role_id'] == $row->id ) selected @endif> {{ $row->name }} </option>
@@ -66,7 +66,7 @@
 		<ul class="search_block list-unstyled">
 			<li class="item"><a href="#">{{ $txt['status'] }}</a></li>
 			<li class="tool">
-				<select name="status">
+				<select name="status" class="form-control">
 					<option value=""> {{ $txt['select_default'] }} </option>
 					<option value="1" @if( isset($_GET['status']) && $_GET['status'] == 1 ) selected @endif> {{ $txt['enable'] }} </option>
 					<option value="2" @if( isset($_GET['status']) && $_GET['status'] == 2 ) selected @endif> {{ $txt['disable'] }} </option>

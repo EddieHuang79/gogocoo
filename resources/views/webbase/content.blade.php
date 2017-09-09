@@ -3,7 +3,15 @@
 		@include('webbase.nav')
 		@include('webbase.menu')
 		<div class="content-wrapper">
-			@include($assign_page)
+			@if( $is_over_date === false || in_array( $assign_page, array( 'shop/shop_list', 'store/store_list', 'admin_user/admin_list' ) ) )
+			
+				@include($assign_page)
+			
+			@else
+				
+				@include("webbase.is_over_date")
+			
+			@endif
 		</div>
 		@include('webbase.footer')
 	</div>

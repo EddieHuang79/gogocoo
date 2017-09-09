@@ -11,7 +11,7 @@ class Admin_user_logic extends Basetool
 
    protected $user_id;
 
-   protected $free_user_limit = 5;
+   protected $free_user_limit = 4;
 
    public function __construct()
    {
@@ -112,6 +112,8 @@ class Admin_user_logic extends Basetool
    public static function get_user_list( $param = array() )
    {
 
+         $result = array();
+
          $_this = new self();
 
          $option = array(
@@ -122,7 +124,36 @@ class Admin_user_logic extends Basetool
                      "status"    => !empty($param["status"]) ? intval($param["status"]) : ""
                   );
 
-         return Admin_user::get_user_list( $option );
+         $data = Admin_user::get_user_list( $option );
+
+         if ( $data->count() > 0 ) 
+         {
+
+            $user_id = array();
+
+            foreach ($data as $row) 
+            {
+            
+               $user_id[] = $row->id;
+
+            }
+
+            // 計算帳號截止日
+
+            $cnt_deadline = Shop_logic::count_deadline( $user_id, "child_account" );
+
+            foreach ($data as &$row) 
+            {
+
+               $row->deadline = Shop_logic::get_deadline( $row, $cnt_deadline );
+
+            }
+
+            $result = $data;
+
+         }
+
+         return $result;
 
    }
 
@@ -247,17 +278,20 @@ class Admin_user_logic extends Basetool
 
          // 已購買的子帳數
 
-         $buy_account_cnt = Shop_logic::get_shop_record_by_id( "child_account" );
+         $buy_account_cnt = Shop_logic::get_count_by_action_key( "child_account" );
+
+         $buy_account_cnt = array_shift($buy_account_cnt);
 
          // 剩餘額度
 
-         $left = $left_free_account + $buy_account_cnt;
+         $left = $left_free_account + $buy_account_cnt["count"];
 
 
          $result = array(
-                     "free"   => $left_free_account > 0 ? $left_free_account : 0,
-                     "buy"    => $buy_account_cnt,
-                     "left"   => $left
+                     "free"               => $left_free_account > 0 ? $left_free_account : 0,
+                     "buy"                => $buy_account_cnt["count"],
+                     "buy_spec_data"      => $buy_account_cnt["data"],
+                     "left"               => $left
                   );
 
          return $result;     
@@ -322,11 +356,40 @@ class Admin_user_logic extends Basetool
    public static function edit_user_photo( $photo_upload_files )
    {
 
+         $_this = new self();
+
          $Login_user = Session::get( 'Login_user' );
+
+         $ori_image = $_this->get_user_image( $Login_user["user_id"] );
+
+         if ( !empty($ori_image->photo) && file_exists( $ori_image->photo ) ) 
+         {
+
+            unlink( $ori_image->photo );
+
+         }
 
          $result = Admin_user::edit_user_photo( $photo_upload_files, $Login_user["user_id"] );
 
          return $result;
+         
+   }
+
+   // 擴展帳號期限
+
+   public static function extend_user_deadline( $user_id, $data )
+   {
+
+      return Shop_logic::add_use_record( $user_id, $data, $type = 1 );
+         
+   }
+
+   // 回傳帳號原始圖片
+
+   public static function get_user_image( $user_id )
+   {
+
+      return Admin_user::get_user_image( $user_id );
          
    }
 

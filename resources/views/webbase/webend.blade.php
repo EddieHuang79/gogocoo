@@ -44,7 +44,15 @@
 
 	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/cropper/2.3.4/cropper.js"></script>
 
+	<script type="text/javascript" src="{{ URL::asset('js/highcharts.js') }}"></script>
+	
+	<script type="text/javascript" src="{{ URL::asset('js/data.js') }}"></script>
+
+	<script type="text/javascript" src="{{ URL::asset('js/drilldown.js') }}"></script>
+
 	<script type="text/javascript" src="{{ URL::asset('js/common.js') }}"></script>
+	
+	<script type="text/javascript" src="{{ URL::asset('js/report.js') }}"></script>
 
 	</body>
 </html>

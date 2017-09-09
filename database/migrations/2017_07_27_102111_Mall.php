@@ -38,27 +38,28 @@ class Mall extends Migration
             $table->text('description');
             $table->string('pic');
             $table->integer('public');
+            $table->integer('cost');
             $table->dateTime('start_date');
             $table->dateTime('end_date');
             $table->timestamps();
             $table->engine = 'InnoDB';
         });   
 
-        // 商品規格
+        // // 商品規格
 
-        #   date_spec - unit: month
+        // #   date_spec - unit: month
 
-        Schema::create($this->mall_shop_spec_table, function (Blueprint $table) {
-            $table->increments('id');
-            $table->integer('mall_shop_id')->unsigned();
-            $table->integer('cost');
-            $table->integer('date_spec');
-            $table->engine = 'InnoDB';
-        });    
+        // Schema::create($this->mall_shop_spec_table, function (Blueprint $table) {
+        //     $table->increments('id');
+        //     $table->integer('mall_shop_id')->unsigned();
+        //     $table->integer('cost');
+        //     $table->integer('date_spec');
+        //     $table->engine = 'InnoDB';
+        // });    
 
-        Schema::table($this->mall_shop_spec_table, function($table) {
-           $table->foreign('mall_shop_id')->references('id')->on($this->mall_shop_table);
-        });
+        // Schema::table($this->mall_shop_spec_table, function($table) {
+        //    $table->foreign('mall_shop_id')->references('id')->on($this->mall_shop_table);
+        // });
 
         // 購買紀錄
 
@@ -67,7 +68,7 @@ class Mall extends Migration
         Schema::create($this->mall_record_table, function (Blueprint $table) {
             $table->increments('id');
             $table->integer('mall_shop_id')->unsigned();
-            $table->integer('mall_shop_spec_id')->unsigned();
+            // $table->integer('mall_shop_spec_id')->unsigned();
             $table->integer('user_id')->unsigned();
             $table->integer('cost');
             $table->integer('number');
@@ -80,7 +81,7 @@ class Mall extends Migration
 
         Schema::table($this->mall_record_table, function($table) {
            $table->foreign('mall_shop_id')->references('id')->on($this->mall_shop_table);
-           $table->foreign('mall_shop_spec_id')->references('id')->on($this->mall_shop_spec_table);
+           // $table->foreign('mall_shop_spec_id')->references('id')->on($this->mall_shop_spec_table);
            $table->foreign('user_id')->references('id')->on($this->user_table);
         });
 
@@ -155,6 +156,8 @@ class Mall extends Migration
             $table->increments('id');
             $table->integer('mall_shop_id')->unsigned();
             $table->integer('mall_product_id')->unsigned();
+            $table->integer('date_spec');
+            $table->integer('number');
             $table->engine = 'InnoDB';
         });    
 
@@ -166,20 +169,28 @@ class Mall extends Migration
 
         // 商城商品使用紀錄
 
-        #   public - 1:yes,2:no
+        // #   type - 1:account, 2:store
 
         Schema::create($this->mall_product_use_table, function (Blueprint $table) {
             $table->increments('id');
             $table->integer('user_id')->unsigned();
+            $table->integer('mall_record_id')->unsigned();
             $table->integer('mall_shop_id')->unsigned();
-            $table->string('action_key');
+            $table->integer('mall_product_id')->unsigned();
+            $table->integer('type');
+            $table->integer('active_item_id');
+            // $table->integer('number');
+            // $table->date('deadline');
+            $table->integer('status');
             $table->dateTime('use_time');
             $table->engine = 'InnoDB';
         });    
 
         Schema::table($this->mall_product_use_table, function($table) {
-           $table->foreign('mall_shop_id')->references('id')->on($this->mall_shop_table);
            $table->foreign('user_id')->references('id')->on($this->user_table);
+           $table->foreign('mall_record_id')->references('id')->on($this->mall_record_table);
+           $table->foreign('mall_shop_id')->references('id')->on($this->mall_shop_table);
+           $table->foreign('mall_product_id')->references('id')->on($this->mall_product_table);
         });
 
 
@@ -255,7 +266,7 @@ class Mall extends Migration
         Schema::dropIfExists($this->mall_product_rel_table);
         Schema::dropIfExists($this->mall_product_table);
         Schema::dropIfExists($this->mall_record_table);
-        Schema::dropIfExists($this->mall_shop_spec_table);
+        // Schema::dropIfExists($this->mall_shop_spec_table);
         Schema::dropIfExists($this->mall_shop_table);
 
         // role_service

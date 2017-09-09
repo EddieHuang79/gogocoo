@@ -3,7 +3,7 @@
 	@include('webbase.breadcrumb')
 </section>
 <section class="content">
-	<form action="/mall" method="POST" enctype="multipart/form-data">
+	<form action="/mall" method="POST" enctype="multipart/form-data" id="mallForm">
 		<table class="table table-stroped">
 			<tbody>
 
@@ -35,19 +35,25 @@
 				</tr>
 
 				<tr>
-					<th>{{ $txt["include_service"] }}</th>
+					<th>
+						{{ $txt["include_service"] }}
+						<br />
+						<h6>{{ $txt["include_service_desc"] }}</h6>
+					</th>
 					<td>
 						<div class="include_service">
 							@if(!empty($mall_product_rel))
 								@foreach($mall_product_rel as $mall_product_id => $mall_product)
 								<div class="include_service_target clone_div_parents clone">
 									<div class="clone_div_child">
-										<select name="service[]">
+										<select name="service[]" required>
 											<option value="">{{ $txt['select_default'] }}</option>
 											@foreach($child_product as $index => $row)
 											<option value="{{ $index }}" @if( $mall_product_id == $index ) selected @endif >{{ $row }}</option>
 											@endforeach
 										</select>
+										<input type="text" name="number[]" value="{{ $mall_product['number'] }}" placeholder="請輸入數量" required>{{ $txt['service_unit'] }}
+										<input type="text" name="date_spec[]" class="InputText" placeholder="{{ $txt['date_range_input'] }}" value="{{ $mall_product['date_spec'] }}" required>{{ $txt['day_unit'] }}
 									</div>
 									<input type="button" class="removeLabel removeBtn" value="{{ $txt['remove_block'] }}" target="include_service_target">									
 								</div>
@@ -55,12 +61,14 @@
 							@else
 								<div class="include_service_target clone_div_parents clone">
 									<div class="clone_div_child">
-										<select name="service[]">
+										<select name="service[]" required>
 											<option value="">{{ $txt['select_default'] }}</option>
 											@foreach($child_product as $index => $row)
 											<option value="{{ $index }}">{{ $row }}</option>
 											@endforeach
 										</select>
+										<input type="text" name="number[]" placeholder="請輸入數量" required>{{ $txt['service_unit'] }}
+										<input type="text" name="date_spec[]" class="InputText" placeholder="{{ $txt['date_range_input'] }}" value="" required>{{ $txt['day_unit'] }}
 									</div>
 									<input type="button" class="removeLabel removeBtn" value="{{ $txt['remove_block'] }}" target="include_service_target">
 								</div>							
@@ -71,26 +79,9 @@
 				</tr>
 
 				<tr>
-					<th>{{ $txt["product_spec"] }}</th>
+					<th>{{ $txt["price"] }}</th>
 					<td>
-						<div class="product_spec">
-							@if(!empty($mall->spec_id))
-								@foreach($mall->spec_id as $row)
-								<div class="product_spec_target clone_div_parents clone">
-									<div class="product_price clone_div_child">{{ $txt['cost_unit'] }}<input type="text" name="cost[]" class="InputText" placeholder="{{ $txt['cost_input'] }}" value="{{ $row->cost }}"></div>
-									<div class="product_date clone_div_child"><input type="text" name="date_range[]" class="InputText" placeholder="{{ $txt['date_range_input'] }}" value="{{ $row->date_spec }}">{{ $txt['day_unit'] }}</div>
-									<input type="button" class="removeLabel removeBtn" value="{{ $txt['remove_block'] }}" target="product_spec_target">
-								</div>
-								@endforeach
-							@else
-								<div class="product_spec_target clone_div_parents clone">
-									<div class="product_price clone_div_child">{{ $txt['cost_unit'] }}<input type="text" name="cost[]" class="InputText" placeholder="{{ $txt['cost_input'] }}"></div>
-									<div class="product_date clone_div_child"><input type="text" name="date_range[]" class="InputText" placeholder="{{ $txt['date_range_input'] }}">{{ $txt['day_unit'] }}</div>
-									<input type="button" class="removeLabel removeBtn" value="{{ $txt['remove_block'] }}" target="product_spec_target">
-								</div>							
-							@endif
-							<input type="button" class="addbtn" value="{{ $txt['add_spec'] }}" target="product_spec_target">
-						</div>
+						<div class="product_price clone_div_child">{{ $txt['cost_unit'] }}<input type="text" name="cost" class="InputText" placeholder="{{ $txt['cost_input'] }}" value="@if(!empty($mall)) {{ $mall->cost }} @endif" required></div>
 					</td>
 				</tr>
 
@@ -106,12 +97,12 @@
 					<th width="10%">{{ $txt["product_live_date"] }}</th>
 					<td>
 						{{ $txt["start_date"] }}<input type="text" name="start_date" class="InputDate" placeholder="{{ $txt['start_date_input'] }}" value="@if( !empty($mall) &&  strtotime($mall->start_date) > 0 ){{ $mall->start_date }}@endif"/> <br />
-						{{ $txt["end_date"] }}<input type="text" name="end_date" class="InputDate" placeholder="{{ $txt['end_date_input'] }}" value="@if( !empty($mall) &&  strtotime($mall->end_date) > 0 ){{ $mall->end_date }}@endif"/>
+						{{ $txt["end_date"] }}<input type="text" name="end_date" class="InputDate" placeholder="{{ $txt['end_date_input'] }}" value="@if( !empty($mall) &&  strtotime($mall->end_date) > strtotime('1970-01-01 23:59:59') ){{ $mall->end_date }}@endif"/>
 					</td>
 				</tr>
 
 				<tr>
-					<th colspan="2"><input type="submit" value="{{ $txt['send'] }}"/></th>
+					<th colspan="2"><input type="button" value="{{ $txt['send'] }}" onclick="MallSubmit();"/></th>
 				</tr>															
 			</tbody>
 		</table>

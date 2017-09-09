@@ -181,4 +181,76 @@ class Order
 
 	}
 
+	public static function get_order_cnt( $data, $shop_id = 0, $status )
+	{
+
+		$_this = new self();
+
+		$result = DB::table($_this->table)
+					->select(
+								DB::raw('count(id) as cnt')
+							)
+				    ->leftJoin($_this->extra_table, $_this->table.'.id', '=', $_this->extra_table.'.order_id');
+
+		$result = $shop_id > 0 ? $result->where("shop_id", "=", $shop_id) : $result ;
+
+		$result = !empty($status) ? $result->whereIn('status', $status) : $result ;
+		
+		$result = strtotime($data["start_date"]) > 0 && strtotime($data["end_date"]) > 0 ? $result->whereBetween('created_at', array($data["start_date"],$data["end_date"])) : $result ;
+
+		$result = $result->orderBy("id", "desc")->first();
+
+		return $result;
+
+	}
+
+	public static function get_order_sum( $data, $shop_id = 0, $status )
+	{
+
+		$_this = new self();
+
+		$result = DB::table($_this->table)
+					->select(
+								DB::raw('SUM(number) as cnt')
+							)
+				    ->leftJoin($_this->extra_table, $_this->table.'.id', '=', $_this->extra_table.'.order_id');
+
+		$result = $shop_id > 0 ? $result->where("shop_id", "=", $shop_id) : $result ;
+
+		$result = !empty($status) ? $result->whereIn('status', $status) : $result ;
+		
+		$result = strtotime($data["start_date"]) > 0 && strtotime($data["end_date"]) > 0 ? $result->whereBetween('out_warehouse_date', array($data["start_date"],$data["end_date"])) : $result ;
+
+		$result = $result->orderBy("id", "desc")->first();
+
+		return $result;
+
+	}
+
+	public static function get_hotSell_top5( $data, $shop_id = 0, $status )
+	{
+
+		$_this = new self();
+
+		$result = DB::table($_this->table)
+					->select(
+								"product_name",
+								DB::raw('SUM(number) as cnt')
+							)
+				    ->leftJoin($_this->extra_table, $_this->table.'.id', '=', $_this->extra_table.'.order_id')
+				    ->leftJoin($_this->product, $_this->product.'.id', '=', $_this->table.'.product_id');
+
+		$result = $shop_id > 0 ? $result->where("shop_id", "=", $shop_id) : $result ;
+
+		$result = !empty($status) ? $result->whereIn('status', $status) : $result ;
+		
+		$result = strtotime($data["start_date"]) > 0 && strtotime($data["end_date"]) > 0 ? $result->whereBetween('out_warehouse_date', array($data["start_date"],$data["end_date"])) : $result ;
+
+		$result = $result->groupBy("product_id")->orderBy("cnt", "desc")->limit(5)->get();
+
+		return $result;
+
+	}
+
+
 }

@@ -39,6 +39,8 @@ Route::post('forgot_password', ['as'=>'login.register_finish','uses'=>'Auth\Forg
 
 Route::resource('user', 'UserController');
 
+Route::post('extend_user_process', ['as'=>'admin.extend_user_process','uses'=>'UserController@extend_user_process']);
+
 Route::resource('role', 'RoleController');
 
 Route::resource('service', 'ServiceController');
@@ -67,6 +69,8 @@ Route::resource('store', 'StoreController');
 
 Route::post('change_store', ['as'=>'store.change','uses'=>'StoreController@change_store']);
 
+Route::post('extend_store_process', ['as'=>'admin.extend_store_process','uses'=>'StoreController@extend_store_process']);
+
 // mall
 
 Route::resource('mall', 'MallController');
@@ -80,6 +84,8 @@ Route::get('buy_record', ['as'=>'shop.service_buy_record','uses'=>'ShopControlle
 Route::post('shop_buy_process', ['as'=>'shop.service_buy_process','uses'=>'ShopController@shop_buy_process']);
 
 Route::post('get_mall_product', ['as'=>'shop.get_mall_product','uses'=>'ShopController@get_mall_product']);
+
+Route::post('get_extend_deadline_option', ['as'=>'shop.get_extend_deadline_option','uses'=>'ShopController@get_extend_deadline_option']);
 
 // photo
 
@@ -140,3 +146,13 @@ Route::get('order_upload', ['as'=>'upload.order_upload','uses'=>'UploadControlle
 Route::post('order_upload_process', ['as'=>'upload.order_upload_process','uses'=>'UploadController@order_upload_process']);
 
 Route::get('order_upload_format_download', ['as'=>'upload.order_upload_format_download','uses'=>'UploadController@order_upload_format_download']);
+
+// report
+
+Route::post('month_order_view', ['as'=>'report.month_order_view','uses'=>'ReportController@month_order_view']);
+
+Route::post('year_stock_view', ['as'=>'report.year_stock_view','uses'=>'ReportController@year_stock_view']);
+
+Route::post('year_product_top5', ['as'=>'report.year_product_top5','uses'=>'ReportController@year_product_top5']);
+
+

@@ -226,11 +226,27 @@ class Web_cht
                               "order_upload_format"                     => "訂單上傳格式",
                               "web_index"             => "首頁",
                               "include_service"       => "包含服務",
+                              "include_service_desc"  => "請勿包含重複的服務",
                               "add_service"           => "新增服務",
                               "mall_list"             => "商城產品列表",
                               "create_account_disable"                  => "無法建立子帳號",
                               "create_account_disable_desc"             => "您的建立的子帳號數量已達上限，若要擴充請前往商城購買子帳號額度",
-
+                              "service_unit"          => "個",
+                              "free_date_spec_desc"   => "免費試用30天，到期日為: ",
+                              "buy_date_spec_desc"    => "天，到期日為: ",
+                              "extend_deadline"       => "延長使用期限",
+                              "extend"                => "延長",
+                              "service_use_title_success"               => "啟用成功",
+                              "service_use_content_success"             => "感謝您的支持與鼓勵！",
+                              "service_use_title_fail"                  => "啟用失敗",
+                              "service_use_content_fail"                => "請稍候再試或聯絡客服人員！",
+                              "store_over_date_desc"                    => "您的店鋪已到期，請前往商城購買擴充期限服務！",
+                              "account_over_date_desc"                  => "您的帳號已到期，請前往商城購買擴充期限服務！",
+                              "is_over_date_notice"   => "到期通知",
+                              "this_week_order_cnt"               => "本周訂單數",
+                              "this_week_cancel_order_cnt"        => "本周取消訂單數",
+                              "today_in_ws"                       => "今日入庫",
+                              "today_out_ws"                      => "今日出庫",
    				);
 
    public static function get_txt()

@@ -50,7 +50,7 @@ class Store extends Model
 
 		$_this = new self;
 
-		$result = DB::table($_this->table)->insert($data);
+		$result = DB::table($_this->table)->insertGetId($data);
 
 		return $result;
 

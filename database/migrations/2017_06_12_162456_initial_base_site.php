@@ -5,6 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Redis;
 
 class InitialBaseSite extends Migration
 {
@@ -52,7 +53,6 @@ class InitialBaseSite extends Migration
             $table->string('store_name');
             $table->string('store_code')->unique();
             $table->integer('store_type');
-            $table->date('deadline');
             $table->integer('is_free')->default(1);
             $table->timestamps();
             $table->engine = 'InnoDB';
@@ -161,7 +161,6 @@ class InitialBaseSite extends Migration
                 'store_name'    => 'Coo管理者',
                 'store_code'    => 'ADM',
                 'store_type'    => 2,
-                'deadline'      => "2050-12-31",
                 'is_free'       => 1,
                 'created_at'    => date("Y-m-d H:i:s"),
                 'updated_at'    => date("Y-m-d H:i:s")
@@ -915,7 +914,7 @@ class InitialBaseSite extends Migration
         DB::table($this->service_table)->insert(
             array(
                 'name'          => '首頁',
-                'link'          => '/admin/index',
+                'link'          => '/admin_index',
                 'parents_id'    => 0,
                 'status'        => 1,
                 'public'        => 4,
@@ -1175,6 +1174,12 @@ class InitialBaseSite extends Migration
      */
     public function down()
     {
+
+        // delete redis all key
+        $match_key = Redis::KEYS( "*" );
+        foreach ($match_key as $row)
+            Redis::del( $row );
+
         Schema::dropIfExists($this->user_role_table);
         Schema::dropIfExists($this->role_service_table);
         Schema::dropIfExists($this->service_user_table);

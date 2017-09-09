@@ -19,20 +19,22 @@ class Mall_logic extends Basetool
 	}
 
 	// 新增格式
+
 	public static function insert_format( $data )
 	{
 
 		$_this = new self();
 
 		$result = array(
-			"product_name"      => isset($data["product_name"]) ? $_this->strFilter($data["product_name"]) : "",
-			"description"       => isset($data["description"]) ? trim($data["description"]) : "",
-			"pic"          		=> isset($data["product_image_path"]) ? trim($data["product_image_path"]) : "",
-			"public"          	=> isset($data["public"]) ? intval($data["public"]) : "",
-			"start_date"       	=> isset($data["start_date"]) ? date("Y-m-d 00:00:00", strtotime($data["start_date"])) : "",
-			"end_date"         	=> isset($data["end_date"]) ? date("Y-m-d 23:59:59", strtotime($data["end_date"])) : "",
-			"created_at"    	=> date("Y-m-d H:i:s"),
-			"updated_at"    	=> date("Y-m-d H:i:s")
+				"product_name"      => isset($data["product_name"]) ? $_this->strFilter($data["product_name"]) : "",
+				"description"       => isset($data["description"]) ? trim($data["description"]) : "",
+				"pic"          		=> isset($data["product_image_path"]) ? trim($data["product_image_path"]) : "",
+				"public"          	=> isset($data["public"]) ? intval($data["public"]) : "",
+				"cost"         		=> isset($data["cost"]) ? intval($data["cost"]) : "",
+				"start_date"       	=> isset($data["start_date"]) ? date("Y-m-d 00:00:00", strtotime($data["start_date"])) : "",
+				"end_date"         	=> isset($data["end_date"]) ? date("Y-m-d 23:59:59", strtotime($data["end_date"])) : "",
+				"created_at"    	=> date("Y-m-d H:i:s"),
+				"updated_at"    	=> date("Y-m-d H:i:s")
 			);
 
 		return $result;
@@ -40,6 +42,7 @@ class Mall_logic extends Basetool
 	}
 
 	// 新增規格格式
+
 	public static function insert_spec_format( $data )
 	{
 
@@ -67,6 +70,7 @@ class Mall_logic extends Basetool
 	}
 
 	// 新增商品關聯
+
 	public static function insert_child_product_format( $data )
 	{
 
@@ -83,6 +87,8 @@ class Mall_logic extends Basetool
 			$result[] = array(
 					"mall_shop_id"   	=> isset($data["mall_shop_id"]) ? intval($data["mall_shop_id"]) : "",
 					"mall_product_id"   => isset($data["service"][$i]) ? intval($data["service"][$i]) : "",
+					"date_spec"   		=> isset($data["date_spec"][$i]) ? intval($data["date_spec"][$i]) : "",
+					"number"   			=> isset($data["number"][$i]) ? intval($data["number"][$i]) : "",
 				);
 		}
 
@@ -100,6 +106,7 @@ class Mall_logic extends Basetool
 					"product_name"      => isset($data["product_name"]) ? $_this->strFilter($data["product_name"]) : "",
 					"description"       => isset($data["description"]) ? trim($data["description"]) : "",
 					"public"          	=> isset($data["public"]) ? intval($data["public"]) : "",
+					"cost"         		=> isset($data["cost"]) ? intval($data["cost"]) : "",
 					"start_date"       	=> isset($data["start_date"]) ? date("Y-m-d 00:00:00", strtotime($data["start_date"])) : "",
 					"end_date"         	=> isset($data["end_date"]) ? date("Y-m-d 23:59:59", strtotime($data["end_date"])) : "",
 					"updated_at"    	=> date("Y-m-d H:i:s")
@@ -181,7 +188,7 @@ class Mall_logic extends Basetool
 		{
 
 			$mall_shop_id[] = $row->id;
-			$spec[$row->id][] = $txt["cost_unit"] . $row->cost . "/" . $row->date_spec . $txt["day_unit"] ; 
+			// $spec[$row->id][] = $txt["cost_unit"] . $row->cost . "/" . $row->date_spec . $txt["day_unit"] ; 
 			$row->public_txt = $row->public > 0 ? $txt["yes"] : $txt["no"] ;
 			$row->start_date_desc = strtotime($row->start_date) > 0 ? $row->start_date : $txt["product_on_right_now"] ;
 			$row->end_date_desc = strtotime($row->end_date) > strtotime("1970-01-01 23:59:59") ? $row->end_date : $txt["product_on_forever"] ;
@@ -190,6 +197,7 @@ class Mall_logic extends Basetool
 
 		// 關聯服務
 		$mall_rel = $_this->get_mall_service_rel( $mall_shop_id );
+
 
 		foreach ($mall as &$row) 
 		{
@@ -259,19 +267,31 @@ class Mall_logic extends Basetool
 
 		$data = Mall::get_mall_service_rel( $mall_shop_id );
 
+		$txt = $_this->txt;
+
 		if ( $data->count() > 0 ) 
 		{
 
 			foreach ($data as $row) 
 			{
 				
-				$result[$row->mall_shop_id][$row->mall_product_id] = $row->product_name;
+				$result[$row->mall_shop_id][$row->mall_product_id]["product_name"] = $row->product_name;
+				$result[$row->mall_shop_id][$row->mall_product_id]["number"] = $row->number;
+				$result[$row->mall_shop_id][$row->mall_product_id]["date_spec"] = $row->date_spec;
+				// $result[$row->mall_shop_id][$row->mall_product_id] = $row->product_name . " / " . $row->number . $txt["service_unit"] . " / " . $row->date_spec . $txt["day_unit"] ;
 
 			}
 
 		}
 
 		return $result;
+
+	}
+
+	public static function get_mall_image( $mall_shop_id )
+	{
+
+		return Mall::get_mall_image( $mall_shop_id );
 
 	}
 

@@ -14,6 +14,7 @@ class Shop extends Model
 	protected $record_table = "mall_record";
 	protected $mall_product_table = "mall_product";
 	protected $mall_product_rel_table = "mall_product_rel";
+	protected $mall_product_use_table = "mall_product_use";
 
 
 	public static function shop_product_list()
@@ -74,9 +75,16 @@ class Shop extends Model
 		$_this = new self();
 
 		$data = DB::table($_this->record_table)
-					->select($_this->spec_table.".*",$_this->table.'.product_name',$_this->record_table.'.paid_at',$_this->record_table.'.number')
+					->select(
+							// $_this->mall_product_rel_table.".*",
+							$_this->table.'.id',
+							$_this->table.'.product_name',
+							$_this->table.'.cost',
+							$_this->record_table.'.paid_at',
+							$_this->record_table.'.number'
+						)
 					->leftJoin($_this->table, $_this->record_table.'.mall_shop_id', '=', $_this->table.'.id')
-					->leftJoin($_this->spec_table, $_this->record_table.'.mall_shop_spec_id', '=', $_this->spec_table.'.id')
+					// ->leftJoin($_this->mall_product_rel_table, $_this->record_table.'.mall_shop_id', '=', $_this->mall_product_rel_table.'.mall_shop_id')
 					->where($_this->record_table.".user_id", "=", $data["user_id"])
 					->paginate(15);
 
@@ -90,8 +98,8 @@ class Shop extends Model
 		$_this = new self();
 
 		$data = DB::table($_this->table)
-					->select( $_this->table.".id", $_this->table.".product_name", $_this->table.".description", $_this->table.".pic", $_this->spec_table.".cost", $_this->spec_table.".date_spec", $_this->spec_table.".id as spec_id" )
-					->leftJoin($_this->spec_table, $_this->table.'.id', '=', $_this->spec_table.'.mall_shop_id')
+					->select( $_this->table.".id", $_this->table.".product_name", $_this->table.".description", $_this->table.".pic", $_this->table.".cost" )
+					// ->leftJoin($_this->spec_table, $_this->table.'.id', '=', $_this->spec_table.'.mall_shop_id')
 					->where($_this->table.".id", "=", $mall_shop_id)
 					->get();
 
@@ -115,31 +123,9 @@ class Shop extends Model
 
 		$_this = new self();
 
-		$data = DB::table($_this->record_table)->insertGetId( $data );
+		$result = DB::table($_this->record_table)->insertGetId( $data );
 
-		return $data > 0 ? true : false;
-
-	}
-
-	public static function get_shop_record_by_id( $data )
-	{
-
-		$_this = new self();
-
-		$data = DB::table($_this->record_table)
-					->select(
-							// \DB::raw('SUM(number) as number')
-							"action_key",
-							"number"
-						)
-					->leftJoin($_this->table, $_this->record_table.'.mall_shop_id', '=', $_this->table.'.id')
-					->leftJoin($_this->mall_product_rel_table, $_this->mall_product_rel_table.'.mall_shop_id', '=', $_this->table.'.id')
-					->leftJoin($_this->mall_product_table, $_this->mall_product_rel_table.'.mall_product_id', '=', $_this->mall_product_table.'.id')
-					->where($_this->record_table.".user_id", "=", $data["user_id"])
-					// ->groupBy($_this->record_table.".mall_shop_id")
-					->get();
-
-		return $data;
+		return $result;
 
 	}
 
@@ -164,5 +150,162 @@ class Shop extends Model
 		return $data;
 
 	}
+
+	// 取得購買紀錄
+
+	public static function get_shop_record_by_id( $user_id, $action_key )
+	{
+
+		$_this = new self();
+
+		$data = DB::table($_this->record_table)
+					->select(
+							// \DB::raw('SUM(number) as number')
+							$_this->record_table.".mall_shop_id",
+							$_this->mall_product_rel_table.".mall_product_id",
+							$_this->mall_product_rel_table.".date_spec",
+							$_this->mall_product_rel_table.".number",
+							$_this->record_table.".number as buy_number"
+						)
+					->leftJoin($_this->table, $_this->record_table.'.mall_shop_id', '=', $_this->table.'.id')
+					->leftJoin($_this->mall_product_rel_table, $_this->mall_product_rel_table.'.mall_shop_id', '=', $_this->table.'.id')
+					->leftJoin($_this->mall_product_table, $_this->mall_product_rel_table.'.mall_product_id', '=', $_this->mall_product_table.'.id')
+					->where($_this->record_table.".user_id", "=", $user_id)
+					->where($_this->mall_product_table.".action_key", "=", $action_key)
+					// ->groupBy($_this->record_table.".mall_shop_id")
+					->get();
+
+		return $data;
+
+	}
+
+	// 取得使用紀錄表
+
+	public static function get_mall_product_use_record( $user_id, $item_id, $action_key, $type )
+	{
+
+		$_this = new self();
+
+		$data = DB::table($_this->mall_product_use_table)
+					->select(
+							$_this->mall_product_use_table.".active_item_id",
+							$_this->record_table.".mall_shop_id",
+							//$_this->record_table.".id",
+							$_this->mall_product_use_table.".mall_product_id"
+						)
+					->leftJoin($_this->record_table, $_this->mall_product_use_table.'.mall_record_id', '=', $_this->record_table.'.id')
+					->leftJoin($_this->mall_product_table, $_this->mall_product_use_table.'.mall_product_id', '=', $_this->mall_product_table.'.id')
+					->where($_this->mall_product_use_table.".user_id", "=", $user_id);
+
+		$data = !empty($item_id) ? $data->whereIn($_this->mall_product_use_table.".active_item_id", $item_id) : $data ;
+		
+		$data = !empty($action_key) ? $data->where($_this->mall_product_table.".action_key", "=", $action_key) : $data ;
+
+		$data = !empty($type) ? $data->where($_this->mall_product_use_table.".type", "=", $type) : $data ;
+
+		$data = $data->get();
+
+		return $data;
+
+	}
+
+	// 驗證使用項目
+
+	public static function check_legal( $user_id, $data )
+	{
+
+		$_this = new self();
+
+		$data = DB::table($_this->mall_product_use_table)
+					->select($_this->mall_product_use_table.".id")
+					->leftJoin($_this->mall_product_rel_table, $_this->mall_product_rel_table.'.mall_shop_id', '=', $_this->mall_product_use_table.'.mall_shop_id')
+					->where($_this->mall_product_use_table.".user_id", "=", $user_id)
+					->where($_this->mall_product_use_table.".mall_shop_id", "=", $data[0])
+					->where($_this->mall_product_use_table.".mall_product_id", $data[1])
+					->where($_this->mall_product_rel_table.".date_spec", "=", $data[2])
+					->where($_this->mall_product_use_table.".status", "=", "1")
+					->first();
+		
+		$result = !empty($data) ? $data->id : 0 ;
+
+		return $result;
+
+	}
+
+	// 寫入使用紀錄
+
+	public static function add_use_record( $data )
+	{
+
+		$_this = new self();
+
+		return DB::table($_this->mall_product_use_table)->insert($data);
+
+	}
+
+	// 寫入使用紀錄
+
+	public static function get_mall_product_rel_data()
+	{
+
+		$_this = new self();
+
+		return DB::table($_this->mall_product_rel_table)->get();
+
+	}
+
+	// 啟用服務
+
+	public static function active_use_record( $data, $use_id )
+	{
+
+		$_this = new self();
+
+		return DB::table($_this->mall_product_use_table)->where("id", "=", $use_id)->update($data);
+
+	}
+
+	// 驗證使用項目
+
+	public static function get_valuable_id( $user_id, $type )
+	{
+
+		$_this = new self();
+
+		$result = DB::table($_this->mall_product_use_table)
+					->select($_this->mall_product_use_table.".active_item_id")
+					->where($_this->mall_product_use_table.".user_id", "=", $user_id)
+					->where($_this->mall_product_use_table.".type", "=", $type)
+					->where($_this->mall_product_use_table.".mall_product_id", "!=", "2")
+					->get();
+		
+		return $result;
+
+	}
+
+	// 取得未使用的選項
+
+	public static function get_not_use_extend( $user_id, $action_key )
+	{
+
+		$_this = new self();
+
+		$data = DB::table($_this->mall_product_use_table)
+					->select(
+							$_this->mall_product_use_table.".active_item_id",
+							$_this->record_table.".mall_shop_id",
+							$_this->mall_product_use_table.".mall_product_id"
+						)
+					->leftJoin($_this->record_table, $_this->mall_product_use_table.'.mall_record_id', '=', $_this->record_table.'.id')
+					->leftJoin($_this->mall_product_table, $_this->mall_product_use_table.'.mall_product_id', '=', $_this->mall_product_table.'.id')
+					->where($_this->mall_product_use_table.".user_id", "=", $user_id)
+					->where($_this->mall_product_table.".action_key", "=", $action_key)
+					->where($_this->mall_product_use_table.".status", "=", "1")
+					->get();
+
+		return $data;
+
+	}
+
 
 }

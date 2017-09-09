@@ -40,17 +40,38 @@
 					<th>{{ $txt["auth"] }}</th>
 					<td>
 						@foreach($role_list as $row)
-						<input type="checkbox" value="{{ $row->id }}" name="auth[]" @if( isset($user_role) && in_array( $row->id, $user_role ) ) checked @endif ) /> {{ $row->name }} <br />
+						<input type="checkbox" value="{{ $row->id }}" name="auth[]" @if( isset($user_role) && in_array( $row->id, $user_role ) ) checked @endif )/> {{ $row->name }} <br />
 						@endforeach	
 					</td>
 				</tr>
 				<tr>
 					<th>{{ $txt["status"] }}</th>
 					<td>
-						<input type="radio" value="1" name="active" @if( !empty($user) && $user->status == 1 ) checked  @endif />{{ $txt["enable"] }}
-						<input type="radio" value="2" name="active" @if( !empty($user) && $user->status == 2 ) checked  @endif />{{ $txt["disable"] }}
+						<input type="radio" value="1" name="active" @if( !empty($user) && $user->status == 1 ) checked  @endif required/>{{ $txt["enable"] }}
+						<input type="radio" value="2" name="active" @if( !empty($user) && $user->status == 2 ) checked  @endif required/>{{ $txt["disable"] }}
 					</td>
 				</tr>
+				@if( empty($user) )
+				<tr>
+					<th>{{ $txt["deadline"] }}</th>
+					<td>
+						
+						@if( isset($account_status["free"]) && $account_status["free"] > 0 )
+							{{ $txt['free_date_spec_desc'] }} {{ $deadline }}
+						@endif
+
+						@if( isset($account_status["free"]) && $account_status["free"] <= 0 )
+							<select name="date_spec" required>
+								<option value="">{{ $txt['select_default'] }}</option>
+								@foreach($deadline as $index => $date_spec)
+									<option value="{{ $index }}">{{ $date_spec }}</option>
+								@endforeach
+							</select>
+						@endif
+
+					</td>
+				</tr>
+				@endif
 				<tr>
 					<th colspan="2"><input type="submit" value="{{ $txt['send'] }}"/></th>
 				</tr>															

@@ -10,8 +10,8 @@
 				<th>{{ $txt['id'] }}</th>
 				<th>{{ $txt['product_name'] }}</th>
 				<th>{{ $txt['product_image'] }}</th>
-				<th>{{ $txt['product_spec'] }}</th>
-				<th>{{ $txt['include_service'] }}</th>
+				<th>{{ $txt['price'] }}</th>
+				<th>{{ $txt['include_service'] }}/ {{ $txt['number'] }} /{{ $txt['day_unit'] }}</th>
 				<th>{{ $txt['public'] }}</th>
 				<th>{{ $txt['start_date_input'] }}</th>
 				<th>{{ $txt['end_date_input'] }}</th>
@@ -28,15 +28,11 @@
 						<img src="{{ URL::asset($row->pic) }}" alt="" width="100">
 					@endif
 				</td>
-				<td>
-					@foreach($row->spec as $spec)
-					<div>{{ $spec }}</div>
-					@endforeach	
-				</td>
+				<td> {{ $txt["cost_unit"] }} {{ $row->cost }} </td>
 				<td>
 					@if( !empty($row->include_service) )
 						@foreach($row->include_service as $service)
-						<div>{{ $service }}</div>
+						<div>{{ $service["product_name"] }} / {{ $service["number"] }}{{ $txt['service_unit'] }} / {{ $service["date_spec"] }}{{ $txt['day_unit'] }}</div>
 						@endforeach	
 					@endif					
 				</td>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\logic\Shop_logic;
+use App\logic\Mall_logic;
 
 class ShopController extends Controller
 {
@@ -37,9 +38,9 @@ class ShopController extends Controller
     public static function shop_buy_process()
     {
 
-        $data = Shop_logic::shop_buy_format( $_POST );
+        // $data = Shop_logic::shop_buy_format( $_POST );
 
-        $result = Shop_logic::shop_buy_insert( $data );
+        $result = Shop_logic::shop_buy_insert( $_POST );
 
         echo json_encode($result);
 
@@ -77,6 +78,26 @@ class ShopController extends Controller
     {
 
         $data = Shop_logic::get_mall_product( $_POST["mall_product_id"] );
+
+        echo json_encode($data);
+
+        exit();
+
+    }
+
+
+    /**
+     * get_extend_deadline_option 取得期限的選項
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public static function get_extend_deadline_option()
+    {
+
+        // $extend_count = Shop_logic::extend_count();
+
+        $data = Shop_logic::get_extend_deadline_option();
 
         echo json_encode($data);
 

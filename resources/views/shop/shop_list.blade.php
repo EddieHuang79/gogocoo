@@ -32,10 +32,12 @@
 				<!-- <div class="mall_product_description">mall_product_description</div>			 -->
 				<div class="mall_child_product">{{ $txt['include_service'] }}</div>			
 				<div class="mall_product_option">
+					
 					<div class="mall_product_spec">
-					    <select name="mall_product_spec" required autofocus>
+<!-- 					    <select name="mall_product_spec" required autofocus>
 					    	<option value="">{{ $txt['select_default'] }}{{ $txt['product_spec'] }}</option>
-					    </select>
+					    </select> -->
+						{{ $txt['cost_unit'] }} <label class="cost">  </label>
 					</div>
 					<div class="mall_product_number">
 						<div class="number_btn minus" target="[name='mall_product_number']">-</div> <div><input type="text" name="mall_product_number" value="1" size="1" style="width: 30px; text-align: center;" readonly="true"></div> <div class="number_btn plus" target="[name='mall_product_number']">+</div>
@@ -43,7 +45,9 @@
 				</div>			
 				<div class="mall_product_cost"></div>			
 				<div class="mall_product_btn">
+					<input type="hidden" class="mall_shop_id" name="mall_shop_id">
 					<input type="button" value="{{ $txt['buy'] }}" onclick="ShopSubmit();">
+					<!-- <input type="submit" value="{{ $txt['buy'] }}"> -->
 					<input type="button" value="{{ $txt['back'] }}" onclick="ClosePopup();">
 					<input type="hidden" name="_token" value="{{ csrf_token() }}">
 				</div>			

@@ -121,7 +121,7 @@ class Order_logic extends Basetool
 			$number = isset($data["number"]) ? intval($data["number"]) : 0 ;
 
 			$result = array(
-			            "shop_id"      			=> $shop_id,
+			            "shop_id"      			=> isset($shop_id) ? $shop_id : 1,
 			            "product_id"			=> $product_id,
 			            "spec_id"				=> $spec_id,
 			            "order_number"			=> $order_number,
@@ -574,7 +574,7 @@ class Order_logic extends Basetool
 
 		$content = !empty($error_data) ? "庫存不足，無法入帳！訂單編號: ". implode(",", $error_data) : $subject ;
 
-        Msg_logic::add_notice_msg( $subject, $content, $Login_user["user_id"] );
+        // Msg_logic::add_notice_msg( $subject, $content, $Login_user["user_id"] );
 
 	}
 

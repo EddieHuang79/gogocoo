@@ -114,26 +114,29 @@ var Show_current_position = function(){
 			data: "mall_product_id="+mall_product_id,
 			type: 'POST',
 			success: function( response ) {
-				var data = JSON.parse(response);
+				var data = JSON.parse(response),
+					total = parseInt(data.cost) * 1;
 				$(".mall_product_name").text(data.mall_product_name);
 				$(".mall_product_description").text(data.mall_product_description);
 				// $(".mall_product_pic").find("img").attr("src",data.mall_product_pic);
-				$(".mall_product_cost").text("NT. 0");
+				$(".mall_product_cost").text( "NT." + total );
+				$(".mall_product_spec>.cost").text(data.cost);
 				$('.mall_product_spec>select').find("option[classkey='append']").remove();
 				$('[name="mall_product_number"]').val("1");
-				$.map(data.include_service, function(value, index) {
-					var dom = "<div>"+value+"</div>";
+				$.map(data.include_service, function(row, index) {
+					var dom = "<div> "+row['product_name']+" X "+row["number"]+" 可用"+row["date_spec"]+" 天 </div>";
 					$(".mall_child_product").append(dom);
 				});
-				data.mall_product_spec.forEach(function(value, key){
-					$('.mall_product_spec>select').append($('<option>', {
-					    value: value.id,
-					    spec: value.cost+'/'+value.date_spec,
-					    text: 'NT.'+value.cost+' / '+value.date_spec+'天',
-					    classkey: "append"
-					}));
-				});
-				$('.mall_product_spec>select').val('');
+				// data.mall_product_spec.forEach(function(value, key){
+				// 	$('.mall_product_spec>select').append($('<option>', {
+				// 	    value: value.id,
+				// 	    spec: value.cost+'/'+value.date_spec,
+				// 	    text: 'NT.'+value.cost+' / '+value.date_spec+'天',
+				// 	    classkey: "append"
+				// 	}));
+				// });
+				// $('.mall_product_spec>select').val('');
+				$(".mall_shop_id").val(data.mall_shop_id);
 				$(".mall_product_lightbox").fadeIn(200);
 			}
 		});		
@@ -159,26 +162,21 @@ var Show_current_position = function(){
 			
 	},
 	shop_calc = function(){
-		var spec_tmp = $("[name='mall_product_spec']").val(),
-			spec = $("[name='mall_product_spec']>option[value='"+spec_tmp+"']").attr("spec");
+		var cost = $("label.cost").text();
 			number = $("[name='mall_product_number']").val(),
-			spec_data = spec.split("/"),
-			total = parseInt(number) * parseInt(spec_data[0]),
+			// spec_data = spec.split("/"),
+			total = parseInt(number) * parseInt(cost),
 			price_txt = isNaN(total) ? "NT. 0" : "NT. "+total,
 			total_price = isNaN(total) ? 0 : total ;
 		$(".mall_product_cost").text(price_txt);
 	},
 	ShopSubmit = function(){
-		var spec = $("[name='mall_product_spec']"),
+		var mall_shop_id = $(".mall_shop_id"),
 			number = $("[name='mall_product_number']");
-		if ( spec.val() == '' ) 
-		{
-			spec.focus();
-			return false;
-		};
+
 		$.ajax({
 			url: "/shop_buy_process",
-			data: "mall_product_spec="+spec.val()+"&mall_product_number="+number.val(),
+			data: "mall_shop_id="+mall_shop_id.val()+"&mall_product_number="+number.val(),
 			type: 'POST',
 			success: function( response ) {
 				var data = JSON.parse(response);
@@ -311,44 +309,122 @@ var Show_current_position = function(){
 		});
 
 	},
-	get_product_spec = function(){
-		var	product_name = $( "[name='product_name']" ).val(),
-			url = $( "[name='product_name']" ).attr("site");
-
-		if ( product_name == '' || typeof(product_name) == "undefined" ) 
-		{
-			return false;
-		};
-
-		$.ajax({
-			url: url+"/get_product_spec",
-			data: "product_name="+product_name,
-			type: 'POST',
-			success: function( response ) {
-				var data = JSON.parse(response),
-					spec_id = $( "[name='product_name']" ).attr("specId");
-				$('[name="spec_id"]>option.append').remove();
-				data.forEach(function(value, key){
-					var	spec = "顏色:"+value.value.color+"，尺寸:"+value.value.size+"，字型:"+value.value.font_type;
-					$('[name="spec_id"]').append($('<option>', {
-					    value: value.id,
-					    text: spec,
-					    class: "append"
-					}));
-				});
-				$('[name="spec_id"]').val(spec_id);
-			}
-		});	
-	},
 	count_lightbox_width = function(){
 		var lightbox_width = ( $(".lightbox").width() / 2 ) * -1;
 		$(".lightbox").css( "margin-left", lightbox_width );
+	},
+	extend_account_deadline = function(){
+		
+		var account = $(this).attr("account"),
+			userId = $(this).attr("userId");
+		
+		$(".popup_option").find(".account").text(account);
+		$("[name='user_id']").val(userId);
+
+		$.ajax({
+			url: "/get_extend_deadline_option",
+			type: 'POST',
+			success: function( response ) {
+
+				var data = JSON.parse(response);
+
+				if ( data.length !== 0 ) 
+				{
+
+					$('[name="date_spec"]>.append').remove();
+
+					$.map(data, function(value, index) {
+						$('[name="date_spec"]').append($('<option>', {
+						    value: index,
+						    text: value,
+						    class: "append"
+						}));
+					});
+
+				}
+				else
+				{
+
+					$("div.popup_option").text("擴充道具不足，請前往商城購買！");
+					$("div.mall_product_btn").text("");
+					$("div.mall_product_btn").append("<button class=\"btn btn-lg btn-primary btn-block\" type=\"button\" onclick=\"location.href='/buy';\">前往商城購買</button>");
+
+				}
+
+				$(".extend_lightbox").show();
+			
+			}
+		});	
+	},
+	ExtendSubmit = function(){
+		
+		var user_id = $("#ShopForm").find("[name='user_id']").val(),
+			date_spec = $("#ShopForm").find("[name='date_spec']").val(),
+			url = $("#ShopForm").attr("action");
+
+		if ( user_id == '' || date_spec == '' ) 
+		{
+
+			$("#ShopForm").find("[name='date_spec']").focus();
+
+			return false;
+		
+		};
+
+		$.ajax({
+			url: url,
+			type: 'POST',
+			data: "user_id="+user_id+"&date_spec="+date_spec,
+			success: function( response ) {
+				var data = JSON.parse(response);
+				$(".shop_finish").find(".subject").text(data.subject);
+				$(".shop_finish").find(".content").text(data.content);
+				$(".lightbox").hide();
+				$(".shop_finish").fadeIn();
+
+				// After 1.5 sec reload
+
+				setTimeout(function(){ location.reload(); }, 1500);
+
+			}
+		});	
+	},
+	MallSubmit = function(){
+		
+		var service = [],
+			verify = true;
+
+		$("[name='service[]']").each(function(e){
+
+			var value = $(this).val();
+
+			if ( service.indexOf(value) < 0 && value != '' ) 
+			{
+				service[e] = value; 
+			}
+			else
+			{
+				verify = false;
+				$("[name='service[]']").eq(e).focus();
+				$("[name='service[]']").eq(e).css("background-color","#CCC");
+			};
+
+		});
+	
+		if ( verify === false ) 
+		{
+
+			return false;
+
+		};
+
+		$("#mallForm").submit();
+
 	};
 
 
 Show_current_position();
 Ajax_init();
-get_product_spec();
 count_lightbox_width();
 
 $(".addbtn").on("click", AddBtn);
@@ -374,3 +450,4 @@ $("[name='mall_product_spec']").on("change", shop_calc);
 $(".crop").on("click", upload_crop_image);
 $(".autocomplete").on("click", AutoComplete);
 $(".clickAll").on("click", clickAllFunction);
+$(".extend_account_deadline").on("click", extend_account_deadline);

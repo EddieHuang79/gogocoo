@@ -34,7 +34,27 @@
 						@endif
 					</td>
 				</tr>
+				@if( empty($store) )
+				<tr>
+					<th>{{ $txt["deadline"] }}</th>
+					<td>
+						
+						@if( isset($store_status["free"]) && $store_status["free"] > 0 )
+							{{ $txt['free_date_spec_desc'] }} {{ $deadline }}
+						@endif
 
+						@if( isset($store_status["free"]) && $store_status["free"] <= 0 )
+							<select name="date_spec" required>
+								<option value="">{{ $txt['select_default'] }}</option>
+								@foreach($deadline as $index => $date_spec)
+									<option value="{{ $index }}">{{ $date_spec }}</option>
+								@endforeach
+							</select>
+						@endif
+
+					</td>
+				</tr>
+				@endif
 				<tr>
 					<th colspan="2"><input type="submit" value="{{ $txt['send'] }}"/></th>
 				</tr>	

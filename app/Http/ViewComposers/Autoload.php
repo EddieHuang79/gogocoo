@@ -13,6 +13,7 @@ use App\logic\Role_logic;
 use App\logic\Basetool;
 use App\logic\Msg_logic;
 use App\logic\Store_logic;
+use App\logic\Shop_logic;
 
 class Autoload extends Basetool
 {
@@ -171,6 +172,59 @@ class Autoload extends Basetool
         $data = Admin_user_logic::get_user_photo();
 
         $data = compact('data');
+
+        $view->with($data);
+
+    }
+
+    public function is_over_deadline(View $view)
+    {
+
+        $over_date_des = array();
+
+        $txt = Web_cht::get_txt();
+
+        $is_over_date = false;
+
+        // 店家過期日
+
+        $now_store = Session::get( 'Store' );
+
+        $cnt_deadline = Shop_logic::count_deadline( array($now_store), "create_shop" );
+
+        $created_data = Store_logic::get_single_store( $now_store );
+
+        $store_deadline = Shop_logic::get_deadline( $created_data, $cnt_deadline );
+
+        if ( strtotime($store_deadline) < time() ) 
+        {
+
+            $is_over_date = true ;
+
+            $over_date_des[] = $txt["store_over_date_desc"];
+
+        }
+
+        // 帳號過期日
+
+        $Login_user = Session::get('Login_user');
+
+        $cnt_deadline = Shop_logic::count_deadline( array($Login_user["user_id"]), "child_account" );
+
+        $created_data = Admin_user_logic::get_user( $now_store );
+
+        $account_deadline = Shop_logic::get_deadline( $created_data, $cnt_deadline );
+
+        if ( strtotime($account_deadline) < time() ) 
+        {
+
+            $is_over_date = true ;
+
+            $over_date_des[] = $txt["account_over_date_desc"];
+
+        }
+
+        $data = compact('is_over_date', 'over_date_des');
 
         $view->with($data);
 

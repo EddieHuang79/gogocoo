@@ -67,7 +67,7 @@ class Purchase_logic extends Basetool
 			$in_warehouse_number = $_this->get_in_warehouse_number( $product_id, $spec_id, 0 );
 
 			$result = array(
-			            "shop_id"      			=> $shop_id,
+			            "shop_id"      			=> !empty($shop_id) ? $shop_id : 1,
 			            "product_id"      		=> $product_id,
 			            "spec_id"      			=> $spec_id,
 			            "in_warehouse_number"	=> $in_warehouse_number,

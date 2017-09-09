@@ -49,7 +49,7 @@ class Product_logic extends Basetool
 
 		$shop_id = Session::get( 'Store' );		
 
-		$result["shop_id"] = $shop_id;
+		$result["shop_id"] = !empty($shop_id) ? $shop_id : 1;
 
 		$result["product_id"] = $product_id;
 

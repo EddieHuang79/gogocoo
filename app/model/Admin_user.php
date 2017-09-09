@@ -246,4 +246,16 @@ class Admin_user
          
    }
 
+   public static function get_user_image( $user_id )
+   {
+
+         $_this = new self;
+      
+         $result = DB::table($_this->table)->select("photo")->find( $user_id );
+
+         return $result; 
+         
+   }
+
+
 }
