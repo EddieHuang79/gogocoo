@@ -196,7 +196,7 @@ class Order
 
 		$result = !empty($status) ? $result->whereIn('status', $status) : $result ;
 		
-		$result = strtotime($data["start_date"]) > 0 && strtotime($data["end_date"]) > 0 ? $result->whereBetween('created_at', array($data["start_date"],$data["end_date"])) : $result ;
+		$result = strtotime($data["start_date"]) > 0 && strtotime($data["end_date"]) > 0 ? $result->whereBetween('out_warehouse_date', array($data["start_date"],$data["end_date"])) : $result ;
 
 		$result = $result->orderBy("id", "desc")->first();
 

@@ -323,11 +323,19 @@ class Report_logic extends Basetool
 
 		$week = date("w",$today);
 
+		$first_day_cnt = (int)$week - 1;
+
+		$first_day_cnt = $first_day_cnt < 0 ? $first_day_cnt + 7 : $first_day_cnt ;
+
+		$last_day_cnt = $week > 0 ? 7 - (int)$week : 0;
+
+		// $last_day_cnt = $first_day_cnt < 0 ? $first_day_cnt + 7 : $first_day_cnt ;
+
 		// 禮拜一為第一天，禮拜日為最後一天
 
-		$first_day = date("Y-m-d 00:00:00", mktime(0,0,0,date("m"),date("d",$today) - ((int)$week - 1) ,date("Y")));
+		$first_day = date("Y-m-d 00:00:00", mktime(0,0,0,date("m"),date("d",$today) - $first_day_cnt ,date("Y")));
 
-		$last_day = date("Y-m-d 23:59:59", mktime(0,0,0,date("m"),date("d",$today) + ( 7 - (int)$week) ,date("Y"))); 
+		$last_day = date("Y-m-d 23:59:59", mktime(0,0,0,date("m"),date("d",$today) + $last_day_cnt ,date("Y"))); 
 
 		$result = array(
 					"start_date" 	=> $first_day,
