@@ -375,12 +375,12 @@ img {
 
 .Report{
 	position: relative;
-	width: 80%;
+	width: 90%;
 	height: auto;
 	/*border: 1px solid #000;*/
 	margin: 0px auto;
 	margin-top: 50px;
-	padding: 5px;
+	padding: 1px;
 }
 .DataRow{
 	overflow: auto;
@@ -419,7 +419,7 @@ img {
 }
 .ReportrRow>div{
 	width: 46%;
-	min-width: 330px;
+	min-width: 320px;
 	height: 300px;
 	border: 1px solid #CCC;
 	float: left;
@@ -447,7 +447,10 @@ img {
 		left: 35%;
 		top: 10%;	
 	}
-
+	.Report{
+		width: 80%;
+		padding: 5px;
+	}
 	.form-signin{
 		width: 30%;
 	}
