@@ -5,6 +5,7 @@ namespace App\logic;
 use App\model\Stock;
 use Illuminate\Support\Facades\Session;
 use App\logic\Product_logic;
+use App\logic\ProductCategory_logic;
 
 class Stock_logic extends Basetool
 {
@@ -352,6 +353,91 @@ class Stock_logic extends Basetool
 	{
 
 		return Stock::cost_stock( $data );
+
+	}
+
+	public static function get_stock_analytics( $shop_id )
+	{
+
+		return Stock::get_stock_analytics( $shop_id );
+
+	}
+
+	public static function get_stock_analytics_add_parents_category( $data )
+	{
+
+		$result = array();
+
+		$parents_category = array();
+
+		$child_id = array();
+
+		foreach ($data as $row) 
+		{
+
+			$child_id[] = $row->category;
+ 
+		}
+
+		$parents_category_data = ProductCategory_logic::get_mutli_parents_category_id( $child_id );
+
+		$parents_id_name_trans = ProductCategory_logic::get_parents_id_name_trans();
+
+		foreach ($data as &$row) 
+		{
+
+			$row->parents_category = isset( $parents_category_data[$row->category] ) ? $parents_category_data[$row->category] : "無" ;
+			
+			$row->parents_category_name = isset( $parents_id_name_trans[$row->parents_category] ) ? $parents_id_name_trans[$row->parents_category] : "無" ;
+ 
+		}
+
+		$result = $data;
+
+		return $result;
+
+	}
+
+	public static function get_stock_and_safe_amount( $data )
+	{
+
+		$result = array();
+
+		$product_id = array();
+
+		$product_name = array();
+
+		$safe_amount = array();
+
+		$stock = array();
+
+		foreach ($data as $row) 
+		{
+
+			$product_id[] = $row->product_id;
+
+		}
+
+		$data = Stock::get_stock_and_safe_amount( $product_id );
+
+		foreach ($data as $row) 
+		{
+
+			$product_name[] = $row->product_name;
+
+			$safe_amount[] = (int)$row->safe_amount;
+
+			$stock[] = (int)$row->stock * 15;
+
+		}
+
+		$result = array(
+						"product_name"	=>	$product_name,
+						"safe_amount"	=>	$safe_amount,
+						"stock"			=>	$stock,
+					);
+
+		return $result;
 
 	}
 

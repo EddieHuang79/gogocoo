@@ -234,6 +234,7 @@ class Order
 
 		$result = DB::table($_this->table)
 					->select(
+								"product_id",
 								"product_name",
 								DB::raw('SUM(number) as cnt')
 							)

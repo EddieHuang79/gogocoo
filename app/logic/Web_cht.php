@@ -247,6 +247,14 @@ class Web_cht
                               "this_week_cancel_order_cnt"        => "本周取消訂單數",
                               "today_in_ws"                       => "今日入庫",
                               "today_out_ws"                      => "今日出庫",
+                              "product_categeory_input"           => "商品類別設定",
+                              "product_categeory_list"            => "商品類別列表",
+                              "parents_category"                  => "上層類別",
+                              "product_category_name_input"       => "請輸入商品類別名稱",
+                              "product_category_name"             => "商品類別名稱",
+                              "system_default_category"           => "系統預設類別",
+                              "none"                              => "無",
+                              "category"                          => "類別",
    				);
 
    public static function get_txt()

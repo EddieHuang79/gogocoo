@@ -26,13 +26,21 @@
 			<tr>
 				<th>{{ $row['product_name'] }}</th>
 
-				@if( !empty( $product_extra_column ) )
-				
 				@foreach($product_extra_column as $data)
-				<th>{{ $row[$data['name']] }}</th>
-				@endforeach
+				<th>
+					
+					@if( $data['name']=='pic' && !empty($row[$data['name']]) )
+					<img src="/{{ $row[$data['name']] }}" alt="{{ $data['name'] }}" width="200">
+					@else
+						@if( isset($row[$data['name']."_txt"]) )
+						{{ $row[$data['name']."_txt"] }}
+						@else
+						{{ $row[$data['name']] }}
+						@endif					
+					@endif
 
-				@endif	
+				</th>
+				@endforeach
 
 				<th>{{ $row['safe_amount'] }}</th>
 				<td><input type="button" value="{{ $txt['edit'] }}" onClick="location.href='/product/{{ $row['product_id'] }}/edit?';"/></td>

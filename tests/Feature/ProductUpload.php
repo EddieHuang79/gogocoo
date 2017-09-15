@@ -36,6 +36,7 @@ class ProductUpload extends TestCase
 							"safe_amount"				=>	200,
 							"shop_id"					=>	1,
 							"qc_number"					=>	"qc_number_".$i,
+							"category"					=>	mt_rand(3,8),
 							"barcode"					=>	mt_rand(11111111,99999999),
 							"keep_for_days"				=>	111,
 						);

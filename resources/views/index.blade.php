@@ -36,8 +36,12 @@
 			<div id="StockStatus" class="StockStatus"></div>
 		</div>
 		<div class="ReportrRow">
-			<div class="ProductCategory"></div>
+			<div id="ProductCategory" class="ProductCategory"></div>
 			<div id="HotSellTop5" class="HotSellTop5"></div>
+		</div>
+		<div class="ReportrRow">
+			<div id="HotSellTop5Stack" class="HotSellTop5Stack"></div>
+			<div></div>
 		</div>
 	</div>
 </section>

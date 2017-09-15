@@ -46,6 +46,8 @@ class IndexController extends Controller
 
         $today_out_ws_cnt = Report_logic::today_out_ws_cnt();
 
+        // Report_logic::product_top5_stack();
+
         $assign_page = "index";
 
         $data = compact('assign_page','week_order_cnt', 'week_cancel_order_cnt', 'today_in_ws_cnt', 'today_out_ws_cnt');

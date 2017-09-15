@@ -34,6 +34,19 @@ class ReportController extends Controller
 
 	}
 
+	// 商品庫存佔比
+
+	public function stock_analytics()
+	{
+
+        $stock_analytics = Report_logic::stock_analytics();
+
+        echo $stock_analytics;
+
+        exit();
+
+	}
+
 	// 每月銷售top 5
 
 	public function year_product_top5()
@@ -42,6 +55,19 @@ class ReportController extends Controller
         $year_product_top5 = Report_logic::year_product_top5();
 
         echo $year_product_top5;
+
+        exit();
+
+	}
+
+	// TOP 5 庫存
+
+	public function product_top5_stack()
+	{
+
+        $product_top5_stack = Report_logic::product_top5_stack();
+
+        echo $product_top5_stack;
 
         exit();
 

@@ -169,6 +169,128 @@ var	month_order_view = function(){
 		});
 
 	},
+	stock_analytics = function(){
+
+		if ( $("body").find("#ProductCategory").length < 1 ) 
+		{
+			return false;
+		};
+
+		$.ajax({
+			url: "/stock_analytics",
+			type: 'POST',
+			success: function( data ) {
+
+
+			var data1 = JSON.parse(data),
+				times = 0,
+				times2 = 0,
+				level1 = $.map(data1['level1'], function(value,index) { 
+							
+							var colors = Highcharts.getOptions().colors;
+
+							data = {
+								name: index,
+								y: value,
+								colors: colors[times],
+							};
+
+							times++;
+
+							return data;
+						}),
+				level2 = $.map(data1['level2'], function(value,index) { 
+
+								var colors = Highcharts.getOptions().colors,
+									size = Object.keys(value).length;
+
+								data =  $.map(value, function(value2,index2){
+
+											var brightness = 0.2 - (times2 / size) / 2;
+
+											data = {
+												name: index2,
+												y: value2,
+												colors: Highcharts.Color(colors[index]).brighten(brightness).get()
+											};
+
+											times2++;
+
+											return data;								
+
+										});
+					
+							return data 
+						});
+
+				// Create the chart
+				Highcharts.chart('ProductCategory', {
+				    chart: {
+				        type: 'pie'
+				    },
+				    title: {
+				        text: '庫存商品種類比例'
+				    },
+				    yAxis: {
+				        title: {
+				            text: '商品佔例'
+				        }
+				    },
+				    plotOptions: {
+				        pie: {
+				            shadow: false,
+				            center: ['50%', '50%']
+				        }
+				    },
+				    tooltip: {
+				        valueSuffix: '%'
+				    },
+				    series: [{
+				        name: '大分類',
+				        data: level1,
+				        size: '60%',
+				        dataLabels: {
+				            formatter: function () {
+				                return this.y > 5 ? this.point.name : null;
+				            },
+				            color: '#ffffff',
+				            distance: -30
+				        }
+				    },{
+				        name: '小分類',
+				        data: level2,
+				        size: '80%',
+				        innerSize: '60%',
+				        dataLabels: {
+				            formatter: function () {
+				                // display only if larger than 1
+				                return this.y > 1 ? '<b>' + this.point.name + ':</b> ' +
+				                    this.y + '%' : null;
+				            }
+				        },
+				        id: 'versions'
+				    }],
+				    responsive: {
+				        rules: [{
+				            condition: {
+				                maxWidth: 400
+				            },
+				            chartOptions: {
+				                series: [{
+				                    id: 'versions',
+				                    dataLabels: {
+				                        enabled: false
+				                    }
+				                }]
+				            }
+				        }]
+				    }
+				});			
+
+			}
+		});
+
+	},
 	month_top_five = function(){
 
 		if ( $("body").find("#HotSellTop5").length < 1 ) 
@@ -232,8 +354,91 @@ var	month_order_view = function(){
 			}
 		});
 
+	},
+	product_top5_stack = function(){
+
+		if ( $("body").find("#HotSellTop5Stack").length < 1 ) 
+		{
+			return false;
+		};
+
+		$.ajax({
+			url: "/product_top5_stack",
+			type: 'POST',
+			success: function( data ) {
+
+			var data1 = JSON.parse(data),
+				categories = data1.product_name,
+				safe_amount = data1.safe_amount,
+				stock = data1.stock;
+
+				// console.log(safe_amount);
+				
+				// return false;
+
+				Highcharts.chart('HotSellTop5Stack', {
+				    chart: {
+				        type: 'column'
+				    },
+				    title: {
+				        text: 'Top5商品庫存'
+				    },
+				    xAxis: {
+				        categories: categories
+				    },
+				    yAxis: {
+				        min: 0,
+				        title: {
+				            text: '庫存量'
+				        },
+				        stackLabels: {
+				            enabled: true,
+				            style: {
+				                fontWeight: 'bold',
+				                color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray'
+				            }
+				        }
+				    },
+				    legend: {
+				        align: 'right',
+				        x: -30,
+				        verticalAlign: 'top',
+				        y: 25,
+				        floating: true,
+				        backgroundColor: (Highcharts.theme && Highcharts.theme.background2) || 'white',
+				        borderColor: '#CCC',
+				        borderWidth: 1,
+				        shadow: false
+				    },
+				    tooltip: {
+				        headerFormat: '<b>{point.x}</b><br/>',
+				        pointFormat: '{series.name}: {point.y}<br/>Total: {point.stackTotal}'
+				    },
+				    plotOptions: {
+				        column: {
+				            stacking: 'normal',
+				            dataLabels: {
+				                enabled: true,
+				                color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white'
+				            }
+				        }
+				    },
+				    series: [{
+				        name: '安庫數',
+				        data: safe_amount
+				    }, {
+				        name: '庫存數',
+				        data: stock
+				    }]
+				});
+
+			}
+		});
+
 	};
 
 month_order_view();
 year_stock_view();
+stock_analytics();
 month_top_five();
+// product_top5_stack();

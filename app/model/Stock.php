@@ -13,6 +13,10 @@ class Stock
 
 	protected $product_table = "product";
 
+	protected $product_extra_table = "product_extra";
+	
+	protected $product_category_table = "product_category";
+
 	protected $product_spec_table = "product_spec";
 
 	protected $page_size = 15;
@@ -248,6 +252,51 @@ class Stock
 			DB::table($_this->table)->where("id", "=", $row["stock_id"])->update( array( "stock" => $update_stock ) );
 
 		}
+
+	}
+
+	public static function get_stock_analytics( $shop_id )
+	{
+
+		$_this = new self();
+
+		$result = DB::table($_this->table)
+					->leftJoin($_this->purchase_table, $_this->table.'.purchase_id', '=', $_this->purchase_table.'.id')
+					->leftJoin($_this->product_extra_table, $_this->product_extra_table.'.product_id', '=', $_this->purchase_table.'.product_id')
+					->leftJoin($_this->product_category_table, $_this->product_category_table.'.id', '=', $_this->product_extra_table.'.category')
+					->select(	
+								$_this->product_extra_table.".category",
+								$_this->product_category_table.".name",
+								\DB::raw('SUM(stock) as stock')
+							)
+					->where("stock", ">=", "0")
+					->where($_this->purchase_table.".shop_id", "=", $shop_id)
+					->groupBy($_this->product_extra_table.".category")
+					->get();	
+
+		return $result;
+
+	}
+
+	public static function get_stock_and_safe_amount( $product_id )
+	{
+
+		$_this = new self();
+
+		$result = DB::table($_this->table)
+					->leftJoin($_this->purchase_table, $_this->table.'.purchase_id', '=', $_this->purchase_table.'.id')
+					->leftJoin($_this->product_table, $_this->product_table.'.id', '=', $_this->purchase_table.'.product_id')
+					->select(	
+								$_this->product_table.".product_name",
+								$_this->product_table.".safe_amount",
+								\DB::raw('SUM(stock) as stock')
+							)
+					->where("stock", ">=", "0")
+					->whereIn($_this->product_table.".id", $product_id)
+					->groupBy($_this->purchase_table.".product_id")
+					->get();	
+
+		return $result;
 
 	}
 

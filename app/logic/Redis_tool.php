@@ -31,6 +31,11 @@ class Redis_tool
 	protected $year_stock_view_key = "year_stock_view_";
 
 	protected $year_product_top5_key = "year_product_top5_";
+
+	protected $stock_analytics_key = "stock_analytics_";
+
+	protected $product_top5_stack_key = "product_top5_stack_";
+    
     
 	public static function set_search_tool( $data )
 	{
@@ -379,6 +384,38 @@ class Redis_tool
 
 	}
 
+	public static function get_stock_analytics( $key )
+	{
+
+		$_this = new self;
+
+		$stock_analytics_key = $_this->stock_analytics_key.$key;
+
+		$data = Redis::get( $stock_analytics_key );
+
+		$result = !empty($data) ? $data : "" ;
+
+		return $result;
+
+	}
+
+	public static function set_stock_analytics( $key, $cnt )
+	{
+
+		$_this = new self;
+
+		$_this->del_key_by_keyword( $_this->stock_analytics_key );
+
+		$stock_analytics_key = $_this->stock_analytics_key.$key;
+
+		$cnt = json_encode($cnt);
+
+		Redis::set( $stock_analytics_key, $cnt ) ;
+
+		return $cnt;
+
+	}
+
 	public static function set_year_product_top5( $key, $cnt )
 	{
 
@@ -404,6 +441,38 @@ class Redis_tool
 		$year_product_top5_key = $_this->year_product_top5_key.$key;
 
 		$data = Redis::get( $year_product_top5_key );
+
+		$result = !empty($data) ? $data : "" ;
+
+		return $result;
+
+	}
+
+	public static function set_product_top5_stack( $key, $cnt )
+	{
+
+		$_this = new self;
+
+		$_this->del_key_by_keyword( $_this->product_top5_stack_key );
+
+		$product_top5_stack_key = $_this->product_top5_stack_key.$key;
+
+		$cnt = json_encode($cnt);
+
+		Redis::set( $product_top5_stack_key, $cnt ) ;
+
+		return $cnt;
+
+	}
+
+	public static function get_product_top5_stack( $key )
+	{
+
+		$_this = new self;
+
+		$product_top5_stack_key = $_this->product_top5_stack_key.$key;
+
+		$data = Redis::get( $product_top5_stack_key );
 
 		$result = !empty($data) ? $data : "" ;
 

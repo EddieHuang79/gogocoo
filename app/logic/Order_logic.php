@@ -619,4 +619,28 @@ class Order_logic extends Basetool
 
 	}
 
+	public static function get_order_cnt( $week_date, $shop_id, $status )
+	{
+
+
+		return Order::get_order_cnt( $week_date, $shop_id, $status );
+
+	}
+
+	public static function get_order_sum( $week_date, $shop_id, $status )
+	{
+
+
+		return Order::get_order_sum( $week_date, $shop_id, $status );
+
+	}
+
+	public static function get_hotSell_top5( $week_date, $shop_id, $status )
+	{
+
+
+		return Order::get_hotSell_top5( $week_date, $shop_id, $status );
+
+	}
+
 }

@@ -9,7 +9,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Agency - Start Bootstrap Theme</title>
+    <title>歡迎來到 GoGoCOO! 很開心能在此相遇!</title>
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="{{ URL::asset('css/bootstrap.min.css') }}">
@@ -68,7 +68,7 @@
                         <a class="page-scroll" href="#contact">聯繫我們</a>
                     </li>
                     <li>
-                        <a class="page-scroll" href="/login">登入系統</a>
+                        <a class="page-scroll" href="/login">登入/註冊</a>
                     </li>
                 </ul>
             </div>
@@ -83,7 +83,7 @@
             <div class="intro-text">
                 <div class="intro-lead-in">歡迎來到 GoGoCOO!</div>
                 <div class="intro-heading">很開心能在此相遇!</div>
-                <a href="#services" class="page-scroll btn btn-xl">免費試用</a>
+                <a class="page-scroll btn btn-xl" href="/login">免費試用</a>
             </div>
         </div>
     </header>

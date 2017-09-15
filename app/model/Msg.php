@@ -55,7 +55,7 @@ class Msg
 
 		$result = DB::table($_this->table);
 
-		$result = !empty($result) ? $result->where("msg_type", "=", $data["type"]) : $result ;
+		$result = !empty($data["type"]) ? $result->where("msg_type", "=", $data["type"]) : $result ;
 
 		$result = $result->orderBy('id', 'asc')->paginate($_this->page_size);
 

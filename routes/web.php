@@ -99,6 +99,7 @@ Route::resource('product', 'ProductController');
 
 Route::post('get_product_spec', ['as'=>'product.get_product_spec','uses'=>'ProductController@get_product_spec']);
 
+
 // purchase
 
 Route::resource('purchase', 'PurchaseController');
@@ -153,6 +154,14 @@ Route::post('month_order_view', ['as'=>'report.month_order_view','uses'=>'Report
 
 Route::post('year_stock_view', ['as'=>'report.year_stock_view','uses'=>'ReportController@year_stock_view']);
 
+Route::post('stock_analytics', ['as'=>'report.stock_analytics','uses'=>'ReportController@stock_analytics']);
+
 Route::post('year_product_top5', ['as'=>'report.year_product_top5','uses'=>'ReportController@year_product_top5']);
 
+Route::post('product_top5_stack', ['as'=>'report.product_top5_stack','uses'=>'ReportController@product_top5_stack']);
 
+// product_category
+
+Route::resource('product_category', 'ProductCategoryController');
+
+Route::post('product_category/get_child_list', ['as'=>'product_category.get_child_list','uses'=>'ProductCategoryController@get_child_list']);

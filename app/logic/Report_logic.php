@@ -3,8 +3,9 @@
 namespace App\logic;
 
 use Illuminate\Support\Facades\Session;
-use App\model\Purchase;
-use App\model\Order;
+use App\logic\Purchase_logic;
+use App\logic\Order_logic;
+use App\logic\Stock_logic;
 use App\logic\Redis_tool;
 
 class Report_logic extends Basetool
@@ -28,7 +29,7 @@ class Report_logic extends Basetool
 
 			$week_date = $_this->this_week_date();
 
-			$cnt = Order::get_order_cnt( $week_date, $shop_id, $status = array(1,2) );
+			$cnt = Order_logic::get_order_cnt( $week_date, $shop_id, $status = array(1,2) );
 
 			$cnt = $cnt->cnt;
 	
@@ -60,7 +61,7 @@ class Report_logic extends Basetool
 
 			$week_date = $_this->this_week_date();
 
-			$cnt = Order::get_order_cnt( $week_date, $shop_id, $status = array(3) );
+			$cnt = Order_logic::get_order_cnt( $week_date, $shop_id, $status = array(3) );
 
 			$cnt = $cnt->cnt;
 	
@@ -92,7 +93,7 @@ class Report_logic extends Basetool
 
 			$date = $_this->today_date();
 
-			$cnt = Purchase::get_purchase_sum( $date, $shop_id, $status = array(2) );
+			$cnt = Purchase_logic::get_purchase_sum( $date, $shop_id, $status = array(2) );
 
 			$cnt = $cnt->cnt;
 	
@@ -124,7 +125,7 @@ class Report_logic extends Basetool
 
 			$date = $_this->today_date();
 
-			$cnt = Order::get_order_sum( $date, $shop_id, $status = array(1,2) );
+			$cnt = Order_logic::get_order_sum( $date, $shop_id, $status = array(1,2) );
 
 			$cnt = $cnt->cnt;
 	
@@ -163,7 +164,7 @@ class Report_logic extends Basetool
 			foreach ($date as $index => $row) 
 			{
 
-				$tmp = Order::get_order_sum( $row, $shop_id, $status = array(1,2) );
+				$tmp = Order_logic::get_order_sum( $row, $shop_id, $status = array(1,2) );
 				
 				$cnt[] = (int)$tmp->cnt;
 
@@ -204,7 +205,7 @@ class Report_logic extends Basetool
 			foreach ($date as $index => $row) 
 			{
 
-				$tmp = Purchase::get_purchase_sum( $row, $shop_id, $status = array(2) );
+				$tmp = Purchase_logic::get_purchase_sum( $row, $shop_id, $status = array(2) );
 				
 				$cnt["in"][] = $tmp->cnt * -1;
 
@@ -215,13 +216,60 @@ class Report_logic extends Basetool
 			foreach ($date as $index => $row) 
 			{
 
-				$tmp = Order::get_order_sum( $row, $shop_id, $status = array(1,2) );
+				$tmp = Order_logic::get_order_sum( $row, $shop_id, $status = array(1,2) );
 				
 				$cnt["out"][] = $tmp->cnt;
 
 			}
 
 			$data = Redis_tool::set_year_stock_view( $Redis_key, $cnt );
+
+		}
+
+		return $data;
+
+	}
+
+	public static function stock_analytics()
+	{
+
+		$_this = new self();
+
+		$data = array();
+
+		$cnt = array();
+
+		$shop_id = Session::get( 'Store' );
+
+		$search_deadline = mktime(date("H")+1,5,0,date("m"),date("d"),date("Y"));
+
+		$Redis_key = $shop_id."_".$search_deadline;
+
+		$data = Redis_tool::get_year_stock_view( $Redis_key );
+
+		if ( is_null($data) || empty($data) ) 
+		{
+
+			// 取得資料
+
+			$data = Stock_logic::get_stock_analytics( $shop_id );
+
+			// 加入父類別翻譯
+
+			$data = Stock_logic::get_stock_analytics_add_parents_category( $data );
+
+			// 轉成第一層類別資料格式
+
+			$parents_data = $_this->stock_analytics_level1_data( $data );
+
+			$child_data = $_this->stock_analytics_level2_data( $data );
+
+			$result	= array(
+							"level1" => $parents_data,
+							"level2" => $child_data,
+						);
+
+			$data = Redis_tool::set_year_stock_view( $Redis_key, $result );
 
 		}
 
@@ -246,8 +294,8 @@ class Report_logic extends Basetool
 
 		$data = Redis_tool::get_year_product_top5( $Redis_key );
 
-		// if ( is_null($data) || empty($data) ) 
-		// {
+		if ( is_null($data) || empty($data) ) 
+		{
 
 			$date = $_this->month_of_year_date();
 
@@ -258,7 +306,7 @@ class Report_logic extends Basetool
 
 				// 總量
 
-				$tmp = Order::get_order_sum( $row, $shop_id, $status = array(1,2) );
+				$tmp = Order_logic::get_order_sum( $row, $shop_id, $status = array(1,2) );
 				
 				$cnt["total"][$index-1] = new \stdClass;
 
@@ -266,7 +314,7 @@ class Report_logic extends Basetool
 				$cnt["total"][$index-1]->y = (int)$tmp->cnt;
 				$cnt["total"][$index-1]->drilldown = date("M", mktime(0,0,0,$index,1,date("Y")));	
 
-				$tmp = Order::get_hotSell_top5( $row, $shop_id, $status = array(1,2) );
+				$tmp = Order_logic::get_hotSell_top5( $row, $shop_id, $status = array(1,2) );
 
 				$cnt["top5"][$index-1] = new \stdClass;
 				$cnt["top5"][$index-1]->name = date("M", mktime(0,0,0,$index,1,date("Y")));
@@ -288,6 +336,47 @@ class Report_logic extends Basetool
 			}
 
 			$data = Redis_tool::set_year_product_top5( $Redis_key, $cnt );
+
+		}
+
+		return $data;
+
+	}
+
+	public static function product_top5_stack()
+	{
+
+		$_this = new self();
+
+		$data = array();
+
+		$cnt = array();
+
+		$shop_id = Session::get( 'Store' );
+
+		$search_deadline = mktime(date("H")+1,15,0,date("m"),date("d"),date("Y"));
+
+		$Redis_key = $shop_id."_".$search_deadline;
+
+		$data = Redis_tool::get_product_top5_stack( $Redis_key );
+
+		// if ( is_null($data) || empty($data) ) 
+		// {
+
+			// 取得hot sell top 5
+
+			$date = array(
+						"start_date" 	=> "1970-01-01",
+						"end_date" 		=> "1970-01-01"
+					);
+
+			$top5_product = Order_logic::get_hotSell_top5( $date, $shop_id, $status = array(1,2) );
+
+			// 計算庫存總數與安庫數
+
+			$data = Stock_logic::get_stock_and_safe_amount( $top5_product );
+
+			$data = Redis_tool::set_product_top5_stack( $Redis_key, $data );
 
 		// }
 
@@ -353,6 +442,78 @@ class Report_logic extends Basetool
 					"start_date" 	=> date("Y-m-d 00:00:00", time()),
 					"end_date" 		=> date("Y-m-d 23:59:59", time()),
 				);
+
+		return $result;
+
+	}
+
+	protected function stock_analytics_level1_data( $data )
+	{
+
+		$result = array();
+
+		$total = 0;
+
+		$parents_category = array();
+
+		$category_total = array();
+
+		$year = date("Y");
+
+		foreach ($data as $row) 
+		{
+
+			$parents_category[$row->parents_category] = $row->parents_category_name;
+
+			$category_total[$row->parents_category] = isset($category_total[$row->parents_category] ) ? $category_total[$row->parents_category]  : 0 ;
+			$category_total[$row->parents_category]+= $row->stock;
+
+			$total += $row->stock;
+
+		}
+
+		foreach ($data as $row) 
+		{
+
+			$result[$parents_category[$row->parents_category]] = round( $category_total[$row->parents_category] / $total * 100 ,2);
+
+		}
+
+		return $result;
+
+	}
+
+	protected function stock_analytics_level2_data( $data )
+	{
+
+		$result = array();
+
+		$total = 0;
+
+		$category = array();
+
+		$category_total = array();
+
+		$year = date("Y");
+
+		foreach ($data as $row) 
+		{
+
+			$category[$row->category] = $row->name;
+
+			$category_total[$row->category] = isset($category_total[$row->category] ) ? $category_total[$row->category]  : 0 ;
+			$category_total[$row->category]+= $row->stock;
+
+			$total += $row->stock;
+
+		}
+
+		foreach ($data as $row) 
+		{
+
+			$result[$row->parents_category][$category[$row->category]] = round( $category_total[$row->category] / $total * 100 ,2);
+
+		}
 
 		return $result;
 

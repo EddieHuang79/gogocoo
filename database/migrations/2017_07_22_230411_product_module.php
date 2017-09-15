@@ -46,6 +46,7 @@ class ProductModule extends Migration
             $table->integer('shop_id');
             $table->string('qc_number');
             $table->string('barcode');
+            $table->integer('category');
             $table->integer('keep_for_days');
             $table->engine = 'InnoDB';
         });

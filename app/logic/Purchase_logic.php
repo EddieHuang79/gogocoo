@@ -379,5 +379,12 @@ class Purchase_logic extends Basetool
 
 	}
 
+	public static function get_purchase_sum( $week_date, $shop_id, $status )
+	{
+
+
+		return Purchase::get_purchase_sum( $week_date, $shop_id, $status );
+
+	}
 
 }

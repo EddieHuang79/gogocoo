@@ -128,6 +128,8 @@ class Upload_logic extends Basetool
 
 			$extra_column = Product_logic::get_product_extra_column();
 
+			$select_option["category"] = ProductCategory_logic::get_all_category_list();
+
 			foreach ($data as $row) 
 			{
 
@@ -139,6 +141,10 @@ class Upload_logic extends Basetool
 				{
 
 					$product_id = Product_logic::add_product( $main_data );
+
+					// 轉成數字
+
+					$row = $_this->upload_data_en_int( $row, $select_option );
 
 					$extra_data = Product_logic::insert_extra_format( $row, $extra_column, $product_id );
 
@@ -557,6 +563,44 @@ class Upload_logic extends Basetool
     		Msg_logic::add_notice_msg( $subject, $content, $Login_user["user_id"] );
 
 		}
+
+	}
+
+
+	// 特定欄位，將上傳的英文轉成數字
+
+	public static function upload_data_en_int( $data, $select_option )
+	{
+
+		$target = array('category'); 
+
+		if ( !empty( $data ) && !empty( $select_option ) )
+		{
+
+			foreach ($data as $index => &$row) 
+			{
+
+				if ( in_array($index, $target) ) 
+				{
+
+					if ( isset($select_option[$index]) ) 
+					{
+						$row = array_keys($select_option[$index], $row);
+
+						$row = array_shift($row);
+					}
+					else
+					{
+						$row = 0;
+					}
+
+				}
+
+			}
+
+		}
+
+		return $data;
 
 	}
 

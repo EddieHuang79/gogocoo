@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\logic\Product_logic;
+use App\logic\ProductCategory_logic;
 
 class ProductController extends Controller
 {
@@ -16,11 +17,13 @@ class ProductController extends Controller
     public function index(Request $request)
     {
 
+        $select_option["category"] = ProductCategory_logic::get_all_category_list();
+
         $product_data = Product_logic::get_product_data();
 
         $product_extra_column = Product_logic::get_product_extra_column(); 
 
-        $product_list = Product_logic::get_product_list( $product_data );
+        $product_list = Product_logic::get_product_list( $product_data, $select_option );
 
         $assign_page = "product/product_list";
 
@@ -50,7 +53,9 @@ class ProductController extends Controller
 
         $product_extra_column = Product_logic::get_product_extra_column(); 
 
-        $data = compact('assign_page', 'product', 'product_spec', 'product_extra_column', 'product_spec_column', 'has_spec');
+        $select_option["category"] = ProductCategory_logic::get_parents_category_list();
+
+        $data = compact('assign_page', 'product', 'product_spec', 'product_extra_column', 'product_spec_column', 'has_spec','select_option');
 
         return view('webbase/content', $data);
 
@@ -150,9 +155,13 @@ class ProductController extends Controller
 
         $product_spec = $has_spec == 1 ? Product_logic::get_product_spec( $id ) : "" ; 
 
+        $select_option["category"] = ProductCategory_logic::get_parents_category_list();
+
+        $all_category = ProductCategory_logic::get_all_category_list();
+
         $assign_page = "product/product_input";
 
-        $data = compact('assign_page', 'product', 'product_spec', 'product_extra_column', 'product_spec_column', 'has_spec');
+        $data = compact('assign_page', 'product', 'product_spec', 'product_extra_column', 'product_spec_column', 'has_spec', 'select_option', 'all_category');
 
         return view('webbase/content', $data);
 

@@ -20,10 +20,41 @@
 				@if( !empty( $product_extra_column ) )
 				
 				@foreach($product_extra_column as $row)
-				<tr>
-					<th>{{ $txt[$row['name']] }}</th>
-					<td> <input type="{{ $row['type'] }}" name="{{ $row['name'] }}" placeholder="{{ $txt[$row['name'].'_input'] }}" value="@if(!empty($product)){{ $product[$row['name']] }}@endif"> </td>
-				</tr>
+					<tr class="{{ $row['name'] }}">
+						<th>{{ $txt[$row['name']] }}</th>
+						<td> 
+
+							<!-- 個案處理 -->
+							@if( $row['name'] == 'category' )
+				
+								<input type="hidden" name="ori_category" value="{{ $product['category'] }}">
+								{{ $all_category[$product['category']] }} <br />
+
+							@endif
+				
+
+							@if( in_array( $row['type'], array('text', 'number') ) )
+							<input type="{{ $row['type'] }}" name="{{ $row['name'] }}" placeholder="{{ $txt[$row['name'].'_input'] }}" value="@if(!empty($product)){{ $product[$row['name']] }}@endif"> 
+							@endif
+							@if( !empty($select_option) && in_array( $row['type'], array('select') ) )
+							<select name="{{ $row['name'] }}" id="{{ $row['name'] }}">
+								<option value="">{{ $txt['select_default'] }}</option>
+								@foreach($select_option[$row['name']] as $key => $value)
+								<option value="{{ $key }}"  @if( !empty($product) && $product[$row['name']] == $key ) selected @endif>{{ $value }}</option>
+								@endforeach
+							</select>
+							@endif
+							@if( in_array( $row['type'], array('textarea') ) )
+							<textarea name="{{ $row['name'] }}" placeholder="{{ $txt[$row['name'].'_input'] }}" cols="50" rows="5">@if(!empty($product)){{ $product[$row['name']] }}@endif</textarea>
+							@endif
+							@if( in_array( $row['type'], array('file') ) )
+							<input type="{{ $row['type'] }}" name="{{ $row['name'] }}"> 
+								@if( !empty($product) && $product[$row['name']] )
+								<img src="/{{ $product[$row['name']] }}" alt="" width="200">
+								@endif
+							@endif
+						</td>
+					</tr>
 				@endforeach
 
 				@endif

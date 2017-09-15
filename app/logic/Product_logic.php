@@ -5,6 +5,7 @@ namespace App\logic;
 use App\model\Product;
 use Illuminate\Support\Facades\Session;
 use App\logic\Web_cht;
+use App\logic\ProductCategory_logic;
 
 class Product_logic extends Basetool
 {
@@ -109,6 +110,12 @@ class Product_logic extends Basetool
 
 			switch ($row_data['name']) 
 			{
+
+				case 'category':
+
+					$filter_data['category'] = isset($data['category']) && !empty($data['category']) ? trim($data['category']) : trim($data['ori_category']) ;					
+
+					break;
 
 				default:
 
@@ -278,6 +285,7 @@ class Product_logic extends Basetool
 
 		foreach ($data as $key => $row) 
 		{
+
 			$result[$key]["name"] = $row->Field;
 
 			if ( strpos($row->Type, "varchar") !== false ) 
@@ -288,6 +296,17 @@ class Product_logic extends Basetool
 			if ( strpos($row->Type, "int") !== false ) 
 			{
 				$result[$key]["type"] = "number";
+			}
+
+			switch ( $result[$key]["name"] ) 
+			{
+
+				case 'category':
+
+					$result[$key]["type"] = "select";
+
+					break;
+
 			}
 
 		}
@@ -366,19 +385,28 @@ class Product_logic extends Basetool
 
 	// 將商品轉成陣列
 
-	public static function get_product_list( $data )
+	public static function get_product_list( $data, $option_data )
 	{
 
 		$result = array();
 
 		foreach ($data as $key1 => $row) 
 		{
+
 			foreach ($row as $key2 => $data) 
 			{
 
 				$result[$key1][$key2] = $data;
 
 			}
+
+			foreach ($option_data as $key2 => $data) 
+			{
+
+				$result[$key1][$key2.'_txt'] = isset( $data[$row->$key2] ) ? $data[$row->$key2] : "" ;
+			
+			}
+
 		}
 
 		return $result;
@@ -523,6 +551,8 @@ class Product_logic extends Basetool
 
 		$data = Product::product_upload_sample_output( $shop_id );
 
+		$select_option["category"] = ProductCategory_logic::get_all_category_list();
+
 		foreach ($column_header as $row) 
 		{
 
@@ -540,6 +570,13 @@ class Product_logic extends Basetool
 				{
 
 					$result[$key] = $value;
+
+				}
+
+				if ( isset($select_option[$key]) ) 
+				{
+
+					$result[$key] = $select_option[$key][$value];
 
 				}
 

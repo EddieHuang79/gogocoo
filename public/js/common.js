@@ -420,12 +420,49 @@ var Show_current_position = function(){
 
 		$("#mallForm").submit();
 
+	},
+	product_category = function(){
+
+		var parents_id = $(this).val();
+
+		$(".append").remove();
+	
+		$.ajax({
+			url: "/product_category/get_child_list",
+			type: 'POST',
+			data: "parents_id="+parents_id,
+			success: function( response ) {
+				var data = JSON.parse(response);
+
+				$('<select>', {
+					    name: 'new_category',
+					    class: "append"
+					}
+				).insertAfter("#category");
+
+				$.map(data, function(value,index) { 
+
+					$('[name="new_category"]').append($('<option>', {
+					    value: index,
+					    text: value,
+					    class: "append"
+					}));
+
+				});
+
+				$('[name="category"]').attr("name", "parents_category");
+				$('[name="new_category"]').attr("name", "category");
+				
+			}
+		});	
+
 	};
 
 
 Show_current_position();
 Ajax_init();
 count_lightbox_width();
+
 
 $(".addbtn").on("click", AddBtn);
 $(document).on("click", ".removeLabel", RemoveBtn);
@@ -451,3 +488,4 @@ $(".crop").on("click", upload_crop_image);
 $(".autocomplete").on("click", AutoComplete);
 $(".clickAll").on("click", clickAllFunction);
 $(".extend_account_deadline").on("click", extend_account_deadline);
+$("#category").on("change", product_category);

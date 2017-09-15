@@ -39,6 +39,8 @@ class Autoload extends Basetool
 
         $service_list = Service_logic::menu_format($data);
 
+        $icon = $_this->menu_icon();
+
         $service_id = Session::get('service_id') ? intval(Session::get('service_id')) : 0 ;
 
         $service_id = isset($_GET["service_id"]) ? intval($_GET["service_id"]) : $service_id ;
@@ -51,7 +53,7 @@ class Autoload extends Basetool
 
         Session::put('service_id', $service_id);
 
-        $data = compact('service_list', 'service_id', 'breadcrumb');
+        $data = compact('service_list', 'service_id', 'breadcrumb', 'icon');
 
     	$view->with($data);
 
@@ -186,6 +188,8 @@ class Autoload extends Basetool
 
         $is_over_date = false;
 
+        $Login_user = Session::get('Login_user');
+
         // 店家過期日
 
         $now_store = Session::get( 'Store' );
@@ -196,7 +200,7 @@ class Autoload extends Basetool
 
         $store_deadline = Shop_logic::get_deadline( $created_data, $cnt_deadline );
 
-        if ( strtotime($store_deadline) < time() ) 
+        if ( strtotime($store_deadline) < time() && $Login_user["user_id"] != 1 ) 
         {
 
             $is_over_date = true ;
@@ -207,15 +211,13 @@ class Autoload extends Basetool
 
         // 帳號過期日
 
-        $Login_user = Session::get('Login_user');
-
         $cnt_deadline = Shop_logic::count_deadline( array($Login_user["user_id"]), "child_account" );
 
         $created_data = Admin_user_logic::get_user( $now_store );
 
         $account_deadline = Shop_logic::get_deadline( $created_data, $cnt_deadline );
 
-        if ( strtotime($account_deadline) < time() ) 
+        if ( strtotime($account_deadline) < time() && $Login_user["user_id"] != 1 ) 
         {
 
             $is_over_date = true ;
@@ -227,6 +229,30 @@ class Autoload extends Basetool
         $data = compact('is_over_date', 'over_date_des');
 
         $view->with($data);
+
+    }
+
+    protected function menu_icon()
+    {
+
+        $result = array(
+                        1       =>    'fa-home',
+                        2       =>    'fa-user',
+                        6       =>    'fa-group',
+                        9       =>    'fa-briefcase',
+                        13      =>    'fa-shopping-cart',
+                        16      =>    'fa-cog',
+                        19      =>    'fa-comment',
+                        22      =>    'fa-cube',
+                        25      =>    'fa-building',
+                        28      =>    'fa-cart-plus',
+                        31      =>    'fa-bar-chart',
+                        36      =>    'fa-clipboard',
+                        39      =>    'fa-upload',
+                        43      =>    'fa-pie-chart',
+                    );
+
+        return $result;
 
     }
 
