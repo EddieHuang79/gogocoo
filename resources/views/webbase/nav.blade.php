@@ -1,10 +1,7 @@
 <header class="main-header">
 <!-- Logo -->
 <a href="/admin_index" class="logo">
-  <!-- mini logo for sidebar mini 50x50 pixels -->
-  <span class="logo-mini"><b>Go</b></span>
-  <!-- logo for regular state and mobile devices -->
-  <span class="logo-lg"><b>{{ $txt['Site'] }}</b></span>
+  <b>{{ $txt['Site'] }}</b>
 </a>
 <!-- Header Navbar: style can be found in header.less -->
 <nav class="navbar navbar-static-top" role="navigation">
