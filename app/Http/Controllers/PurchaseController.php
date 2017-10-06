@@ -95,13 +95,18 @@ class PurchaseController extends Controller
         else
         {
 
-            $data = Purchase_logic::insert_format( $_POST );
+            if ( isset($_POST["product_name"]) ) 
+            {
 
-            $purchase_id = Purchase_logic::add_purchase( $data );
+                $data = Purchase_logic::insert_format( $_POST );
 
-            $extra_data = Purchase_logic::insert_extra_format( $_POST, $purchase_extra_column, $purchase_id );
+                $purchase_id = Purchase_logic::add_purchase( $data );
 
-            Purchase_logic::add_extra_purchase( $extra_data );
+                $extra_data = Purchase_logic::insert_extra_format( $_POST, $purchase_extra_column, $purchase_id );
+
+                Purchase_logic::add_extra_purchase( $extra_data );
+
+            }
 
         }
 
@@ -124,7 +129,7 @@ class PurchaseController extends Controller
 
         $has_spec = Product_logic::is_spec_function_active();
 
-        $purchase = Purchase_logic::get_single_purchase_data( $id );  
+        $purchase = Purchase_logic::get_single_purchase_data( (int)$id );  
 
         $purchase = get_object_vars($purchase[0]);  
 

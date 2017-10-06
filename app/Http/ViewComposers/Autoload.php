@@ -213,7 +213,7 @@ class Autoload extends Basetool
 
         $cnt_deadline = Shop_logic::count_deadline( array($Login_user["user_id"]), "child_account" );
 
-        $created_data = Admin_user_logic::get_user( $now_store );
+        $created_data = Admin_user_logic::get_user( $Login_user["user_id"] );
 
         $account_deadline = Shop_logic::get_deadline( $created_data, $cnt_deadline );
 
@@ -236,20 +236,20 @@ class Autoload extends Basetool
     {
 
         $result = array(
-                        1       =>    'fa-home',
-                        2       =>    'fa-user',
-                        6       =>    'fa-group',
-                        9       =>    'fa-briefcase',
-                        13      =>    'fa-shopping-cart',
-                        16      =>    'fa-cog',
-                        19      =>    'fa-comment',
-                        22      =>    'fa-cube',
-                        25      =>    'fa-building',
-                        28      =>    'fa-cart-plus',
-                        31      =>    'fa-bar-chart',
-                        36      =>    'fa-clipboard',
-                        39      =>    'fa-upload',
-                        43      =>    'fa-pie-chart',
+                        "首頁"             =>    'fa-home',
+                        "使用者管理"        =>    'fa-user',
+                        "角色管理"          =>    'fa-group',
+                        "服務管理"          =>    'fa-briefcase',
+                        "GO商城"           =>    'fa-shopping-cart',
+                        "店鋪管理"          =>    'fa-cog',
+                        "訊息管理"          =>    'fa-comment',
+                        "商品管理"          =>    'fa-cube',
+                        "商城管理"          =>    'fa-building',
+                        "進貨管理"          =>    'fa-cart-plus',
+                        "庫存管理"          =>    'fa-bar-chart',
+                        "訂單管理"          =>    'fa-clipboard',
+                        "資料上傳"          =>    'fa-upload',
+                        "商品分類管理"      =>    'fa-pie-chart',
                     );
 
         return $result;

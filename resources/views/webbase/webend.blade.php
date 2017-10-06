@@ -9,6 +9,7 @@
 
 	<!-- Bootstrap 3.3.5 -->
 	<script type="text/javascript" src="{{ URL::asset('bootstrap/js/bootstrap.min.js') }}"></script>
+	
 	<!-- Morris.js charts -->
 	<script type="text/javascript" src="{{ URL::asset('js/raphael-min.js') }}"></script>
 

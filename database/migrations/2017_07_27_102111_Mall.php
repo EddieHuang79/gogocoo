@@ -10,6 +10,7 @@ class Mall extends Migration
 {
 
     protected $user_table = "user";
+    protected $store_table = "store";
     protected $service_table = "service";
     protected $role_service_table = "role_service_relation";
     protected $mall_product_table = "mall_product";
@@ -18,6 +19,7 @@ class Mall extends Migration
     protected $mall_shop_table = "mall_shop";
     protected $mall_product_rel_table = "mall_product_rel";
     protected $mall_product_use_table = "mall_product_use";
+    protected $mall_pay_record_table = "mall_pay_record";
     
     /**
      * Run the migrations.
@@ -69,7 +71,8 @@ class Mall extends Migration
             $table->increments('id');
             $table->integer('mall_shop_id')->unsigned();
             // $table->integer('mall_shop_spec_id')->unsigned();
-            $table->integer('user_id')->unsigned();
+            $table->integer('MerchantTradeNo')->default(0);
+            $table->integer('store_id')->unsigned();
             $table->integer('cost');
             $table->integer('number');
             $table->integer('total');
@@ -82,7 +85,7 @@ class Mall extends Migration
         Schema::table($this->mall_record_table, function($table) {
            $table->foreign('mall_shop_id')->references('id')->on($this->mall_shop_table);
            // $table->foreign('mall_shop_spec_id')->references('id')->on($this->mall_shop_spec_table);
-           $table->foreign('user_id')->references('id')->on($this->user_table);
+           $table->foreign('store_id')->references('id')->on($this->store_table);
         });
 
 
@@ -173,7 +176,7 @@ class Mall extends Migration
 
         Schema::create($this->mall_product_use_table, function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('user_id')->unsigned();
+            $table->integer('store_id')->unsigned();
             $table->integer('mall_record_id')->unsigned();
             $table->integer('mall_shop_id')->unsigned();
             $table->integer('mall_product_id')->unsigned();
@@ -187,12 +190,29 @@ class Mall extends Migration
         });    
 
         Schema::table($this->mall_product_use_table, function($table) {
-           $table->foreign('user_id')->references('id')->on($this->user_table);
+           $table->foreign('store_id')->references('id')->on($this->store_table);
            $table->foreign('mall_record_id')->references('id')->on($this->mall_record_table);
            $table->foreign('mall_shop_id')->references('id')->on($this->mall_shop_table);
            $table->foreign('mall_product_id')->references('id')->on($this->mall_product_table);
         });
 
+
+        // 綠界回傳交易結果
+
+        Schema::create($this->mall_pay_record_table, function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('MerchantTradeNo');
+            $table->integer('RtnCode');
+            $table->string('RtnMsg');
+            $table->string('TradeNo');
+            $table->integer('TradeAmt');
+            $table->dateTime('PaymentDate');
+            $table->string('PaymentType');
+            $table->integer('PaymentTypeChargeFee');
+            $table->dateTime('TradeDate');
+            $table->timestamps();
+            $table->engine = 'InnoDB';
+        });   
 
         // service
 
@@ -262,6 +282,7 @@ class Mall extends Migration
     public function down()
     {
         
+        Schema::dropIfExists($this->mall_pay_record_table);
         Schema::dropIfExists($this->mall_product_use_table);
         Schema::dropIfExists($this->mall_product_rel_table);
         Schema::dropIfExists($this->mall_product_table);

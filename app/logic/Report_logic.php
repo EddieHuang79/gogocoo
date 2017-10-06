@@ -11,6 +11,9 @@ use App\logic\Redis_tool;
 class Report_logic extends Basetool
 {
 
+
+	// 本週訂單數
+
 	public static function this_week_order_cnt()
 	{
 
@@ -42,6 +45,9 @@ class Report_logic extends Basetool
 		return $cnt;
 
 	}
+
+
+	// 本週取消訂單數
 
 	public static function week_cancel_order_cnt()
 	{
@@ -75,6 +81,9 @@ class Report_logic extends Basetool
 
 	}
 
+
+	// 本日入庫數
+
 	public static function today_in_ws_cnt()
 	{
 
@@ -107,6 +116,9 @@ class Report_logic extends Basetool
 
 	}
 
+
+	// 本日出庫數
+
 	public static function today_out_ws_cnt()
 	{
 
@@ -138,6 +150,9 @@ class Report_logic extends Basetool
 		return $cnt;
 
 	}
+
+
+	// 每月訂單
 
 	public static function month_order_view()
 	{
@@ -177,6 +192,9 @@ class Report_logic extends Basetool
 		return $data;
 
 	}
+
+
+	// 每日出入庫狀況
 
 	public static function year_stock_view()
 	{
@@ -230,6 +248,9 @@ class Report_logic extends Basetool
 
 	}
 
+
+	// 庫存商品總類比例
+
 	public static function stock_analytics()
 	{
 
@@ -276,6 +297,9 @@ class Report_logic extends Basetool
 		return $data;
 
 	}
+
+
+	// 月銷售top5
 
 	public static function year_product_top5()
 	{
@@ -343,6 +367,9 @@ class Report_logic extends Basetool
 
 	}
 
+
+	// 堆疊圖
+
 	public static function product_top5_stack()
 	{
 
@@ -384,6 +411,9 @@ class Report_logic extends Basetool
 
 	}
 
+
+	// 每月起始/結束日期
+
 	protected function month_of_year_date()
 	{
 
@@ -404,6 +434,9 @@ class Report_logic extends Basetool
 		return $result;
 
 	}
+
+
+	// 每週起始/結束日期
 
 	protected function this_week_date()
 	{
@@ -435,6 +468,9 @@ class Report_logic extends Basetool
 
 	}
 
+
+	// 今日日期
+
 	protected function today_date()
 	{
 
@@ -446,6 +482,9 @@ class Report_logic extends Basetool
 		return $result;
 
 	}
+
+
+	// 庫存商品種類比例資料 第一層
 
 	protected function stock_analytics_level1_data( $data )
 	{
@@ -466,6 +505,7 @@ class Report_logic extends Basetool
 			$parents_category[$row->parents_category] = $row->parents_category_name;
 
 			$category_total[$row->parents_category] = isset($category_total[$row->parents_category] ) ? $category_total[$row->parents_category]  : 0 ;
+			
 			$category_total[$row->parents_category]+= $row->stock;
 
 			$total += $row->stock;
@@ -482,6 +522,9 @@ class Report_logic extends Basetool
 		return $result;
 
 	}
+
+
+	// 庫存商品種類比例資料 第二層
 
 	protected function stock_analytics_level2_data( $data )
 	{

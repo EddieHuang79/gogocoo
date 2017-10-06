@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\logic\Shop_logic;
 use App\logic\Mall_logic;
+use App\logic\Record_logic;
 
 class ShopController extends Controller
 {
@@ -38,13 +39,9 @@ class ShopController extends Controller
     public static function shop_buy_process()
     {
 
-        // $data = Shop_logic::shop_buy_format( $_POST );
+        Record_logic::write_log( "test", json_encode($_POST) );
 
         $result = Shop_logic::shop_buy_insert( $_POST );
-
-        echo json_encode($result);
-
-        exit();
 
     }
 
@@ -77,7 +74,7 @@ class ShopController extends Controller
     public static function get_mall_product()
     {
 
-        $data = Shop_logic::get_mall_product( $_POST["mall_product_id"] );
+        $data = Shop_logic::get_mall_product( (int)$_POST["mall_product_id"] );
 
         echo json_encode($data);
 
@@ -100,6 +97,18 @@ class ShopController extends Controller
         $data = Shop_logic::get_extend_deadline_option();
 
         echo json_encode($data);
+
+        exit();
+
+    }
+
+
+    public static function DataReceive()
+    {
+
+        Shop_logic::DataReceive( $_POST );
+
+        echo "1|OK";
 
         exit();
 

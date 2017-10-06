@@ -17,19 +17,32 @@ class Stock_logic extends Basetool
 
 		$_this = new self();
 
-		$shop_id = Session::get( 'Store' );
+		$result = array();
 
-		foreach ($data as $row) 
+		if ( !empty($data) ) 
 		{
-			$result[] = array(
-								"shop_id"      			=> $shop_id,
-								"purchase_id"      		=> $row->id,
-								"stock"      			=> $row->number,
-								"created_at"    		=> date("Y-m-d H:i:s"),
-								"updated_at"    		=> date("Y-m-d H:i:s")
-							);
-		}
 
+			$shop_id = Session::get( 'Store' );
+
+			foreach ($data as $row) 
+			{
+
+				if ( is_object($row) ) 
+				{
+
+					$result[] = array(
+										"shop_id"      			=> $shop_id,
+										"purchase_id"      		=> $row->id,
+										"stock"      			=> $row->number,
+										"created_at"    		=> date("Y-m-d H:i:s"),
+										"updated_at"    		=> date("Y-m-d H:i:s")
+									);
+
+				}
+
+			}	
+
+		}
 
 		return $result;
 
@@ -38,7 +51,9 @@ class Stock_logic extends Basetool
 	public static function add_stock( $data )
 	{
 
-		Stock::add_stock( $data );
+		$result = !empty($data) && is_array($data) ? Stock::add_stock( $data ) : false;
+
+		return $result;
 
 	}
 
@@ -52,61 +67,66 @@ class Stock_logic extends Basetool
 		foreach ($data as $row) 
 		{
 
-			$stock_data = array(
-								"stock" 				=> $row->stock,
-								"product_name" 			=> $row->product_name,
-								"in_warehouse_number" 	=> str_pad($row->in_warehouse_number, 8, "0", STR_PAD_LEFT),
-								"in_warehouse_date" 	=> $row->in_warehouse_date,
-								"deadline" 				=> $row->deadline
-								// "spec_data" 			=> $spec_data,
-							);
-
-			if ( $has_spec ) 
+			if ( is_object($row) ) 
 			{
 
-				$spec = json_decode($row->spec_data, true);
+				$stock_data = array(
+									"stock" 				=> $row->stock,
+									"product_name" 			=> $row->product_name,
+									"in_warehouse_number" 	=> str_pad($row->in_warehouse_number, 8, "0", STR_PAD_LEFT),
+									"in_warehouse_date" 	=> $row->in_warehouse_date,
+									"deadline" 				=> $row->deadline
+									// "spec_data" 			=> $spec_data,
+								);
 
-				$product_spec = Product_logic::trans_product_spec_name( array( array( "value" => $spec ) ) );
-
-				$product_spec = array_shift($product_spec);
-
-				$spec_data = "";
-
-				foreach ($product_spec['value'] as $key => $value) 
+				if ( $has_spec ) 
 				{
 
-					switch ($key) 
+					$spec = json_decode($row->spec_data, true);
+
+					$product_spec = Product_logic::trans_product_spec_name( array( array( "value" => $spec ) ) );
+
+					$product_spec = array_shift($product_spec);
+
+					$spec_data = "";
+
+					foreach ($product_spec['value'] as $key => $value) 
 					{
 
-						case 'color':
+						switch ($key) 
+						{
 
-							$spec_data .= "顏色: " ;
+							case 'color':
 
-							break;
+								$spec_data .= "顏色: " ;
 
-						case 'size':
+								break;
 
-							$spec_data .= "尺寸: " ;
+							case 'size':
 
-							break;
+								$spec_data .= "尺寸: " ;
 
-						case 'font_type':
+								break;
 
-							$spec_data .= "字型: " ;
+							case 'font_type':
 
-							break;
-				
+								$spec_data .= "字型: " ;
+
+								break;
+					
+						}
+
+						$spec_data .= $value . "; "; 
+					
 					}
 
-					$spec_data .= $value . "; "; 
-				
+					$stock_data['spec_data'] = $spec_data ;
+
 				}
 
-				$stock_data['spec_data'] = $spec_data ;
+				$stock_list[] = $stock_data;
 
 			}
-
-			$stock_list[] = $stock_data;
 
 		}
 
@@ -129,57 +149,62 @@ class Stock_logic extends Basetool
 		foreach ($data as $row) 
 		{
 
-			$stock_data = array(
-								"stock" 				=> $row->stock,
-								"product_name" 			=> $row->product_name,
-							);
-
-			if ( $has_spec ) 
+			if ( is_object($row) ) 
 			{
 
-				$spec = json_decode($row->spec_data, true);
+				$stock_data = array(
+									"stock" 				=> $row->stock,
+									"product_name" 			=> $row->product_name,
+								);
 
-				$product_spec = Product_logic::trans_product_spec_name( array( array( "value" => $spec ) ) );
-
-				$product_spec = array_shift($product_spec);
-
-				$spec_data = "";
-
-				foreach ($product_spec['value'] as $key => $value) 
+				if ( $has_spec ) 
 				{
 
-					switch ($key) 
+					$spec = json_decode($row->spec_data, true);
+
+					$product_spec = Product_logic::trans_product_spec_name( array( array( "value" => $spec ) ) );
+
+					$product_spec = array_shift($product_spec);
+
+					$spec_data = "";
+
+					foreach ($product_spec['value'] as $key => $value) 
 					{
 
-						case 'color':
+						switch ($key) 
+						{
 
-							$spec_data .= "顏色: " ;
+							case 'color':
 
-							break;
+								$spec_data .= "顏色: " ;
 
-						case 'size':
+								break;
 
-							$spec_data .= "尺寸: " ;
+							case 'size':
 
-							break;
+								$spec_data .= "尺寸: " ;
 
-						case 'font_type':
+								break;
 
-							$spec_data .= "字型: " ;
+							case 'font_type':
 
-							break;
-				
+								$spec_data .= "字型: " ;
+
+								break;
+					
+						}
+
+						$spec_data .= $value . "; "; 
+					
 					}
 
-					$spec_data .= $value . "; "; 
-				
+					$stock_data['spec_data'] = $spec_data ;
+
 				}
 
-				$stock_data['spec_data'] = $spec_data ;
+				$stock_list[] = $stock_data;
 
 			}
-
-			$stock_list[] = $stock_data;
 
 		}
 
@@ -202,60 +227,65 @@ class Stock_logic extends Basetool
 		foreach ($data as $row) 
 		{
 
-			$stock_data = array(
-								"stock" 				=> $row->stock,
-								"product_name" 			=> $row->product_name,
-								"in_warehouse_number" 	=> str_pad($row->in_warehouse_number, 8, "0", STR_PAD_LEFT),
-								"in_warehouse_date" 	=> $row->in_warehouse_date,
-								"deadline" 				=> $row->deadline,
-							);
-
-			if ( $has_spec ) 
+			if ( is_object($row) ) 
 			{
 
-				$spec = json_decode($row->spec_data, true);
+				$stock_data = array(
+									"stock" 				=> $row->stock,
+									"product_name" 			=> $row->product_name,
+									"in_warehouse_number" 	=> str_pad($row->in_warehouse_number, 8, "0", STR_PAD_LEFT),
+									"in_warehouse_date" 	=> $row->in_warehouse_date,
+									"deadline" 				=> $row->deadline,
+								);
 
-				$product_spec = Product_logic::trans_product_spec_name( array( array( "value" => $spec ) ) );
-
-				$product_spec = array_shift($product_spec);
-
-				$spec_data = "";
-
-				foreach ($product_spec['value'] as $key => $value) 
+				if ( $has_spec ) 
 				{
 
-					switch ($key) 
+					$spec = json_decode($row->spec_data, true);
+
+					$product_spec = Product_logic::trans_product_spec_name( array( array( "value" => $spec ) ) );
+
+					$product_spec = array_shift($product_spec);
+
+					$spec_data = "";
+
+					foreach ($product_spec['value'] as $key => $value) 
 					{
 
-						case 'color':
+						switch ($key) 
+						{
 
-							$spec_data .= "顏色: " ;
+							case 'color':
 
-							break;
+								$spec_data .= "顏色: " ;
 
-						case 'size':
+								break;
 
-							$spec_data .= "尺寸: " ;
+							case 'size':
 
-							break;
+								$spec_data .= "尺寸: " ;
 
-						case 'font_type':
+								break;
 
-							$spec_data .= "字型: " ;
+							case 'font_type':
 
-							break;
-				
+								$spec_data .= "字型: " ;
+
+								break;
+					
+						}
+
+						$spec_data .= $value . "; "; 
+					
 					}
 
-					$spec_data .= $value . "; "; 
-				
+					$stock_data['spec_data'] = $spec_data ;
+
 				}
 
-				$stock_data['spec_data'] = $spec_data ;
+				$stock_list[] = $stock_data;
 
 			}
-
-			$stock_list[] = $stock_data;
 
 		}
 
@@ -278,58 +308,63 @@ class Stock_logic extends Basetool
 		foreach ($data as $row) 
 		{
 
-			$stock_data = array(
-								"stock" 				=> $row->stock,
-								"product_name" 			=> $row->product_name,
-								"safe_amount" 			=> $row->safe_amount,
-							);
-
-			if ( $has_spec ) 
+			if ( is_object($row) ) 
 			{
 
-				$spec = json_decode($row->spec_data, true);
+				$stock_data = array(
+									"stock" 				=> $row->stock,
+									"product_name" 			=> $row->product_name,
+									"safe_amount" 			=> $row->safe_amount,
+								);
 
-				$product_spec = Product_logic::trans_product_spec_name( array( array( "value" => $spec ) ) );
-
-				$product_spec = array_shift($product_spec);
-
-				$spec_data = "";
-
-				foreach ($product_spec['value'] as $key => $value) 
+				if ( $has_spec ) 
 				{
 
-					switch ($key) 
+					$spec = json_decode($row->spec_data, true);
+
+					$product_spec = Product_logic::trans_product_spec_name( array( array( "value" => $spec ) ) );
+
+					$product_spec = array_shift($product_spec);
+
+					$spec_data = "";
+
+					foreach ($product_spec['value'] as $key => $value) 
 					{
 
-						case 'color':
+						switch ($key) 
+						{
 
-							$spec_data .= "顏色: " ;
+							case 'color':
 
-							break;
+								$spec_data .= "顏色: " ;
 
-						case 'size':
+								break;
 
-							$spec_data .= "尺寸: " ;
+							case 'size':
 
-							break;
+								$spec_data .= "尺寸: " ;
 
-						case 'font_type':
+								break;
 
-							$spec_data .= "字型: " ;
+							case 'font_type':
 
-							break;
-				
+								$spec_data .= "字型: " ;
+
+								break;
+					
+						}
+
+						$spec_data .= $value . "; "; 
+					
 					}
 
-					$spec_data .= $value . "; "; 
-				
+					$stock_data['spec_data'] = $spec_data ;
+
 				}
 
-				$stock_data['spec_data'] = $spec_data ;
+				$stock_list[] = $stock_data;
 
 			}
-
-			$stock_list[] = $stock_data;
 
 		}
 
@@ -345,21 +380,48 @@ class Stock_logic extends Basetool
 	public static function FIFO_get_stock_id( $product_id, $spec_id )
 	{
 
-		return Stock::FIFO_get_stock_id( $product_id, $spec_id );
+		$result = array();
+
+		if ( !empty($product_id) && is_array($product_id) ) 
+		{
+
+			$data = Stock::FIFO_get_stock_id( $product_id, $spec_id );
+
+			if ( $data->count() > 0 ) 
+			{
+			
+				$result = $data;
+
+			}
+
+		}
+
+		return $result;
 
 	}
 
 	public static function cost_stock( $data )
 	{
 
-		return Stock::cost_stock( $data );
+		$result = !empty($data) && is_array($data) ? Stock::cost_stock( $data ) : false;
+
+		return $result;
 
 	}
 
 	public static function get_stock_analytics( $shop_id )
 	{
 
-		return Stock::get_stock_analytics( $shop_id );
+		$result = array();
+
+		if ( !empty($shop_id) && is_int($shop_id) ) 
+		{
+
+			$result = Stock::get_stock_analytics( $shop_id );
+
+		}
+
+		return $result;
 
 	}
 
@@ -372,27 +434,42 @@ class Stock_logic extends Basetool
 
 		$child_id = array();
 
-		foreach ($data as $row) 
+		if ( !empty($data) ) 
 		{
 
-			$child_id[] = $row->category;
- 
+			foreach ($data as $row) 
+			{
+
+				if ( is_object($row) ) 
+				{
+
+					$child_id[] = $row->category;
+
+				}
+	 
+			}
+
+			$parents_category_data = ProductCategory_logic::get_mutli_parents_category_id( $child_id );
+
+			$parents_id_name_trans = ProductCategory_logic::get_parents_id_name_trans();
+
+			foreach ($data as &$row) 
+			{
+
+				if ( is_object($row) ) 
+				{
+
+					$row->parents_category = isset( $parents_category_data[$row->category] ) ? $parents_category_data[$row->category] : "無" ;
+					
+					$row->parents_category_name = isset( $parents_id_name_trans[$row->parents_category] ) ? $parents_id_name_trans[$row->parents_category] : "無" ;
+	 
+				}
+
+			}
+
+			$result = $data;
+
 		}
-
-		$parents_category_data = ProductCategory_logic::get_mutli_parents_category_id( $child_id );
-
-		$parents_id_name_trans = ProductCategory_logic::get_parents_id_name_trans();
-
-		foreach ($data as &$row) 
-		{
-
-			$row->parents_category = isset( $parents_category_data[$row->category] ) ? $parents_category_data[$row->category] : "無" ;
-			
-			$row->parents_category_name = isset( $parents_id_name_trans[$row->parents_category] ) ? $parents_id_name_trans[$row->parents_category] : "無" ;
- 
-		}
-
-		$result = $data;
 
 		return $result;
 
@@ -411,31 +488,56 @@ class Stock_logic extends Basetool
 
 		$stock = array();
 
-		foreach ($data as $row) 
+		if ( !empty($data) ) 
 		{
 
-			$product_id[] = $row->product_id;
+			foreach ($data as $row) 
+			{
+
+				if ( is_object($row) ) 
+				{			
+
+					$product_id[] = $row->product_id;
+
+				}
+
+			}
 
 		}
 
-		$data = Stock::get_stock_and_safe_amount( $product_id );
-
-		foreach ($data as $row) 
+		if ( !empty($product_id) && is_array($product_id) ) 
 		{
 
-			$product_name[] = $row->product_name;
+			$data = Stock::get_stock_and_safe_amount( $product_id );
 
-			$safe_amount[] = (int)$row->safe_amount;
+			if ( !empty($data) ) 
+			{
 
-			$stock[] = (int)$row->stock * 15;
+				foreach ($data as $row) 
+				{
+
+					if ( is_object($row) ) 
+					{			
+
+						$product_name[] = $row->product_name;
+
+						$safe_amount[] = (int)$row->safe_amount;
+
+						$stock[] = (int)$row->stock * 15;
+
+					}
+
+				}
+
+				$result = array(
+								"product_name"	=>	$product_name,
+								"safe_amount"	=>	$safe_amount,
+								"stock"			=>	$stock,
+							);
+
+			}
 
 		}
-
-		$result = array(
-						"product_name"	=>	$product_name,
-						"safe_amount"	=>	$safe_amount,
-						"stock"			=>	$stock,
-					);
 
 		return $result;
 

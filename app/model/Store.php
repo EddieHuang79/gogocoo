@@ -82,4 +82,15 @@ class Store extends Model
 	}	
 
 
+	public static function get_store_id_by_code( $store_code )
+	{
+	     
+		$_this = new self();
+
+		$result = DB::table($_this->table)->select("id")->where("store_code", "=", $store_code)->first();
+
+		return $result;
+
+	}	
+
 }

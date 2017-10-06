@@ -85,9 +85,7 @@ class UploadController extends Controller
 
         $product_column = array_merge( $main_column, $extra_column );
 
-        $product_upload_format = Upload_logic::product_upload_format( $product_column );
-
-        $product_upload_format->download('xlsx');
+        Upload_logic::product_upload_format( $product_column );
 
     }
 
@@ -140,9 +138,7 @@ class UploadController extends Controller
 
         $purchase_column = array_merge( $main_column, $extra_column );
 
-        $purchase_upload_format = Upload_logic::purchase_upload_format( $purchase_column );
-
-        $purchase_upload_format->download('xlsx');
+        Upload_logic::purchase_upload_format( $purchase_column );
 
     }
 
@@ -165,9 +161,7 @@ class UploadController extends Controller
 
         $order_column = array_merge( $main_column, $extra_column );
 
-        $order_upload_format = Upload_logic::order_upload_format( $order_column );
-
-        $order_upload_format->download('xlsx');
+        Upload_logic::order_upload_format( $order_column );
 
     }    
 

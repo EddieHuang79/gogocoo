@@ -8,63 +8,58 @@
 <section class="content">
 
 	@if( $store_status["left"] > 0 )
-	
-	<form action="/store" method="POST">				    
-		<table class="table table-stroped" style="width: 50%;">
-			<tbody>
-
-				<tr>
-					<th width="10%">{{ $txt["store_name"] }}</th>
-					<td><input type="text" id="inputStoreName" name="StoreName" class="form-control" value="@if(!empty($store)){{ $store->store_name }}@endif" placeholder="{{ $txt['store_name_input'] }}" maxlength="6" required></td>
-				</tr>
-
-				<tr>
-					<th width="10%">{{ $txt["store_code"] }}</th>
-					<td><input type="text" id="inputStoreCode" name="StoreCode" class="form-control" value="@if(!empty($store)){{ $store->store_code }}@endif" placeholder="{{ $txt['store_code_input'] }}" maxlength="3" @if(!empty($edit)) readonly="true" @endif ></td>
-				</tr>
-
-				<tr>
-					<th>{{ $txt["store_type"] }}</th>
-					<td>
-						@if( empty($store_status["free"]) && empty($store) )
-							@include('tool.store_type')
-						@else
-							{{ $store_info->store_type_name }}
-							<input type="hidden" name="store_type_id" value="{{ $store_info->store_type }}">
+	<div class="row">
+        <div class="col-md-6">
+			<div class="box box-primary">
+				<div class="box-header">
+					<h3 class="box-title">{{ $txt["store_input"] }}</h3>
+				</div>
+				<form action="/store" method="POST">				    
+					<div class="box-body">
+						<div class="form-group">
+							<label>{{ $txt["store_name"] }}</label>
+							<input type="text" id="inputStoreName" name="StoreName" class="form-control" value="@if(!empty($store)){{ $store->store_name }}@endif" placeholder="{{ $txt['store_name_input'] }}" maxlength="6" required>
+						</div>
+						<div class="form-group">
+							<label>{{ $txt["store_code"] }}</label>
+							<input type="text" id="inputStoreCode" name="StoreCode" class="form-control" value="@if(!empty($store)){{ $store->store_code }}@endif" placeholder="{{ $txt['store_code_input'] }}" maxlength="3" @if(!empty($edit)) readonly="true" @endif >
+						</div>
+						<div class="form-group">
+							<label>{{ $txt["store_type"] }}</label>
+							@if( empty($store_status["free"]) && empty($store) )
+								@include('tool.store_type')
+							@else
+								<br />								
+								{{ $store_info->store_type_name }}
+								<input type="hidden" name="store_type_id" value="{{ $store_info->store_type }}">
+							@endif
+						</div>
+						@if( empty($store) )
+						<div class="form-group">
+							<label>{{ $txt["deadline"] }}</label>
+							@if( isset($store_status["free"]) && $store_status["free"] > 0 )
+								{{ $txt['free_date_spec_desc'] }} {{ $deadline }}
+							@endif
+							@if( isset($store_status["free"]) && $store_status["free"] <= 0 )
+								<select name="date_spec" class="form-control" required>
+									<option value="">{{ $txt['select_default'] }}</option>
+									@foreach($deadline as $index => $date_spec)
+										<option value="{{ $index }}">{{ $date_spec }}</option>
+									@endforeach
+								</select>
+							@endif
+						</div>
 						@endif
-					</td>
-				</tr>
-				@if( empty($store) )
-				<tr>
-					<th>{{ $txt["deadline"] }}</th>
-					<td>
-						
-						@if( isset($store_status["free"]) && $store_status["free"] > 0 )
-							{{ $txt['free_date_spec_desc'] }} {{ $deadline }}
-						@endif
-
-						@if( isset($store_status["free"]) && $store_status["free"] <= 0 )
-							<select name="date_spec" required>
-								<option value="">{{ $txt['select_default'] }}</option>
-								@foreach($deadline as $index => $date_spec)
-									<option value="{{ $index }}">{{ $date_spec }}</option>
-								@endforeach
-							</select>
-						@endif
-
-					</td>
-				</tr>
-				@endif
-				<tr>
-					<th colspan="2"><input type="submit" value="{{ $txt['send'] }}"/></th>
-				</tr>	
-
-			</tbody>
-		</table>
-		<input type="hidden" name="store_id" value="@if(!empty($store)){{ $store->id }}@endif">
-		<input type="hidden" name="_token" value="{{ csrf_token() }}">
-	</form>
-
+						<div class="form-group">
+							<label><input type="submit" class="btn btn-primary" value="{{ $txt['send'] }}"/></label>
+						</div>
+						<input type="hidden" name="store_id" value="@if(!empty($store)){{ $store->id }}@endif">
+						<input type="hidden" name="_token" value="{{ csrf_token() }}">
+					</div>
+				</form>
+	      	</div>
+        </div>
+  	</div>
 	@else
 
 	<div class="lightbox">

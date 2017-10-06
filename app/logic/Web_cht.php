@@ -110,7 +110,8 @@ class Web_cht
                               "mail"                  => "電子郵件",
                               "notice_range"          => "通知區間",
                               "clone"                 => "複製",
-                              "plz_choose_store_type" => "請選擇行業別",
+                              "plz_choose_store_type"       => "請選擇行業別",
+                              "plz_choose_child_store_type" => "請選擇子行業別",
                               "real_name_input"       => "請輸入姓名",
                               "real_name_fail"        => "姓名未輸入",
                               "store_type_fail"       => "未選擇行業別",
@@ -255,7 +256,10 @@ class Web_cht
                               "system_default_category"           => "系統預設類別",
                               "none"                              => "無",
                               "category"                          => "類別",
-   				);
+                              "mall_order_number"                 => "商城訂單編號",
+                              "not_active"                        => "未啟用",
+   				      "record_desc"                       => "購買後的服務須等待10-15分鐘才會生效",
+                        );
 
    public static function get_txt()
    {

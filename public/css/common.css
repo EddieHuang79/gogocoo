@@ -458,3 +458,6 @@ img {
 		height: 500px;
 	}
 }
+.child_store_type_id{
+	display: none;
+}

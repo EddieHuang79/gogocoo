@@ -1,4 +1,5 @@
 @include('webbase.header')
+<body class="hold-transition skin-blue sidebar-mini">
 	<div class="wrapper">
 		@include('webbase.nav')
 		@include('webbase.menu')

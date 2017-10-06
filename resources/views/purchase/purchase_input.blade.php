@@ -3,86 +3,77 @@
 	@include('webbase.breadcrumb')
 </section>
 <section class="content">
-	<form action="/purchase" method="POST">
-		<table class="table table-stroped">
-			<tbody>
-				<tr>
-					<th width="10%">{{ $txt["product_name"] }}</th>
-					<td>
-						<input type="text" name="product_name" value="@if(!empty($purchase)){{ $purchase['product_name'] }}@endif" placeholder="{{ $txt['product_name_key_input'] }}" class="autocomplete" AutoCompleteType="product_name" site="{{ $site }}" specId="@if(!empty($purchase)){{ $purchase['spec_id'] }}@endif" required/>
-					</td>
-				</tr>
-				@if( $has_spec == true )
-				<tr>
-					<th width="10%">{{ $txt["product_spec"] }}</th>
-					<td>
-						<select name="spec_id" required>
-							<option value="">{{ $txt["select_default"] }}</option>
-						</select>
-					</td>
-				</tr>
-				@endif
-				@if(!empty($purchase))
-				<tr>
-					<th width="10%">{{ $txt["in_warehouse_number"] }}</th>
-					<td>{{ $purchase['in_warehouse_number'] }}</td>
-				</tr>
-				@endif
-				<tr>
-					<th width="10%">{{ $txt["number"] }}</th>
-					<td>
-						<input type="number" name="number" value="@if(!empty($purchase)){{ $purchase['number'] }}@endif" placeholder="{{ $txt['number_input'] }}" required/>
-					</td>
-				</tr>		
-				<tr>
-					<th width="10%">{{ $txt["in_warehouse_date"] }}</th>
-					<td>
-						<input type="text" name="in_warehouse_date" value="@if(!empty($purchase)){{ $purchase['in_warehouse_date'] }}@endif" placeholder="{{ $txt['in_warehouse_date_input'] }}" size="30"/>
-					</td>
-				</tr>
-				<tr>
-					<th width="10%">{{ $txt["in_warehouse_category"] }}</th>
-					<td>
-						<select name="category" required>
-							<option value="">{{ $txt["select_default"] }}</option>
-							@foreach($in_warehouse_category_data as $key => $value)
-								<option value="{{ $key }}" @if( !empty($purchase['category']) && $key == $purchase['category'] ) selected @endif>{{ $value }}</option>
-							@endforeach
-						</select>
-					</td>
-				</tr>
-
-				@if( !empty( $purchase_extra_column ) )
-				
-				@foreach($purchase_extra_column as $row)
-					@if( $row['show_on_page'] === true )
-					<tr>
-						<th>{{ $txt[$row['name']] }}</th>
-						<td> 
-							@if( in_array( $row['type'], array('text', 'number') ) )
-							<input type="{{ $row['type'] }}" name="{{ $row['name'] }}" placeholder="{{ $txt[$row['name'].'_input'] }}" value="@if(!empty($purchase)){{ $purchase[$row['name']] }}@endif"> 
-							@endif
-							@if( in_array( $row['type'], array('select') ) )
-							<select name="{{ $row['name'] }}" id="">
-								<option value="">{{ $txt['select_default'] }}</option>
-								@foreach($select_option[$row['name']] as $key => $value)
-								<option value="{{ $key }}"  @if( !empty($purchase) && $purchase[$row['name']] == $key ) selected @endif>{{ $value }}</option>
+	<div class="row">
+        <div class="col-md-6">
+			<div class="box box-primary">
+				<div class="box-header">
+					<h3 class="box-title">{{ $txt["purchase_input"] }}</h3>
+				</div>
+				<form action="/purchase" method="POST">
+					<div class="box-body">
+						<div class="form-group">
+							<label>{{ $txt["product_name"] }}</label>
+							<input type="text" name="product_name" class="form-control autocomplete" value="@if(!empty($purchase)){{ $purchase['product_name'] }}@endif" placeholder="{{ $txt['product_name_key_input'] }}" AutoCompleteType="product_name" site="{{ $site }}" specId="@if(!empty($purchase)){{ $purchase['spec_id'] }}@endif" required/>
+						</div>
+						@if( $has_spec == true )
+						<div class="form-group">
+							<label>{{ $txt["product_spec"] }}</label>
+							<select name="spec_id" class="form-control" required>
+								<option value="">{{ $txt["select_default"] }}</option>
+							</select>
+						</div>
+						@endif
+						@if(!empty($purchase))
+						<div class="form-group">
+							<label>{{ $txt["in_warehouse_number"] }}</label>
+							{{ $purchase['in_warehouse_number'] }}
+						</div>
+						@endif
+						<div class="form-group">
+							<label>{{ $txt["number"] }}</label>
+							<input type="number" name="number" class="form-control" value="@if(!empty($purchase)){{ $purchase['number'] }}@endif" placeholder="{{ $txt['number_input'] }}" required/>
+						</div>		
+						<div class="form-group">
+							<label>{{ $txt["in_warehouse_date"] }}</label>
+							<input type="text" name="in_warehouse_date" class="form-control" value="@if(!empty($purchase)){{ $purchase['in_warehouse_date'] }}@endif" placeholder="{{ $txt['in_warehouse_date_input'] }}" size="30"/>						
+						</div>
+						<div class="form-group">
+							<label>{{ $txt["in_warehouse_category"] }}</label>						
+							<select name="category" class="form-control" required>
+								<option value="">{{ $txt["select_default"] }}</option>
+								@foreach($in_warehouse_category_data as $key => $value)
+									<option value="{{ $key }}" @if( !empty($purchase['category']) && $key == $purchase['category'] ) selected @endif>{{ $value }}</option>
 								@endforeach
 							</select>
-							@endif
-						</td>
-					</tr>
-					@endif
-				@endforeach
-
-				@endif
-
-				<tr>
-					<th colspan="2"><input type="submit" value="{{ $txt['send'] }}"/></th>
-				</tr>															
-			</tbody>
-		</table>
-		<input type="hidden" name="purchase_id" value="@if(!empty($purchase)){{ $purchase['id'] }}@endif">
-		<input type="hidden" name="_token" value="{{ csrf_token() }}">
-	</form>
+						</div>
+						@if( !empty( $purchase_extra_column ) )
+							@foreach($purchase_extra_column as $row)
+								@if( $row['show_on_page'] === true )
+								<div class="form-group">
+									<label>{{ $txt[$row['name']] }}</label>
+									@if( in_array( $row['type'], array('text', 'number') ) )
+									<input type="{{ $row['type'] }}" name="{{ $row['name'] }}" class="form-control" placeholder="{{ $txt[$row['name'].'_input'] }}" value="@if(!empty($purchase)){{ $purchase[$row['name']] }}@endif"> 
+									@endif
+									@if( in_array( $row['type'], array('select') ) )
+									<select name="{{ $row['name'] }}" class="form-control" id="">
+										<option value="">{{ $txt['select_default'] }}</option>
+										@foreach($select_option[$row['name']] as $key => $value)
+										<option value="{{ $key }}"  @if( !empty($purchase) && $purchase[$row['name']] == $key ) selected @endif>{{ $value }}</option>
+										@endforeach
+									</select>
+									@endif
+								</div>
+								@endif
+							@endforeach
+						@endif
+						<div class="form-group">
+							<label><input type="submit" class="btn btn-primary" value="{{ $txt['send'] }}"/></label>
+						</div>
+						<input type="hidden" name="purchase_id" value="@if(!empty($purchase)){{ $purchase['id'] }}@endif">
+						<input type="hidden" name="_token" value="{{ csrf_token() }}">
+					</div>	
+				</form>
+	      	</div>
+        </div>
+  	</div>
 </section>

@@ -9,7 +9,8 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="{{ URL::asset('css/font-awesome.min.css') }}">
     <!-- Ionicons -->
-    <link rel="stylesheet" href="{{ URL::asset('css/ionicons.min.css') }}">
+    <!-- <link rel="stylesheet" href="{{ URL::asset('css/ionicons.min.css') }}"> -->
+    <link href="http://code.ionicframework.com/ionicons/2.0.0/css/ionicons.min.css" rel="stylesheet" type="text/css" />    
     <!-- Theme style -->
     <link rel="stylesheet" href="{{ URL::asset('dist/css/AdminLTE.min.css') }}">
     <!-- AdminLTE Skins. Choose a skin from the css/skins
@@ -33,5 +34,3 @@
 	<link rel="stylesheet" href="{{ URL::asset('css/common.css') }}">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropper/2.3.4/cropper.css" />
-
-	<body class="hold-transition skin-blue sidebar-mini">

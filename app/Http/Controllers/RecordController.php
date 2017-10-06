@@ -15,7 +15,7 @@ class RecordController extends Controller
 
 		$search_tool = array(1);
 
-		Redis_tool::set_search_tool( $search_tool );
+		Redis_tool::set_search_tool( $search_tool, $_GET );
 
 		// get variable setting
 

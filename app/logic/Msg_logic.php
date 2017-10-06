@@ -40,46 +40,63 @@ class Msg_logic extends Basetool
 
 	}
 
+
 	// 新增格式
+
 	public static function insert_format( $data )
 	{
 
 		$_this = new self();
 
-		$result = array(
-		            "subject"          	=> isset($data["subject"]) ? $_this->strFilter($data["subject"]) : "",
-		            "content"          	=> isset($data["content"]) ? $_this->strFilter($data["content"]) : "",
-		            "role_id"          	=> isset($data["role_id"]) ? intval($data["role_id"]) : "",
-		            "show_type"        	=> isset($data["show_type"]) ? intval($data["show_type"]) : "",
-		            "msg_type"         	=> isset($data["msg_type"]) ? intval($data["msg_type"]) : "",
-		            "public"        	=> isset($data["public"]) ? intval($data["public"]) : 0,
-		            "start_date"        => isset($data["start_date"]) ? $_this->strFilter($data["start_date"]) . " 00:00:00" : "",
-		            "end_date"          => isset($data["end_date"]) ? $_this->strFilter($data["end_date"]) . " 23:59:59" : "",
-		            "created_at"    	=> date("Y-m-d H:i:s"),
-		            "updated_at"    	=> date("Y-m-d H:i:s")
-		         );
+		$result = array();
+
+		if ( !empty($data) && is_array($data) ) 
+		{
+
+			$result = array(
+			            "subject"          	=> isset($data["subject"]) ? $_this->strFilter($data["subject"]) : "",
+			            "content"          	=> isset($data["content"]) ? $_this->strFilter($data["content"]) : "",
+			            "role_id"          	=> isset($data["role_id"]) ? intval($data["role_id"]) : "",
+			            "show_type"        	=> isset($data["show_type"]) ? intval($data["show_type"]) : "",
+			            "msg_type"         	=> isset($data["msg_type"]) ? intval($data["msg_type"]) : "",
+			            "public"        	=> isset($data["public"]) ? intval($data["public"]) : 0,
+			            "start_date"        => isset($data["start_date"]) ? $_this->strFilter($data["start_date"]) . " 00:00:00" : "",
+			            "end_date"          => isset($data["end_date"]) ? $_this->strFilter($data["end_date"]) . " 23:59:59" : "",
+			            "created_at"    	=> date("Y-m-d H:i:s"),
+			            "updated_at"    	=> date("Y-m-d H:i:s")
+			         );
+
+		}
 
 		return $result;
 
 	}
 
+
 	// 更新格式
+
 	public static function update_format( $data )
 	{
 
 		$_this = new self();
 
-		$result = array(
-		            "subject"          	=> isset($data["subject"]) ? $_this->strFilter($data["subject"]) : "",
-		            "content"          	=> isset($data["content"]) ? $_this->strFilter($data["content"]) : "",
-		            "role_id"          	=> isset($data["role_id"]) ? intval($data["role_id"]) : "",
-		            "show_type"        	=> isset($data["show_type"]) ? intval($data["show_type"]) : "",
-		            "msg_type"         	=> isset($data["msg_type"]) ? intval($data["msg_type"]) : "",
-		            "public"        	=> isset($data["public"]) ? intval($data["public"]) : 0,
-		            "start_date"        => isset($data["start_date"]) ? $_this->strFilter($data["start_date"]) . " 00:00:00" : "",
-		            "end_date"          => isset($data["end_date"]) ? $_this->strFilter($data["end_date"]) . " 23:59:59" : "",
-		            "updated_at"    	=> date("Y-m-d H:i:s")
-		         );
+		$result = array();
+
+		if ( !empty($data) && is_array($data) ) 
+		{
+
+			$result = array(
+			            "subject"          	=> isset($data["subject"]) ? $_this->strFilter($data["subject"]) : "",
+			            "content"          	=> isset($data["content"]) ? $_this->strFilter($data["content"]) : "",
+			            "role_id"          	=> isset($data["role_id"]) ? intval($data["role_id"]) : "",
+			            "show_type"        	=> isset($data["show_type"]) ? intval($data["show_type"]) : "",
+			            "msg_type"         	=> isset($data["msg_type"]) ? intval($data["msg_type"]) : "",
+			            "public"        	=> isset($data["public"]) ? intval($data["public"]) : 0,
+			            "start_date"        => isset($data["start_date"]) ? $_this->strFilter($data["start_date"]) . " 00:00:00" : "",
+			            "end_date"          => isset($data["end_date"]) ? $_this->strFilter($data["end_date"]) . " 23:59:59" : "",
+			            "updated_at"    	=> date("Y-m-d H:i:s")
+			         );
+		}
 
 		return $result;
 
@@ -87,6 +104,7 @@ class Msg_logic extends Basetool
 
 
 	// 取得訊息
+
 	public static function get_msg( $role_id = array(), $show_type = array(), $msg_type = array() )
 	{
 
@@ -96,31 +114,51 @@ class Msg_logic extends Basetool
 
 	}	
 
+
 	// 轉換時間顯示
+
 	public static function time_format( $data )
 	{
 
-		foreach ($data as &$row) 
+		$result = new \stdClass;
+
+		if ( !empty($data) ) 
 		{
 
-			$diff = time() - strtotime($row->updated_at);
-			$show_data = ($diff / ( 60 * 60 * 24 )) > 0 ? floor($diff / ( 60 * 60 * 24 * 7 )) . " weeks" : "";
-			$show_data = ($diff / ( 60 * 60 * 24 )) > 0 ? floor($diff / ( 60 * 60 * 24 )) . " days" : $show_data;
-			$show_data = empty($show_data) && ($diff / ( 60 * 60 )) > 0 ? floor($diff / ( 60 * 60 )) . " hours" : $show_data ;
-			$show_data = empty($show_data) && $diff / 60 > 0 ? floor($diff / 60) . " mins" : $show_data ;
-			$show_data = empty($show_data) ? $diff . " secs" : $show_data ;
+			foreach ($data as &$row) 
+			{
 
-			$row->updated_at = $show_data;
+				if ( is_object($row) ) 
+				{
 
-		}
+					$diff = time() - strtotime($row->updated_at);
+					$show_data = ($diff / ( 60 * 60 * 24 )) > 0 ? floor($diff / ( 60 * 60 * 24 * 7 )) . " weeks" : "";
+					$show_data = ($diff / ( 60 * 60 * 24 )) > 0 ? floor($diff / ( 60 * 60 * 24 )) . " days" : $show_data;
+					$show_data = empty($show_data) && ($diff / ( 60 * 60 )) > 0 ? floor($diff / ( 60 * 60 )) . " hours" : $show_data ;
+					$show_data = empty($show_data) && $diff / 60 > 0 ? floor($diff / 60) . " mins" : $show_data ;
+					$show_data = empty($show_data) ? $diff . " secs" : $show_data ;
 
-		return $data;
+					$row->updated_at = $show_data;
 
-	}		
+				}
+
+			}
+
+			$result = $data;
+
+		} 
+
+		return $result;
+
+	}	
+
 
 	// 顯示未讀的第一筆 
+
 	public static function show_popup_msg( $data )
 	{
+
+		$result = array();
 
 		$Login_user = Session::get('Login_user');
 
@@ -130,28 +168,41 @@ class Msg_logic extends Basetool
 
 		$msg_id = 0;
 
-		foreach ($data as $row) 
+		if ( !empty($data) ) 
 		{
-			if (!in_array($row->id, $read_msg)) 
+
+			foreach ($data as $row) 
 			{
-				$result["subject"] = $row->subject;
-				$result["content"] = $row->content;
-				$msg_id = $row->id;
-				break;
+
+				if ( is_object($row) && !in_array($row->id, $read_msg) ) 
+				{
+
+					$result["subject"] = $row->subject;
+					$result["content"] = $row->content;
+					$msg_id = $row->id;
+					break;
+
+				}
+
 			}
+
 		}
 
 		// add redis
 		if (!empty($msg_id)) 
 		{
+
 			Redis_tool::set_read_msg( $Login_user["user_id"], $msg_id );
+
 		}
 
 		return $result;
 
 	}	
 
+
 	// 訊息列表
+
 	public static function get_msg_list( $data )
 	{
 
@@ -162,6 +213,8 @@ class Msg_logic extends Basetool
 		$msg_type = $_this->msg_type;
 		$role_data = $_this->role_data;
 
+		$result = new \stdClass;
+
 		$option = array(
 						"type" => isset($data['type']) ? intval($data['type']) : 0 
 					);
@@ -169,22 +222,35 @@ class Msg_logic extends Basetool
 		// 訊息
 		$msg = Msg::get_all_msg( $option );
 
-
-		foreach ($msg as &$row) 
+		if ( !empty($msg) ) 
 		{
 
-			$row->role_id = isset($role_data[$row->role_id]) ? $role_data[$row->role_id] : $txt["all_role"] ; 
-			$row->public_txt = $row->public > 0 ? $txt["yes"] : $txt["no"] ;
-			$row->show_type = isset($show_type[$row->show_type]) ? $show_type[$row->show_type] : "" ;
-			$row->msg_type = isset($msg_type[$row->msg_type]) ? $msg_type[$row->msg_type] : "" ;
+			foreach ($msg as &$row) 
+			{
+
+				if ( is_object($row) ) 
+				{
+
+					$row->role_id = isset($role_data[$row->role_id]) ? $role_data[$row->role_id] : $txt["all_role"] ; 
+					$row->public_txt = $row->public > 0 ? $txt["yes"] : $txt["no"] ;
+					$row->show_type = isset($show_type[$row->show_type]) ? $show_type[$row->show_type] : "" ;
+					$row->msg_type = isset($msg_type[$row->msg_type]) ? $msg_type[$row->msg_type] : "" ;
+
+				}
+
+			}
+
+			$result = $msg;
 
 		}
 
-		return $msg;
+		return $result;
 
 	}
 
+
 	// 取得選項
+
 	public static function get_msg_option()
 	{
 
@@ -200,97 +266,175 @@ class Msg_logic extends Basetool
 
 	}
 
+
 	// 取得訊息
+
 	public static function get_single_msg( $msg_id )
 	{
 
-		$data = Msg::get_single_msg( $msg_id );
+		$result = new \stdClass;
 
-		$data->start_date = date("Y-m-d", strtotime($data->start_date));
-		$data->end_date = date("Y-m-d", strtotime($data->end_date));
+		if ( !empty($msg_id) && is_int($msg_id) ) 
+		{
 
-		return $data;
+			$data = Msg::get_single_msg( $msg_id );
+
+			if ( is_object($data) ) 
+			{
+
+				$data->start_date = date("Y-m-d", strtotime($data->start_date));
+
+				$data->end_date = date("Y-m-d", strtotime($data->end_date));
+
+			}
+
+			$result = $data;
+
+		}
+
+		return $result;
 
 	}	
 
+
 	// 修改訊息
+
 	public static function edit_msg( $data, $msg_id )
 	{
 
-		return Msg::edit_msg( $data, $msg_id );
+		$result = false;
 
-	}
+		if ( !empty($data) && is_array($data) && !empty($msg_id) && is_int($msg_id) ) 
+		{
 
-	// 新增訊息
-	public static function add_msg( $data )
-	{
+			Msg::edit_msg( $data, $msg_id );
 
-		return Msg::add_msg( $data );
+			$result = true;
 
-	}
-
-	// 複製訊息
-	public static function clone_msg( $data )
-	{
-
-		$result = array(
-						"subject" 		=> $data->subject . "_[clone from id:".$data->id."]",
-						"content" 		=> $data->content,
-						"role_id" 		=> $data->role_id,
-						"show_type" 	=> $data->show_type,
-						"msg_type" 		=> $data->msg_type,
-						"public" 		=> 0,
-						"start_date" 	=> $data->start_date,
-						"end_date" 		=> $data->end_date,
-						"created_at" 	=> date("Y-m-d H:i:s"),
-						"updated_at" 	=> date("Y-m-d H:i:s"),
-					);
+		}
 
 		return $result;
 
 	}
 
-	// 新增一般訊息
-	public static function add_normal_msg( $subject, $content, $user_id = 0 )
+
+	// 新增訊息
+
+	public static function add_msg( $data )
 	{
 
-		$data = array(
-						"subject" 		=> $subject,
-						"content" 		=> $content,
-						"role_id" 		=> 0,
-						"user_id" 		=> $user_id,
-						"show_type" 	=> 2,
-						"msg_type" 		=> 1,
-						"public" 		=> 1,
-						"start_date" 	=> date("Y-m-d H:i:s"),
-						"end_date" 		=> date("Y-m-d 23:59:59"),
-						"created_at" 	=> date("Y-m-d H:i:s"),
-						"updated_at" 	=> date("Y-m-d H:i:s"),
-					);
+		$result = false;
 
-		Msg::add_msg( $data );
+		if ( !empty($data) ) 
+		{
+
+			Msg::add_msg( $data );
+
+			$result = true;
+
+		}
+
+		return $result;
 
 	}
 
+
+	// 複製訊息
+
+	public static function clone_msg( $data )
+	{
+
+		$result = array();
+
+		if ( !empty($data) && is_object($data) && isset($data->subject) ) 
+		{
+
+			$result = array(
+							"subject" 		=> $data->subject . "_[clone from id:".$data->id."]",
+							"content" 		=> $data->content,
+							"role_id" 		=> $data->role_id,
+							"show_type" 	=> $data->show_type,
+							"msg_type" 		=> $data->msg_type,
+							"public" 		=> 0,
+							"start_date" 	=> $data->start_date,
+							"end_date" 		=> $data->end_date,
+							"created_at" 	=> date("Y-m-d H:i:s"),
+							"updated_at" 	=> date("Y-m-d H:i:s"),
+						);
+
+		}
+
+		return $result;
+
+	}
+
+
+	// 新增一般訊息
+
+	public static function add_normal_msg( $subject, $content, $user_id = 0 )
+	{
+
+		$result = false;
+
+		if ( !empty($subject) && !empty($content) ) 
+		{
+
+			$data = array(
+							"subject" 		=> $subject,
+							"content" 		=> $content,
+							"role_id" 		=> 0,
+							"user_id" 		=> $user_id,
+							"show_type" 	=> 2,
+							"msg_type" 		=> 1,
+							"public" 		=> 1,
+							"start_date" 	=> date("Y-m-d H:i:s"),
+							"end_date" 		=> date("Y-m-d 23:59:59"),
+							"created_at" 	=> date("Y-m-d H:i:s"),
+							"updated_at" 	=> date("Y-m-d H:i:s"),
+						);
+
+			Msg::add_msg( $data );
+
+			$result = true;
+
+		}
+
+		return $result;
+
+	}
+
+
 	// 新增系統訊息
+
 	public static function add_notice_msg( $subject, $content, $user_id = 0 )
 	{
 
-		$data = array(
-						"subject" 		=> $subject,
-						"content" 		=> $content,
-						"role_id" 		=> 0,
-						"user_id" 		=> $user_id,
-						"show_type" 	=> 2,
-						"msg_type" 		=> 2,
-						"public" 		=> 1,
-						"start_date" 	=> date("Y-m-d H:i:s"),
-						"end_date" 		=> date("Y-m-d 23:59:59"),
-						"created_at" 	=> date("Y-m-d H:i:s"),
-						"updated_at" 	=> date("Y-m-d H:i:s"),
-					);
+		$result = false;
 
-		Msg::add_msg( $data );
+		if ( !empty($subject) && !empty($content) ) 
+		{
+
+			$data = array(
+							"subject" 		=> $subject,
+							"content" 		=> $content,
+							"role_id" 		=> 0,
+							"user_id" 		=> $user_id,
+							"show_type" 	=> 2,
+							"msg_type" 		=> 2,
+							"public" 		=> 1,
+							"start_date" 	=> date("Y-m-d H:i:s"),
+							"end_date" 		=> date("Y-m-d 23:59:59"),
+							"created_at" 	=> date("Y-m-d H:i:s"),
+							"updated_at" 	=> date("Y-m-d H:i:s"),
+						);
+
+			Msg::add_msg( $data );
+
+			$result = true;
+
+		}
+
+		return $result;
 
 	}
 

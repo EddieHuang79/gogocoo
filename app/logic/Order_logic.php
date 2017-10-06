@@ -32,6 +32,8 @@ class Order_logic extends Basetool
 	}
 
 
+	// 取得額外欄位
+
 	public static function get_order_extra_column()
 	{
 
@@ -41,43 +43,47 @@ class Order_logic extends Basetool
 
 		$not_show_on_page = array('pay_status', 'logistics_status', 'pay_time', 'refund_time', 'cancel_time');
 
-		unset($data[0]);
-		unset($data[1]);
+		unset($data[0], $data[1]);
 
-		foreach ($data as $key => $row) 
+		if ( !empty($data) ) 
 		{
 
-			$result[$key]["name"] = $row->Field;
-
-			$result[$key]["show_on_page"] = true;
-
-			// 基本案例
-
-			if ( strpos($row->Type, "varchar") !== false || strpos($row->Type, "date") !== false ) 
+			foreach ($data as $key => $row) 
 			{
-				$result[$key]["type"] = "text";
-			}
 
-			if ( strpos($row->Type, "int") !== false ) 
-			{
-				$result[$key]["type"] = "number";
-			}
+				$result[$key]["name"] = $row->Field;
 
-			if ( strpos($row->Type, "text") !== false ) 
-			{
-				$result[$key]["type"] = "textarea";
-			}
+				$result[$key]["show_on_page"] = true;
 
-			// 特例
+				// 基本案例
 
-			// if ( $row->Field == 'warehouse_id' ) 
-			// {
-			// 	$result[$key]["type"] = "select";
-			// }
+				if ( strpos($row->Type, "varchar") !== false || strpos($row->Type, "date") !== false ) 
+				{
+					$result[$key]["type"] = "text";
+				}
 
-			if ( in_array($row->Field, $not_show_on_page) ) 
-			{
-				$result[$key]["show_on_page"] = false;
+				if ( strpos($row->Type, "int") !== false ) 
+				{
+					$result[$key]["type"] = "number";
+				}
+
+				if ( strpos($row->Type, "text") !== false ) 
+				{
+					$result[$key]["type"] = "textarea";
+				}
+
+				// 特例
+
+				// if ( $row->Field == 'warehouse_id' ) 
+				// {
+				// 	$result[$key]["type"] = "select";
+				// }
+
+				if ( in_array($row->Field, $not_show_on_page) ) 
+				{
+					$result[$key]["show_on_page"] = false;
+				}
+
 			}
 
 		}
@@ -97,47 +103,53 @@ class Order_logic extends Basetool
 
 		$result = array();
 
-		$shop_id = Session::get( 'Store' );
+		if ( !empty($data) && is_array($data) ) 
+		{
 
-		$spec_id = isset($data["spec_id"]) ? intval($data["spec_id"]) : 0 ;
+			$shop_id = Session::get( 'Store' );
 
-		// 商品data
+			$spec_id = isset($data["spec_id"]) ? intval($data["spec_id"]) : 0 ;
 
-		$product_name = isset($data["product_name"]) ? $_this->strFilter($data["product_name"]) : "" ;
+			// 商品data
 
-        if ( !empty($product_name) ) 
-        {
+			$product_name = isset($data["product_name"]) ? $_this->strFilter($data["product_name"]) : "" ;
 
-	        $option = array( array("product_name", "=", $product_name) );
+	        if ( !empty($product_name) ) 
+	        {
 
-	        $product_data = Product_logic::get_product_data( $option );
+		        $option = array( array("product_name", "=", $product_name) );
 
-	        $product_id = $product_data[0]->product_id;
+		        $product_data = Product_logic::get_product_data( $option );
 
-			// 訂單編號
+		        $product_id = $product_data[0]->product_id;
 
-			$order_number = $_this->get_order_number();
+				// 訂單編號
 
-			$number = isset($data["number"]) ? intval($data["number"]) : 0 ;
+				$order_number = $_this->get_order_number();
 
-			$result = array(
-			            "shop_id"      			=> isset($shop_id) ? $shop_id : 1,
-			            "product_id"			=> $product_id,
-			            "spec_id"				=> $spec_id,
-			            "order_number"			=> $order_number,
-			            "number"       			=> $number,
-			            "out_warehouse_date" 	=> isset($data["out_warehouse_date"]) ? date("Y-m-d", strtotime($data["out_warehouse_date"])) : date("Y-m-d"),
-			            "category"    			=> isset($data["category"]) ? intval($data["category"]) : 1,
-			            "status"    			=> 1,
-			            "created_at"    		=> date("Y-m-d H:i:s"),
-			            "updated_at"    		=> date("Y-m-d H:i:s")
-			         );
+				$number = isset($data["number"]) ? intval($data["number"]) : 0 ;
+
+				$result = array(
+				            "shop_id"      			=> isset($shop_id) ? $shop_id : 1,
+				            "product_id"			=> $product_id,
+				            "spec_id"				=> $spec_id,
+				            "order_number"			=> $order_number,
+				            "number"       			=> $number,
+				            "out_warehouse_date" 	=> isset($data["out_warehouse_date"]) ? date("Y-m-d", strtotime($data["out_warehouse_date"])) : date("Y-m-d"),
+				            "category"    			=> isset($data["category"]) ? intval($data["category"]) : 1,
+				            "status"    			=> 1,
+				            "created_at"    		=> date("Y-m-d H:i:s"),
+				            "updated_at"    		=> date("Y-m-d H:i:s")
+				         );
+
+	        }
 
         }
 
 		return $result;
 
 	}
+
 
 	// 新增附屬欄位格式
 
@@ -148,20 +160,26 @@ class Order_logic extends Basetool
 
 		$result = array();
 
-		$result["order_id"] = $order_id;
-
-		foreach ($order_extra_column as $row_data) 
+		if ( !empty($data) && is_array($data) && !empty($order_extra_column) && is_array($order_extra_column) && !empty($order_id) && is_int($order_id) ) 
 		{
 
-			$default_value = $row_data['type'] == 'number' ? 0 : "" ;
+			$result["order_id"] = $order_id;
 
-			$result[$row_data['name']] = isset($data[$row_data['name']]) && !empty($data[$row_data['name']]) ? trim($data[$row_data['name']]) : $default_value ;
+			foreach ($order_extra_column as $row_data) 
+			{
+
+				$default_value = $row_data['type'] == 'number' ? 0 : "" ;
+
+				$result[$row_data['name']] = isset($data[$row_data['name']]) && !empty($data[$row_data['name']]) ? trim($data[$row_data['name']]) : $default_value ;
+
+			}
 
 		}
 
 		return $result;
 
 	}
+
 
 	// 更新格式
 
@@ -170,30 +188,38 @@ class Order_logic extends Basetool
 
 		$_this = new self();
 
-		$spec_id = isset($data["spec_id"]) ? intval($data["spec_id"]) : 0 ;
+		$result = array();
 
-		// 商品data
+		if ( !empty($data) && is_array($data) ) 
+		{
 
-		$product_name = isset($data["product_name"]) ? $_this->strFilter($data["product_name"]) : "" ;
+			$spec_id = isset($data["spec_id"]) ? intval($data["spec_id"]) : 0 ;
 
-        $option = array( array("product_name", "=", $product_name) );
+			// 商品data
 
-        $product_data = Product_logic::get_product_data( $option );
+			$product_name = isset($data["product_name"]) ? $_this->strFilter($data["product_name"]) : "" ;
 
-        $product_id = $product_data[0]->product_id;
+	        $option = array( array("product_name", "=", $product_name) );
 
-		$result = array(
-		            "product_id"      		=> $product_id,
-		            "spec_id"      			=> $spec_id,
-		            "number"       			=> isset($data["number"]) ? intval($data["number"]) : 0,
-		            "out_warehouse_date" 	=> isset($data["out_warehouse_date"]) ? date("Y-m-d", strtotime($data["out_warehouse_date"])) : date("Y-m-d"),
-		            "category"    			=> isset($data["category"]) ? intval($data["category"]) : 1,
-		            "updated_at"    		=> date("Y-m-d H:i:s")
-		         );
+	        $product_data = Product_logic::get_product_data( $option );
+
+	        $product_id = $product_data[0]->product_id;
+
+			$result = array(
+			            "product_id"      		=> $product_id,
+			            "spec_id"      			=> $spec_id,
+			            "number"       			=> isset($data["number"]) ? intval($data["number"]) : 0,
+			            "out_warehouse_date" 	=> isset($data["out_warehouse_date"]) ? date("Y-m-d", strtotime($data["out_warehouse_date"])) : date("Y-m-d"),
+			            "category"    			=> isset($data["category"]) ? intval($data["category"]) : 1,
+			            "updated_at"    		=> date("Y-m-d H:i:s")
+			        );
+
+		}
 
 		return $result;
 
 	}
+
 
 	// 附屬資料更新格式
 
@@ -204,12 +230,17 @@ class Order_logic extends Basetool
 
 		$result = array();
 
-		foreach ($purchase_extra_column as $row_data) 
+		if ( !empty($data) && is_array($data) && !empty($purchase_extra_column) && is_array($purchase_extra_column) ) 
 		{
 
-			$default_value = $row_data['type'] == 'number' ? 0 : "" ;
+			foreach ($purchase_extra_column as $row_data) 
+			{
 
-			$result[$row_data['name']] = isset($data[$row_data['name']]) && !empty($data[$row_data['name']]) ? trim($data[$row_data['name']]) : $default_value ;
+				$default_value = $row_data['type'] == 'number' ? 0 : "" ;
+
+				$result[$row_data['name']] = isset($data[$row_data['name']]) && !empty($data[$row_data['name']]) ? trim($data[$row_data['name']]) : $default_value ;
+
+			}
 
 		}
 
@@ -217,19 +248,56 @@ class Order_logic extends Basetool
 
 	}
 
+
+	// 新增訂單
+
+	public static function add_order( $data )
+	{
+
+		$result = !empty($data) && is_array($data) ? Order::add_order( $data ) : false;
+
+		return $result;
+
+	}
+
+
+	// 新增額外訂單
+
+	public static function add_extra_order( $data )
+	{
+
+		$result = !empty($data) && is_array($data) ? Order::add_extra_order( $data ) : false;
+
+		return $result;
+
+	}
+
+
+	// 修改訂單
+
 	public static function edit_order( $data, $order_id )
 	{
 
-		Order::edit_order( $data, $order_id );
+		$result = !empty($data) && is_array($data) ? Order::edit_order( $data, $order_id ) : false;
+
+		return $result;
 
 	}
+
+
+	// 修改訂單額外欄位
 
 	public static function edit_order_extra_data( $data, $order_id )
 	{
 
-		Order::edit_order_extra_data( $data, $order_id );
+		$result = !empty($data) && is_array($data) ? Order::edit_order_extra_data( $data, $order_id ) : false;
+
+		return $result;
 
 	}
+
+
+	// 取得訂單編號
 
 	public static function get_order_number( $order_id = 0 )
 	{
@@ -242,19 +310,8 @@ class Order_logic extends Basetool
 
 	}
 
-	public static function add_order( $data )
-	{
 
-		return Order::add_order( $data );
-
-	}
-
-	public static function add_extra_order( $data )
-	{
-
-		Order::add_extra_order( $data );
-
-	}
+	// 取得訂單資料
 
 	public static function get_order_data( $data = array() )
 	{
@@ -264,6 +321,9 @@ class Order_logic extends Basetool
 		return Order::get_order_data( $data, $shop_id );
 
 	}
+
+
+	// 取得訂單列表
 
 	public static function get_order_list( $data, $option_data )
 	{
@@ -276,28 +336,33 @@ class Order_logic extends Basetool
 
 		$result = array();
 
-		foreach ($data as $key1 => $row) 
+		if ( !empty($data) ) 
 		{
-			foreach ($row as $key2 => $data) 
+
+			foreach ($data as $key1 => $row) 
 			{
+				foreach ($row as $key2 => $data) 
+				{
 
-				$result[$key1][$key2] = $data;
+					$result[$key1][$key2] = $data;
 
-			}
+				}
 
-			$category = $row->category;
+				$category = $row->category;
 
-			$result[$key1]['out_warehouse_category_txt'] = $out_warehouse_category_txt->$category;
+				$result[$key1]['out_warehouse_category_txt'] = $out_warehouse_category_txt->$category;
 
-			$result[$key1]['status_txt'] = $status_txt[$row->status];
+				$result[$key1]['status_txt'] = $status_txt[$row->status];
 
-			$result[$key1]['order_number_txt'] = $_this->return_order_number_to_user($row);
+				$result[$key1]['order_number_txt'] = $_this->order_number_encode($row);
 
-			foreach ($option_data as $key2 => $data) 
-			{
+				foreach ($option_data as $key2 => $data) 
+				{
 
-				$result[$key1][$key2.'_txt'] = isset( $data[$row->$key2] ) ? $data[$row->$key2] : "" ;
-			
+					$result[$key1][$key2.'_txt'] = isset( $data[$row->$key2] ) ? $data[$row->$key2] : "" ;
+				
+				}
+
 			}
 
 		}
@@ -306,12 +371,27 @@ class Order_logic extends Basetool
 
 	}
 
+
+	// 取得單筆訂單
+
 	public static function get_single_order_data( $id )
 	{
 
-		return Order::get_single_order_data( $id );
+		$result = array();
+
+		if ( !empty($id) && is_int($id) )
+		{
+
+			$result = Order::get_single_order_data( $id );
+
+		}
+
+		return $result;
 
 	}
+
+
+	// FIFO Controller
 
 	public static function FIFO_get_stock_id( $data )
 	{
@@ -324,41 +404,59 @@ class Order_logic extends Basetool
 		
 		$spec_id = array();
 
-		foreach ($data as $row) 
+		if ( !empty($data) ) 
 		{
 
-			$product_id[] = $row->product_id;
+			foreach ($data as $row) 
+			{
 
-			$spec_id[] = $row->spec_id;
+				if ( is_object($row) ) 
+				{
 
-		}
+					$product_id[] = $row->product_id;
 
-		$product_id = array_filter($product_id, "intval");
+					$spec_id[] = $row->spec_id;
 
-		$spec_id = array_filter($spec_id, "intval");
+				}
 
-		$stock_data = Stock_logic::FIFO_get_stock_id( $product_id, $spec_id );
+			}
 
-    	$stock_data = $_this->change_format($stock_data);
+			$product_id = array_filter($product_id, "intval");
 
-    	// 爛招 丟session
+			$spec_id = array_filter($spec_id, "intval");
 
-    	Session::forget('stock_data');
+			$stock_data = Stock_logic::FIFO_get_stock_id( $product_id, $spec_id );
 
-    	Session::put('stock_data', $stock_data);
+	    	$stock_data = $_this->change_format($stock_data);
 
-		foreach ($data as $row) 
-		{
+	    	// 爛招 丟session
 
-			$stock_key = $_this->made_key(array($row->product_id, $row->spec_id));
+	    	Session::forget('stock_data');
 
-			$result[$row->id] = $_this->FIFO_stock( $stock_key, $row->number );
+	    	Session::put('stock_data', $stock_data);
+
+			foreach ($data as $row) 
+			{
+
+				if ( is_object($row) ) 
+				{
+
+					$stock_key = $_this->made_key(array($row->product_id, $row->spec_id));
+
+					$result[$row->id] = $_this->FIFO_stock( $stock_key, $row->number );
+
+				}
+
+			}
 
 		}
 
 		return $result;
 
 	}
+
+
+	// 轉換格式
 
 	public static function change_format( $data )
 	{
@@ -367,20 +465,33 @@ class Order_logic extends Basetool
 
 		$result = array();
 
-		foreach ($data as $row) 
+		if ( !empty($data) ) 
 		{
 
-			$stock_key =  $_this->made_key( array( $row->product_id, $row->spec_id ) );
+			foreach ($data as $row) 
+			{
 
-			$result[$stock_key][$row->in_warehouse_number] = array(
-																	$row->id => $row->stock
-																);
+				if ( is_object($row) ) 
+				{
+
+					$stock_key =  $_this->made_key( array( $row->product_id, $row->spec_id ) );
+
+					$result[$stock_key][$row->in_warehouse_number] = array(
+																			$row->id => $row->stock
+																		);
+
+				}
+
+			}
 
 		}
 
 		return $result;
 
 	}
+
+
+	// FIFO core
 
 	public static function FIFO_stock( $stock_key, $request_number )
 	{
@@ -396,42 +507,47 @@ class Order_logic extends Basetool
 
 			$stock_data = $data;
 
-			foreach ($data[$stock_key] as &$row) 
+			if ( isset($data[$stock_key]) && !empty($data[$stock_key]) && !empty($request_number) && is_int($request_number) ) 
 			{
 
-				foreach ($row as $stock_id => &$stock) 
+				foreach ($data[$stock_key] as &$row) 
 				{
 
-					// 判斷結果
-
-					$tmp = $stock - $request_number;
-					
-					if ( $tmp >= 0 ) 
-					{
-						$stock_result[] = array(
-												$stock_id => $request_number
-											);
-
-						$request_number = 0;
-
-						// 更新陣列數
-
-						$stock = $tmp > 0 ? $tmp : 0 ;
-
-						break 2;
-					}
-					else
+					foreach ($row as $stock_id => &$stock) 
 					{
 
-						$request_number = abs($tmp) ; 
+						// 判斷結果
 
-						$stock_result[] = array(
-												$stock_id => $stock
-											);
+						$tmp = $stock - $request_number;
+						
+						if ( $tmp >= 0 ) 
+						{
+							$stock_result[] = array(
+													$stock_id => $request_number
+												);
 
-						// 更新陣列數
+							$request_number = 0;
 
-						$stock = $tmp > 0 ? $tmp : 0 ;
+							// 更新陣列數
+
+							$stock = $tmp > 0 ? $tmp : 0 ;
+
+							break 2;
+						}
+						else
+						{
+
+							$request_number = abs($tmp) ; 
+
+							$stock_result[] = array(
+													$stock_id => $stock
+												);
+
+							// 更新陣列數
+
+							$stock = $tmp > 0 ? $tmp : 0 ;
+
+						}
 
 					}
 
@@ -443,33 +559,53 @@ class Order_logic extends Basetool
 
 			$request_number > 0 ? Session::put('stock_data', $stock_data) : Session::put('stock_data', $data) ;
 
-		}
-		
-		$result = array(
-						
-						"result" 	=> $request_number > 0 ? false : true,
+			$result = array(
+							
+							"result" 	=> $request_number > 0 ? false : true,
 
-						"data" 		=> $request_number > 0 ? array() : $stock_result
-					
-					);
+							"data" 		=> $request_number > 0 ? array() : $stock_result
+						
+						);
+
+		}
 
 		return $result;
 
 	}
 
+
+	// 多筆訂單核可
+
 	public static function get_order_data_for_verify( $id )
 	{
 
-		return Order::get_order_data_for_verify( $id );
+		$result = array();
+
+		if ( !empty($id) && is_array($id) && count($id) > 0 ) 
+		{
+
+			$result = Order::get_order_data_for_verify( $id );
+
+		}
+
+		return $result;
 
 	}
+
+
+	// 改變訂單狀態
 
 	public static function change_status( $id )
 	{
 
-		return Order::change_status( $id );
+		$result = !empty($id) && is_int($id) ? Order::change_status( $id ) : false;
+
+		return $result;
 
 	}
+
+
+	// 取得訂單紀錄格式
 
 	public static function order_stock_record_format( $data, $order_id )
 	{
@@ -478,19 +614,24 @@ class Order_logic extends Basetool
 
 		$result = array();
 
-		foreach ($data as $row) 
+		if ( !empty($data) && is_array($data) && !empty($order_id) && is_int($order_id) ) 
 		{
 
-			foreach ($row as $stock_id => $cost_stock) 
+			foreach ($data as $row) 
 			{
 
-				$result[] = array(
-									"order_id" 		=> $order_id,
-									"stock_id" 		=> $stock_id,
-									"cost_number" 	=> $cost_stock,
-									"created_at" 	=> date("Y-m-d H:i:s"),
-									"updated_at" 	=> date("Y-m-d H:i:s"),
-								);
+				foreach ($row as $stock_id => $cost_stock) 
+				{
+
+					$result[] = array(
+										"order_id" 		=> $order_id,
+										"stock_id" 		=> $stock_id,
+										"cost_number" 	=> $cost_stock,
+										"created_at" 	=> date("Y-m-d H:i:s"),
+										"updated_at" 	=> date("Y-m-d H:i:s"),
+									);
+				}
+
 			}
 
 		}
@@ -499,84 +640,121 @@ class Order_logic extends Basetool
 
 	}
 
+
+	// 新增訂單紀錄
+
 	public static function add_order_stock_record( $data )
 	{
 
-		return Order::add_order_stock_record( $data );
-
-	}
-
-	public static function return_order_number_to_user( $order_data )
-	{
-
-		$result = date("Ymd", strtotime($order_data->created_at)) . str_pad($order_data->order_number, 8, "0", STR_PAD_LEFT);
+		$result = !empty($data) && is_array($data) ? Order::add_order_stock_record( $data ) : false;
 
 		return $result;
 
 	}
+
+
+	// 訂單編號 編碼
+
+	public static function order_number_encode( $order_data )
+	{
+
+		$result = is_object($order_data) ? date("Ymd", strtotime($order_data->created_at)) . str_pad($order_data->order_number, 3, "0", STR_PAD_LEFT) : false ;
+
+		return $result;
+
+	}
+
+
+	// 訂單編號 解碼
+
+	public static function order_number_decode( $order_number )
+	{
+
+		$result = !empty($order_number) ? substr($order_number, 8) : false ;
+
+		$result = !empty($result) ? intval($result) : false ;
+
+		return $result;
+
+	}
+
+
+	// 訂單核可 controller
 
 	public static function order_verify( $order_id )
 	{
 
 		$_this = new self();
 
-        // filter
+		$result = array();
 
-        $order_id_array = array_filter($order_id, "intval");
+		if ( !empty($order_id) && is_array($order_id) ) 
+		{
 
-        // 取得訂單資料 預期回傳 id,product_id,spec_id,number
+	        // filter
 
-        $order_data = $_this->get_order_data_for_verify( $order_id_array ); 
+	        $order_id_array = array_filter($order_id, "intval");
 
-        $FIFO_result = $_this->FIFO_get_stock_id( $order_data ); 
+	        // 取得訂單資料 預期回傳 id,product_id,spec_id,number
 
-        $Login_user = Session::get("Login_user");
+	        $order_data = $_this->get_order_data_for_verify( $order_id_array ); 
 
-        $error_data = array();
+	        $FIFO_result = $_this->FIFO_get_stock_id( $order_data ); 
 
-        foreach ($FIFO_result as $order_id => $data) 
-        {
+	        $Login_user = Session::get("Login_user");
 
-        	if ( $data['result'] === true ) 
-        	{
+	        $error_data = array();
 
-    			// 更改狀態
+	        foreach ($FIFO_result as $order_id => $data) 
+	        {
 
-    			$_this->change_status( $order_id );
+	        	if ( $data['result'] === true ) 
+	        	{
 
-    			// 紀錄扣庫
+	    			// 更改狀態
 
-    			$order_stock_record = $_this->order_stock_record_format( $data['data'], $order_id );
+	    			$_this->change_status( $order_id );
 
-    			$_this->add_order_stock_record( $order_stock_record );
+	    			// 紀錄扣庫
 
-    			// 扣除庫存
+	    			$order_stock_record = $_this->order_stock_record_format( $data['data'], $order_id );
 
-    			Stock_logic::cost_stock( $order_stock_record );
+	    			$_this->add_order_stock_record( $order_stock_record );
 
-        	}
-        	else
-        	{
+	    			// 扣除庫存
 
-        		$fail_data = $_this->get_single_order_data($order_id);
+	    			Stock_logic::cost_stock( $order_stock_record );
 
-        		$fail_data = $fail_data[0];
+	        	}
+	        	else
+	        	{
 
-        		$order_number = $_this->return_order_number_to_user($fail_data);
+	        		$fail_data = $_this->get_single_order_data($order_id);
 
-        		$error_data[] = $order_number;
+	        		$fail_data = $fail_data[0];
 
-        	}
+	        		$order_number = $_this->order_number_encode($fail_data);
 
-        }
+	        		$error_data[] = $order_number;
 
-		$subject = !empty($error_data) ? "庫存不足" : "入帳成功" ;
+	        	}
 
-		$content = !empty($error_data) ? "庫存不足，無法入帳！訂單編號: ". implode(",", $error_data) : $subject ;
+	        }
 
-        // Msg_logic::add_notice_msg( $subject, $content, $Login_user["user_id"] );
+			$subject = !empty($error_data) ? "庫存不足" : "入帳成功" ;
+
+			$content = !empty($error_data) ? "庫存不足，無法入帳！訂單編號: ". implode(",", $error_data) : $subject ;
+
+	        // Msg_logic::add_notice_msg( $subject, $content, $Login_user["user_id"] );
+
+		}
+
+		return $result;
 
 	}
+
+
+	// 訂單上傳範例
 
 	public static function order_upload_sample_output( $column_header )
 	{
@@ -589,14 +767,19 @@ class Order_logic extends Basetool
 
 		$shop_id = Session::get( 'Store' );	
 
-		$data = Order::order_upload_sample_output( $shop_id );
-
-		foreach ($column_header as $row) 
+		if ( !empty($column_header) && is_array($column_header) ) 
 		{
 
-			$column[] = $row['name'];
+			foreach ($column_header as $row) 
+			{
+
+				$column[] = $row['name'];
+
+			}
 
 		}
+
+		$data = Order::order_upload_sample_output( $shop_id );
 
 		if ( !empty($data) ) 
 		{
@@ -619,27 +802,60 @@ class Order_logic extends Basetool
 
 	}
 
+
+	// 取得訂單數量
+
 	public static function get_order_cnt( $week_date, $shop_id, $status )
 	{
 
+		$result = array();
 
-		return Order::get_order_cnt( $week_date, $shop_id, $status );
+		if ( !empty($week_date) && !empty($shop_id) && is_int($shop_id) && !empty($status) && is_array($status) ) 
+		{
+
+			$result = Order::get_order_cnt( $week_date, $shop_id, $status );
+
+		}
+
+		return $result;
 
 	}
+
+
+	// 取得訂單總和
 
 	public static function get_order_sum( $week_date, $shop_id, $status )
 	{
 
+		$result = array();
 
-		return Order::get_order_sum( $week_date, $shop_id, $status );
+		if ( !empty($week_date) && !empty($shop_id) && is_int($shop_id) && !empty($status) && is_array($status) ) 
+		{
+
+			$result = Order::get_order_sum( $week_date, $shop_id, $status );
+
+		}
+
+		return $result;
 
 	}
+
+
+	// 取得熱銷top5
 
 	public static function get_hotSell_top5( $week_date, $shop_id, $status )
 	{
 
+		$result = array();
 
-		return Order::get_hotSell_top5( $week_date, $shop_id, $status );
+		if ( !empty($week_date) && !empty($shop_id) && is_int($shop_id) && !empty($status) && is_array($status) ) 
+		{
+
+			$result = Order::get_hotSell_top5( $week_date, $shop_id, $status );
+
+		}
+
+		return $result;
 
 	}
 

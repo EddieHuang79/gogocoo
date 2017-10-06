@@ -7,10 +7,14 @@ use App\model\Option;
 class Option_logic extends Basetool
 {
 
+
+	// 取得店鋪資料
+
 	public static function get_store_data()
 	{
 
 		$result = array();
+
 		$child = array();
 
 		$data = Option::get_store_data();
@@ -47,14 +51,19 @@ class Option_logic extends Basetool
 	}
 
 
+	// 取得店鋪分類名稱
+
 	public static function get_store_type_name( $store_type )
 	{
 
-		$result = Option::get_store_type_by_id( $store_type );
+		$result = !empty($store_type) && is_array($store_type) ? Option::get_store_type_by_id( $store_type ) : false ;
 
 		return $result;
 
 	}
+
+
+	// 取得入庫分類
 
 	public static function get_in_warehouse_category()
 	{
@@ -69,6 +78,9 @@ class Option_logic extends Basetool
 
 	}
 
+
+	// 取得出庫分類
+
 	public static function get_out_warehouse_category()
 	{
 
@@ -82,12 +94,20 @@ class Option_logic extends Basetool
 
 	}
 
+
+	// 取得指定選項
+
 	public static function get_option( $data )
 	{
 
-		return Option::get_option( $data );
+		$result = !empty($data) ? Option::get_option( $data ) : array();
+
+		return $result;
 
 	}
+
+
+	// 取得選單
 
 	public static function get_select_option( $data )
 	{
@@ -96,29 +116,33 @@ class Option_logic extends Basetool
 
 		$result = array();
 
-		foreach ($data as $key => $value) 
+		if ( !empty($data) && is_array($data) ) 
 		{
 
-			$option_key = "_".$value['name'];
-
-			$option_data = $_this->get_option( array( $option_key ) );
-
-			if ($option_data->count() > 0) 
+			foreach ($data as $key => $value) 
 			{
-				
-				foreach ($option_data as &$row) 
+
+				$option_key = "_".$value['name'];
+
+				$option_data = $_this->get_option( array( $option_key ) );
+
+				if ($option_data->count() > 0) 
 				{
 					
-					$row->value = json_decode($row->value, true);
+					foreach ($option_data as &$row) 
+					{
+						
+						$row->value = json_decode($row->value, true);
+
+					}
+
+					$result[$value['name']] = $option_data[0]->value;
 
 				}
-
-				$result[$value['name']] = $option_data[0]->value ;
 
 			}
 
 		}
-
 
 		return $result;
 

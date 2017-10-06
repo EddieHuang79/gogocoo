@@ -24,6 +24,9 @@ class Store_logic extends Basetool
 
 	}
 
+
+	// 計算店舖數
+
 	public static function get_store_cnt()
 	{
 
@@ -48,6 +51,7 @@ class Store_logic extends Basetool
 		$left = $free_store + $buy_store_cnt["count"];
 
 		// return
+
 		$result = array(
 						"free" 					=> $free_store > 0 ? $free_store : 0,
 						"buy" 					=> $buy_store_cnt["count"],
@@ -59,6 +63,9 @@ class Store_logic extends Basetool
 		return $result;
 
 	}	
+
+
+	// 取得店鋪列表
 
 	public static function get_store_info( $data = array() )
 	{
@@ -78,17 +85,24 @@ class Store_logic extends Basetool
 
 		$store_info = Store::get_store_info( $_this->user_id );
 
+
 		if ( $store_info->count() > 0 ) 
 		{
 
 			foreach ($store_info as $row) 
 			{
 
-				$store_type_array[] = $row->store_type;
-				
-				$user_id[] = $row->id;
+				if ( is_object($row) ) 
+				{
+
+					$store_type_array[] = $row->store_type;
+					
+					$user_id[] = $row->id;
+
+				}
 
 			}
+
 
 			// 取得行業別
 
@@ -101,40 +115,57 @@ class Store_logic extends Basetool
 			
 			}
 
+
 			// 計算店鋪截止日
 
 			$cnt_deadline = Shop_logic::count_deadline( $user_id, "create_shop" );
+
 
 			// 寫入名稱
 
 			foreach ($store_info as &$row) 
 			{
 
-				$row->deadline = Shop_logic::get_deadline( $row, $cnt_deadline );
+				if ( is_object($row) ) 
+				{
 
-				$row->store_type_name = isset($store_type_name[$row->store_type]) ? $store_type_name[$row->store_type] : "" ;
+					$row->deadline = Shop_logic::get_deadline( $row, $cnt_deadline );
+
+					$row->store_type_name = isset($store_type_name[$row->store_type]) ? $store_type_name[$row->store_type] : "" ;
+
+				}
 			
 			}
 
-
-			$result = $store_info;
-
 			if ( !empty($data["store_id"]) ) 
 			{
+
 				foreach ($store_info as $row) 
 				{
-					if ( $row->id == $data["store_id"] ) 
+			
+					if ( is_object($row) && $row->id == $data["store_id"] ) 
 					{
+			
 						$result = $row;
+			
 					}
+			
 				}
+			
+			}
+			else
+			{
+
+				$result = $store_info;
+
 			}
 
 		}
 
 		return $result;
 
-	}	
+	}
+
 
 	// 新增格式
 
@@ -143,19 +174,22 @@ class Store_logic extends Basetool
 
 		$_this = new self();
 
-		// 取得帳號
-	     
-		$result = array(
-		            "store_name"        => isset($data["StoreName"]) ? $_this->strFilter($data["StoreName"]) : "",
-		            "store_code"        => isset($data["StoreCode"]) && !empty($data["StoreCode"]) ? strtoupper($_this->strFilter($data["StoreCode"])) : Admin_user_logic::get_rand_string(),
-		            "store_type"     	=> isset($data["store_type_id"]) ? intval($data["store_type_id"]) : "",
-		            "user_id"     		=> isset($_this->user_id) ? intval($_this->user_id) : "",
-		            // "deadline"    		=> date("Y-m-d", mktime( 0, 0, 0, date("m"), date("d")+30, date("Y") )),
-		            "is_free"    		=> isset($data["is_free"]) ? intval($data["is_free"]) : 1,
-		            "created_at"    	=> date("Y-m-d H:i:s"),
-		            "updated_at"    	=> date("Y-m-d H:i:s")
-		         );
+		$result = array();
 
+		if ( !empty($data) && is_array($data) ) 
+		{
+		     
+			$result = array(
+			            "store_name"        => isset($data["StoreName"]) ? $_this->strFilter($data["StoreName"]) : "",
+			            "store_code"        => isset($data["StoreCode"]) && !empty($data["StoreCode"]) ? strtoupper($_this->strFilter($data["StoreCode"])) : Admin_user_logic::get_rand_string(),
+			            "store_type"     	=> isset($data["store_type_id"]) ? intval($data["store_type_id"]) : "",
+			            "user_id"     		=> isset($_this->user_id) ? intval($_this->user_id) : "",
+			            "is_free"    		=> isset($data["is_free"]) ? intval($data["is_free"]) : 1,
+			            "created_at"    	=> date("Y-m-d H:i:s"),
+			            "updated_at"    	=> date("Y-m-d H:i:s")
+			         );
+
+		}
 
 		return $result;
 
@@ -168,44 +202,80 @@ class Store_logic extends Basetool
 
 		$_this = new self();
 
-		$result = array(
-		            "store_name"        => isset($data["StoreName"]) ? $_this->strFilter($data["StoreName"]) : "",
-		            "store_code"        => isset($data["StoreCode"]) && !empty($data["StoreCode"]) ? strtoupper($_this->strFilter($data["StoreCode"])) : Admin_user_logic::get_rand_string(),
-		            "updated_at"    	=> date("Y-m-d H:i:s")
-		         );
+		$result = array();
+
+		if ( !empty($data) && is_array($data) ) 
+		{
+
+			$result = array(
+			            "store_name"        => isset($data["StoreName"]) ? $_this->strFilter($data["StoreName"]) : "",
+			            "store_code"        => isset($data["StoreCode"]) && !empty($data["StoreCode"]) ? strtoupper($_this->strFilter($data["StoreCode"])) : Admin_user_logic::get_rand_string(),
+			            "updated_at"    	=> date("Y-m-d H:i:s")
+			         );
+
+		}
 
 		return $result;
 
 	}
+
 
 	// 修改店鋪
 
 	public static function edit_store( $data, $store_id )
 	{
 
-		return Store::edit_store( $data, $store_id );
+		$result = false;
+
+		if ( !empty($data) && is_array($data) && !empty($store_id) && is_int($store_id) ) 
+		{
+
+			$result = Store::edit_store( $data, $store_id );
+
+		}
+
+		return $result;
 
 	}
+
 
 	// 新增店鋪
 
 	public static function add_store( $data )
 	{
 
-		return Store::add_store( $data );
+		$result = false;
+
+		if ( !empty($data) && is_array($data) ) 
+		{
+
+			$result = Store::add_store( $data );
+
+		}
+
+		return $result;
 
 	}
+
 
 	// 取得店鋪
 
 	public static function get_single_store( $store_id )
 	{
 
-		$data = Store::get_single_store( $store_id );
+		$result = false;
 
-		return $data;
+		if ( !empty($store_id) && is_int($store_id) ) 
+		{
+
+			$result = Store::get_single_store( $store_id );
+
+		}
+
+		return $result;
 
 	}	
+
 
 	// 檢查 store user
 
@@ -214,19 +284,27 @@ class Store_logic extends Basetool
 
 		$_this = new self();
 
+		$result = false;
+
 		$store_id = intval($store_id);
 
-		$data = Store::get_single_store( $store_id );
+		if ( !empty($store_id) && is_int($store_id) ) 
+		{
 
-		$parents_id = Admin_user_logic::get_parents_id( array("user_id" => $_this->user_id ) );
+			$data = Store::get_single_store( $store_id );
 
-		$parents_id = $parents_id == 0 ? $_this->user_id : $parents_id ;
+			$parents_id = Admin_user_logic::get_parents_id( array("user_id" => $_this->user_id ) );
 
-		$result = $parents_id == $data->user_id ? true : false;
+			$parents_id = $parents_id == 0 ? $_this->user_id : $parents_id ;
+
+			$result = $parents_id == $data->user_id ? true : false;
+
+		}
 
 		return $result;
 
 	}	
+
 
 	// 切換店舖
 
@@ -235,28 +313,52 @@ class Store_logic extends Basetool
 
 		$_this = new self();
 
+		$result = false;
+
 		$store_id = intval($store_id);
 
-		Session::put( 'Store', $store_id );
+		if ( !empty($store_id) && is_int($store_id) ) 
+		{
+
+			Session::put( 'Store', $store_id );
+
+			$result = true;
+
+		}
+
+		return $result;
 
 	}	
+
 
 	// 擴展店鋪日期
 
 	public static function extend_store_deadline( $user_id, $data )
 	{
 
-	  return Shop_logic::add_use_record( $user_id, $data, $type = 2 );
+		$result = false;
+
+		if ( !empty($data) && is_array($data) && !empty($user_id) && is_int($user_id) ) 
+		{
+
+			$result = Shop_logic::add_use_record( (int)$user_id, $data, $type = 2 );
+
+		}
+
+	  	return $result;
 	     
 	}
 
-   // 取得創建日期
 
-   public static function get_created_at( $user_id )
-   {
+   	// 以代碼取得店鋪id
 
-      return Store::get_created_at( $user_id );
-         
-   }
+	public static function get_store_id_by_code( $store_code )
+	{
+	    
+		$result = !empty($store_code) ? Store::get_store_id_by_code( $store_code ) : false ;
+
+		return $result;
+
+	}	
 
 }

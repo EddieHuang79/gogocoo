@@ -46,7 +46,9 @@
 				<div class="mall_product_cost"></div>			
 				<div class="mall_product_btn">
 					<input type="hidden" class="mall_shop_id" name="mall_shop_id">
-					<input type="button" value="{{ $txt['buy'] }}" onclick="ShopSubmit();">
+					<input type="hidden" name="total">
+					<input type="submit" value="{{ $txt['buy'] }}">
+					<!-- <input type="submit" value="{{ $txt['buy'] }}" onclick="ShopSubmit();"> -->
 					<!-- <input type="submit" value="{{ $txt['buy'] }}"> -->
 					<input type="button" value="{{ $txt['back'] }}" onclick="ClosePopup();">
 					<input type="hidden" name="_token" value="{{ csrf_token() }}">

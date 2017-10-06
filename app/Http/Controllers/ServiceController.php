@@ -7,9 +7,9 @@ use App\logic\Role_logic;
 use App\logic\Service_logic;
 use App\logic\Redis_tool;
 use App\logic\Web_cht;
+use App\logic\Basetool;
 
-
-class ServiceController extends Controller
+class ServiceController extends Basetool
 {
     /**
      * Display a listing of the resource.
@@ -19,6 +19,10 @@ class ServiceController extends Controller
     public function index(Request $request)
     {
 
+        $_this = new self();
+
+        $service_id = isset($_GET['service_id']) ? intval($_GET['service_id']) : 0 ;
+
         // get now page
 
         Service_logic::get_service_id_by_url_and_save( $request->path() );
@@ -27,8 +31,14 @@ class ServiceController extends Controller
 
         $search_tool = array(4,5,7);
 
-        Redis_tool::set_search_tool( $search_tool );
+        $search_query = $_this->get_search_query( $search_tool, $_GET );
 
+        if ( $service_id > 0 ) 
+        {
+        
+            Redis_tool::set_search_tool( $search_tool, $service_id );
+        
+        }
 
         $service_data = Service_logic::get_service_data();
 
@@ -79,6 +89,8 @@ class ServiceController extends Controller
     public function store(Request $request)
     {
 
+        $_this = new self();
+
         if (!empty($_POST["service_id"])) 
         {
             
@@ -123,7 +135,9 @@ class ServiceController extends Controller
 
         Redis_tool::del_menu_data_all();
 
-        return redirect("/service");
+        $page_query = $_this->made_search_query();
+
+        return redirect("/service".$page_query);
 
     }
 
@@ -147,7 +161,7 @@ class ServiceController extends Controller
     public function edit($id)
     {
 
-        $service = Service_logic::get_service( $id );
+        $service = Service_logic::get_service( (int)$id );
  
         $assign_page = "service/service_input";
 
@@ -223,7 +237,12 @@ class ServiceController extends Controller
     public function service_public_process()
     {
 
-        $service = Service_logic::public_service( $_GET );
+        if ( !empty($_GET) ) 
+        {
+
+            $service = Service_logic::public_service( $_GET );
+
+        }
 
         return redirect("/service_public");
 

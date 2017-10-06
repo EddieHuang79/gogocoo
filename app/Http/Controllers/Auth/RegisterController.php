@@ -144,15 +144,20 @@ class RegisterController extends Controller
 
         if ( $user_id > 0 ) 
         {
+
             $data = Login::login_format($data);
+            
             $err = Login::login_verify($data);
+        
         }
 
         // 註冊
         
         if ( $user_id <= 0 ) 
         {
+        
             Session::put( 'Social_login', $data );
+        
         }
 
         $path = $user_id > 0 ? "/admin_index" : "/register" ;

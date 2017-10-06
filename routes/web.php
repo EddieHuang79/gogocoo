@@ -11,6 +11,8 @@
 |
 */
 
+// 首頁 + 登入
+
 Route::resource('/', 'IndexController');
 
 Route::get('index', ['as'=>'index','uses'=>'IndexController@index']);
@@ -27,6 +29,9 @@ Route::post('login', ['as'=>'login.process','uses'=>'Auth\LoginController@proces
 
 Route::post('refresh', ['as'=>'login.refresh','uses'=>'Auth\LoginController@refresh']);
 
+
+// 註冊
+
 Route::get('register', ['as'=>'register.index','uses'=>'Auth\RegisterController@index']);
 
 Route::post('register', ['as'=>'register.register_process','uses'=>'Auth\RegisterController@register_process']);
@@ -37,25 +42,40 @@ Route::get('forgot_password', ['as'=>'login.register_finish','uses'=>'Auth\Forgo
 
 Route::post('forgot_password', ['as'=>'login.register_finish','uses'=>'Auth\ForgotPasswordController@process']);
 
+Route::get('reset', ['as'=>'login.reset','uses'=>'Auth\ForgotPasswordController@reset']);
+
+Route::post('social_process', ['as'=>'social.login','uses'=>'Auth\RegisterController@social_process']);
+
+
+// 使用者
+
 Route::resource('user', 'UserController');
 
 Route::post('extend_user_process', ['as'=>'admin.extend_user_process','uses'=>'UserController@extend_user_process']);
 
+// photo
+
+Route::get('photo', ['as'=>'user.photo_index','uses'=>'UserController@photo_index']);
+
+Route::post('photo_upload_process', ['as'=>'user.photo_upload_process','uses'=>'UserController@photo_upload_process']);
+
+// 角色
+
 Route::resource('role', 'RoleController');
 
+// 服務
+
 Route::resource('service', 'ServiceController');
-
-Route::get('record', ['as'=>'record.index','uses'=>'RecordController@index']);
-
-Route::post('password', ['as'=>'password.email','uses'=>'Auth\ForgotPasswordController@index']);
-
-Route::get('reset', ['as'=>'password.reset','uses'=>'Auth\ForgotPasswordController@reset']);
-
-Route::post('social_process', ['as'=>'social.login','uses'=>'Auth\RegisterController@social_process']);
 
 Route::get('service_public', ['as'=>'service.public','uses'=>'ServiceController@service_public']);
 
 Route::get('service_public_process', ['as'=>'service.public_process','uses'=>'ServiceController@service_public_process']);
+
+
+// record
+
+Route::get('record', ['as'=>'record.index','uses'=>'RecordController@index']);
+
 
 // msg
 
@@ -87,11 +107,8 @@ Route::post('get_mall_product', ['as'=>'shop.get_mall_product','uses'=>'ShopCont
 
 Route::post('get_extend_deadline_option', ['as'=>'shop.get_extend_deadline_option','uses'=>'ShopController@get_extend_deadline_option']);
 
-// photo
+Route::post('DataReceive', ['as'=>'shop.DataReceive','uses'=>'ShopController@DataReceive']);
 
-Route::get('photo', ['as'=>'user.photo_index','uses'=>'UserController@photo_index']);
-
-Route::post('photo_upload_process', ['as'=>'user.photo_upload_process','uses'=>'UserController@photo_upload_process']);
 
 // product
 

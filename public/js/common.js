@@ -77,10 +77,11 @@ var Show_current_position = function(){
 		$(".store_type>li").removeClass('store_type_choose');
 	}
 	store_type_find_child = function() {
-		var optid = $(this).attr("optid");
-		$(".store_type>li").hide();
-		$(".store_type>li[optid='"+optid+"']").addClass('store_type_choose').show();
-		$(".store_type>li[parentsid='"+optid+"']").show();
+		var optid = $(this).val();
+		console.log(optid);
+		$("[name='store_type_id']").val("");
+		$("[name='store_type_id']>option").hide();
+		$("[name='store_type_id']>option[parentsid='"+optid+"']").show();
 	},
 	set_store_type = function() {
 		var choose_opt = $(this).text(),
@@ -120,6 +121,7 @@ var Show_current_position = function(){
 				$(".mall_product_description").text(data.mall_product_description);
 				// $(".mall_product_pic").find("img").attr("src",data.mall_product_pic);
 				$(".mall_product_cost").text( "NT." + total );
+				$("[name='total']").val( total );
 				$(".mall_product_spec>.cost").text(data.cost);
 				$('.mall_product_spec>select').find("option[classkey='append']").remove();
 				$('[name="mall_product_number"]').val("1");
@@ -127,15 +129,6 @@ var Show_current_position = function(){
 					var dom = "<div> "+row['product_name']+" X "+row["number"]+" 可用"+row["date_spec"]+" 天 </div>";
 					$(".mall_child_product").append(dom);
 				});
-				// data.mall_product_spec.forEach(function(value, key){
-				// 	$('.mall_product_spec>select').append($('<option>', {
-				// 	    value: value.id,
-				// 	    spec: value.cost+'/'+value.date_spec,
-				// 	    text: 'NT.'+value.cost+' / '+value.date_spec+'天',
-				// 	    classkey: "append"
-				// 	}));
-				// });
-				// $('.mall_product_spec>select').val('');
 				$(".mall_shop_id").val(data.mall_shop_id);
 				$(".mall_product_lightbox").fadeIn(200);
 			}
@@ -169,6 +162,7 @@ var Show_current_position = function(){
 			price_txt = isNaN(total) ? "NT. 0" : "NT. "+total,
 			total_price = isNaN(total) ? 0 : total ;
 		$(".mall_product_cost").text(price_txt);
+		$("#ShopForm").find("[name='total']").val(total);
 	},
 	ShopSubmit = function(){
 		var mall_shop_id = $(".mall_shop_id"),
@@ -294,7 +288,6 @@ var Show_current_position = function(){
 		    	source: url,
 		    	close: function( event, ui ) {
 		    		$( "[name='product_name']" ).attr("specId", "");
-		    		get_product_spec();
 		    	}
 		    });
 
@@ -477,8 +470,8 @@ $("[name='end_date']").datepicker({format: "yyyy-mm-dd"});
 $("[name='in_warehouse_date']").datepicker({format: "yyyy-mm-dd"});
 $("[name='out_warehouse_date']").datepicker({format: "yyyy-mm-dd"});
 $("[name='store_type']").on("click", call_store_type);
-$(".store_type>li.parent").on("click", store_type_find_child);
-$(".store_type>li.child").on("click", set_store_type);
+$("[name='parents_store_type']").on("change", store_type_find_child);
+// $(".store_type>li.child").on("click", set_store_type);
 $(".branch_select>li").on("click", change_store);
 $(".mall_product>img").on("click", show_shop_div);
 $(".plus").on("click", plus);

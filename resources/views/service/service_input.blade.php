@@ -3,53 +3,66 @@
 	@include('webbase.breadcrumb')
 </section>
 <section class="content">
-	<form action="/service" method="POST">
-		<table class="table table-stroped">
-			<tbody>
-				<tr>
-					<th>{{ $txt["service_name"] }}</th>
-					<td>
-						@if(!empty($service))
-						<input type="hidden" name="service_id" value="{{ $service->id }}">						
-						@endif
-						<input type="text" name="name" value="@if(!empty($service)){{ $service->name }}@endif"/>
-					</td>
-				</tr>
-				<tr>
-					<th>{{ $txt["link"] }}</th>
-					<td><input type="text" name="link" value="@if(!empty($service->link)){{ $service->link }}@endif"/></td>
-				</tr>
-				<tr>
-					<th>{{ $txt["parents_service"] }}</th>
-					<td>
-						<select name="parents_id">
-							<option value="">{{ $txt["select_default"] }}</option>
-							@foreach($parents_service as $row)
-							<option value="{{ $row->id }}" @if( !empty($service) && $service->parents_id == $row->id) selected @endif >{{ $row->name }}</option>
+	<div class="row">
+        <div class="col-md-6">
+			<div class="box box-primary">
+				<div class="box-header">
+					<h3 class="box-title">{{ $txt["service_input"] }}</h3>
+				</div>
+				<form action="/service" method="POST">
+					<div class="box-body">
+						<div class="form-group">
+							<label>{{ $txt["service_name"] }}</label>
+							@if(!empty($service))
+							<input type="hidden" name="service_id" value="{{ $service->id }}">						
+							@endif
+							<input type="text" name="name" class="form-control" value="@if(!empty($service)){{ $service->name }}@endif"/>
+						</div>
+						<div class="form-group">
+							<label>{{ $txt["link"] }}</label>
+							<input type="text" name="link" class="form-control" value="@if(!empty($service->link)){{ $service->link }}@endif"/>
+						</div>
+						<div class="form-group">
+							<label>{{ $txt["parents_service"] }}</label>
+							<select name="parents_id" class="form-control">
+								<option value="">{{ $txt["select_default"] }}</option>
+								@foreach($parents_service as $row)
+								<option value="{{ $row->id }}" @if( !empty($service) && $service->parents_id == $row->id) selected @endif >{{ $row->name }}</option>
+								@endforeach	
+							</select>
+						</div>
+						<div class="form-group">
+							<label>{{ $txt["auth"] }}</label>
+						</div>					
+						<div class="form-group">
+							@foreach($role_list as $row)
+	                   		<div class="checkbox">
+		                        <label>		
+									<input type="checkbox" value="{{ $row->id }}" name="auth[]" @if( isset($role_service[$row->id])) checked @endif ) /> {{ $row->name }} <br />
+								</label>
+							</div>							
 							@endforeach	
-						</select>
-					</td>
-				</tr>
-				<tr>
-					<th>{{ $txt["auth"] }}</th>
-					<td>
-						@foreach($role_list as $row)
-						<input type="checkbox" value="{{ $row->id }}" name="auth[]" @if( isset($role_service[$row->id])) checked @endif ) /> {{ $row->name }} <br />
-						@endforeach	
-					</td>
-				</tr>
-				<tr>
-					<th>{{ $txt["status"] }}</th>
-					<td>
-						<input type="radio" value="1" name="active" @if( !empty($service) && $service->status == 1 ) checked  @endif />{{ $txt["enable"] }}
-						<input type="radio" value="2" name="active" @if( !empty($service) && $service->status == 2 ) checked  @endif />{{ $txt["disable"] }}
-					</td>
-				</tr>
-				<tr>
-					<th colspan="2"><input type="submit" value="{{ $txt['send'] }}"/></th>
-				</tr>															
-			</tbody>
-		</table>
-		<input type="hidden" name="_token" value="{{ csrf_token() }}">
-	</form>
+						</div>
+						<div class="form-group">
+							<label>{{ $txt["status"] }}</label>
+							<div class="radio">
+								<label>	
+									<input type="radio" value="1" name="active" @if( !empty($service) && $service->status == 1 ) checked  @endif />{{ $txt["enable"] }}
+								</label>
+							</div>								
+							<div class="radio">
+								<label>							
+									<input type="radio" value="2" name="active" @if( !empty($service) && $service->status == 2 ) checked  @endif />{{ $txt["disable"] }}
+								</label>
+							</div>						
+						</div>
+						<div class="form-group">
+							<th colspan="2"><input type="submit" class="btn btn-primary" value="{{ $txt['send'] }}"/></label>
+						</div>															
+						<input type="hidden" name="_token" value="{{ csrf_token() }}">
+					</div>
+				</form>
+	      	</div>
+        </div>
+  	</div>
 </section>

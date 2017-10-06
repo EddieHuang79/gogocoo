@@ -70,9 +70,14 @@ class ProductCategoryController extends Controller
         else
         {
 
-            $data = ProductCategory_logic::insert_main_format( $_POST );
+            if ( isset($_POST["name"]) ) 
+            {
 
-            ProductCategory_logic::add_product_category( $data );
+                $data = ProductCategory_logic::insert_main_format( $_POST );
+
+                ProductCategory_logic::add_product_category( $data );
+
+            }
 
         }
 
@@ -89,9 +94,9 @@ class ProductCategoryController extends Controller
     public function edit( $id )
     {
 
-        $ProductCategory = ProductCategory_logic::get_single_product_category( $id );  
+        $ProductCategory = ProductCategory_logic::get_single_product_category( (int)$id );  
 
-        $parents_category_list = ProductCategory_logic::get_parents_category_list( $id );
+        $parents_category_list = ProductCategory_logic::get_parents_category_list( (int)$id );
 
         $assign_page = "product_category/product_category_input";
 

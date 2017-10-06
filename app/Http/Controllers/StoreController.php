@@ -121,20 +121,25 @@ class StoreController extends Controller
 
             $_POST["is_free"] = $store_cnt["free"] > 0 ? 1 : 2 ;
 
-            $data = Store_logic::insert_format( $_POST );
-
-            // 店鋪代號若為空 隨機產生
-
-            $store_id = Store_logic::add_store( $data );
-
-            $date_spec = isset($_POST["date_spec"]) && !empty($_POST["date_spec"]) ? trim($_POST["date_spec"]) : "" ;
-
-            // 紀錄價值服務啟用列表，免費不紀錄
-
-            if ( !empty($date_spec) ) 
+            if ( isset($_POST['StoreName']) ) 
             {
 
-                Shop_logic::add_use_record( $store_id, $date_spec, $type = 2 );
+                $data = Store_logic::insert_format( $_POST );
+
+                // 店鋪代號若為空 隨機產生
+
+                $store_id = Store_logic::add_store( $data );
+
+                $date_spec = isset($_POST["date_spec"]) && !empty($_POST["date_spec"]) ? trim($_POST["date_spec"]) : "" ;
+
+                // 紀錄價值服務啟用列表，免費不紀錄
+
+                if ( !empty($date_spec) ) 
+                {
+
+                    Shop_logic::add_use_record( (int)$store_id, $date_spec, $type = 2 );
+
+                }
 
             }
 
@@ -170,11 +175,11 @@ class StoreController extends Controller
 
         $edit = 1;
 
-        $store = Store_logic::get_single_store( $id ); 
+        $store = Store_logic::get_single_store( (int)$id ); 
 
         // 第一間店舖的資訊
 
-        $store_info = Store_logic::get_store_info( array("store_id" => $id) );
+        $store_info = Store_logic::get_store_info( array("store_id" => (int)$id) );
 
         $assign_page = "store/store_input";
 
@@ -216,23 +221,28 @@ class StoreController extends Controller
     public function change_store()
     {
 
-        $check = Store_logic::check_store_user( $_POST["store_id"] );
-
-        if ( $check === true ) 
+        if ( isset($_POST["store_id"]) ) 
         {
-            Store_logic::change_store( $_POST["store_id"] );
+
+            $check = Store_logic::check_store_user( $_POST["store_id"] );
+
+            if ( $check === true ) 
+            {
+                Store_logic::change_store( $_POST["store_id"] );
+            }
+            else
+            {
+                $subject = "系統通知";
+                $content = "所選擇店家不屬於此帳號管理，若有疑問請聯絡管理員！";
+
+                $Login_user = Session::get("Login_user");
+
+                Msg_logic::add_notice_msg( $subject, $content, $Login_user["user_id"] );
+            }
+
         }
-        else
-        {
-            $subject = "系統通知";
-            $content = "所選擇店家不屬於此帳號管理，若有疑問請聯絡管理員！";
 
-            $Login_user = Session::get("Login_user");
-
-            Msg_logic::add_notice_msg( $subject, $content, $Login_user["user_id"] );
-        }
-
-        return redirect("/admin_index");
+        return back();
 
     }
 

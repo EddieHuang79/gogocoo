@@ -26,6 +26,10 @@ class UserController extends Basetool
     public function index(Request $request)
     {
 
+        $_this = new self();
+
+        $service_id = isset($_GET['service_id']) ? intval($_GET['service_id']) : 0 ;
+
         // get now page
 
         Service_logic::get_service_id_by_url_and_save( $request->path() );
@@ -34,7 +38,14 @@ class UserController extends Basetool
 
         $search_tool = array(2,3,4,5);
 
-        Redis_tool::set_search_tool( $search_tool );
+        $search_query = $_this->get_search_query( $search_tool, $_GET );
+
+        if ( $service_id > 0 ) 
+        {
+        
+            Redis_tool::set_search_tool( $search_tool, $service_id );
+        
+        }
 
         $Login_user = Session::get('Login_user');
 
@@ -47,7 +58,7 @@ class UserController extends Basetool
         $user_role = Admin_user_logic::get_user_role();
 
         $user = Admin_user_logic::get_user_role_auth( $user, $user_role );
- 
+
         $assign_page = "admin_user/admin_list";
 
         $data = compact('user', 'assign_page', 'service_id');
@@ -115,6 +126,8 @@ class UserController extends Basetool
     public function store(Request $request)
     {
         
+        $_this = new self();
+
         if (!empty($_POST["user_id"])) 
         {
             
@@ -153,7 +166,7 @@ class UserController extends Basetool
 
             $ErrorMsg = Register::register_process($_POST);
          
-            if (empty($ErrorMsg)) 
+            if ( empty($ErrorMsg) && isset($_POST["auth"]) ) 
             {
     
                 // user
@@ -175,7 +188,7 @@ class UserController extends Basetool
                 if ( !empty($date_spec) ) 
                 {
 
-                    Shop_logic::add_use_record( $user_id, $date_spec, $type = 1 );
+                    Shop_logic::add_use_record( (int)$user_id, $date_spec, $type = 1 );
 
                 }
 
@@ -193,7 +206,9 @@ class UserController extends Basetool
 
         }
 
-        return redirect("/user");
+        $page_query = $_this->made_search_query();
+
+        return redirect("/user".$page_query);
 
     }
 
@@ -221,9 +236,9 @@ class UserController extends Basetool
 
         $account_status = "";
 
-        $user = Admin_user_logic::get_user( $id );
+        $user = Admin_user_logic::get_user( (int)$id );
 
-        $user_role = $id > 0 ? Admin_user_logic::get_user_role_by_id( $id ) : "" ;
+        $user_role = $id > 0 ? Admin_user_logic::get_user_role_by_id( (int)$id ) : "" ;
 
         $user_role = $_this->get_object_or_array_key( $user_role );
 

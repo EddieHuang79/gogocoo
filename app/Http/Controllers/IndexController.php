@@ -26,7 +26,7 @@ class IndexController extends Controller
     public function admin_index()
     {
 
-        // Login::is_user_login();
+        // Report_logic::month_order_view();
 
         Session::forget('service_id');
 

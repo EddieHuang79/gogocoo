@@ -55,7 +55,9 @@ class ProductController extends Controller
 
         $select_option["category"] = ProductCategory_logic::get_parents_category_list();
 
-        $data = compact('assign_page', 'product', 'product_spec', 'product_extra_column', 'product_spec_column', 'has_spec','select_option');
+        $all_category = ProductCategory_logic::get_all_category_list();
+
+        $data = compact('assign_page', 'product', 'product_spec', 'product_extra_column', 'product_spec_column', 'has_spec','select_option', 'all_category');
 
         return view('webbase/content', $data);
 
@@ -111,20 +113,25 @@ class ProductController extends Controller
         else
         {
 
-            $data = Product_logic::insert_main_format( $_POST );
-
-            $product_id = Product_logic::add_product( $data );
-
-            $data = Product_logic::insert_extra_format( $_POST, $product_extra_column, $product_id );
-
-            Product_logic::add_extra_data( $data );
-
-            if ( $has_spec ) 
+            if ( isset($_POST["product_name"]) ) 
             {
 
-                $data = Product_logic::insert_or_update_spec_data( "insert", $_POST, $product_id );
+                $data = Product_logic::insert_main_format( $_POST );
 
-                Product_logic::add_product_spec_data( $data );
+                $product_id = Product_logic::add_product( $data );
+
+                $data = Product_logic::insert_extra_format( $_POST, $product_extra_column, $product_id );
+
+                Product_logic::add_extra_data( $data );
+
+                if ( $has_spec ) 
+                {
+
+                    $data = Product_logic::insert_or_update_spec_data( "insert", $_POST, $product_id );
+
+                    Product_logic::add_product_spec_data( $data );
+
+                }
 
             }
 

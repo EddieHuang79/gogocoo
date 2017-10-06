@@ -80,9 +80,14 @@ class MsgController extends Controller
         else
         {
 
-            $data = Msg_logic::insert_format( $_POST );
+            if ( isset($_POST["subject"]) ) 
+            {
 
-            Msg_logic::add_msg( $data );
+                $data = Msg_logic::insert_format( $_POST );
+
+                Msg_logic::add_msg( $data );
+
+            }
 
         }
 
@@ -110,7 +115,7 @@ class MsgController extends Controller
     public function edit( $id )
     {
 
-        $msg = Msg_logic::get_single_msg( $id ); 
+        $msg = Msg_logic::get_single_msg( (int)$id ); 
 
         $assign_page = "msg/msg_input";
 
@@ -149,7 +154,7 @@ class MsgController extends Controller
     public function clone()
     {
 
-        $msg_id = intval($_GET["msg_id"]);
+        $msg_id = isset($_GET["msg_id"]) ? intval($_GET["msg_id"]) : 0 ;
     
         $msg = Msg_logic::get_single_msg( $msg_id ); 
 

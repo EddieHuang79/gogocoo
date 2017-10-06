@@ -6,8 +6,9 @@ use Illuminate\Http\Request;
 use App\logic\Role_logic;
 use App\logic\Service_logic;
 use App\logic\Redis_tool;
+use App\logic\Basetool;
 
-class RoleController extends Controller
+class RoleController extends Basetool
 {
     /**
      * Display a listing of the resource.
@@ -17,6 +18,10 @@ class RoleController extends Controller
     public function index(Request $request)
     {
 
+        $_this = new self();
+
+        $service_id = isset($_GET['service_id']) ? intval($_GET['service_id']) : 0 ;
+
         // get now page
 
         Service_logic::get_service_id_by_url_and_save( $request->path() );
@@ -25,7 +30,14 @@ class RoleController extends Controller
 
         $search_tool = array(5,6);
 
-        Redis_tool::set_search_tool( $search_tool );
+        $search_query = $_this->get_search_query( $search_tool, $_GET );
+
+        if ( $service_id > 0 ) 
+        {
+        
+            Redis_tool::set_search_tool( $search_tool, $service_id );
+        
+        }
 
         $role = Role_logic::get_role_list( $_GET );
  
@@ -68,6 +80,8 @@ class RoleController extends Controller
     public function store(Request $request)
     {
 
+        $_this = new self();
+
         if (!empty($_POST["role_id"])) 
         {
             
@@ -93,24 +107,34 @@ class RoleController extends Controller
         }
         else
         {
-            // role
 
-            $data = Role_logic::insert_format( $_POST );
-         
-            $role_id = Role_logic::add_role( $data );
-
-            // role service add
-            
-            if (!empty($_POST["auth"])) 
+            if ( isset($_POST["name"]) ) 
             {
-                $data = Role_logic::add_role_service_format( $role_id, 0, $_POST["auth"] );
 
-                $data = Role_logic::add_role_service( $data );
+                // role
+
+                $data = Role_logic::insert_format( $_POST );
+             
+                $role_id = Role_logic::add_role( $data );
+
+                // role service add
+                
+                if (!empty($_POST["auth"])) 
+                {
+
+                    $data = Role_logic::add_role_service_format( $role_id, 0, $_POST["auth"] );
+
+                    $data = Role_logic::add_role_service( $data );
+                
+                }
+
             }
 
         }
 
-        return redirect("/role");
+        $page_query = $_this->made_search_query();
+
+        return redirect("/role".$page_query);
 
     }
 
@@ -134,8 +158,8 @@ class RoleController extends Controller
     public function edit( $id )
     {
 
-        $role = Role_logic::get_role( $id );
- 
+        $role = Role_logic::get_role( (int)$id );
+
         $assign_page = "role/role_input";
 
         $menu_data = Service_logic::get_active_service();

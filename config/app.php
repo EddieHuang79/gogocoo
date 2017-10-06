@@ -182,6 +182,7 @@ return [
 
         App\Providers\ComposerServiceProvider::class,
 
+        flamelin\ECPay\EcpayServiceProvider::class, 
     ],
 
     /*
@@ -231,7 +232,7 @@ return [
         'URL' => Illuminate\Support\Facades\URL::class,
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
-
+        'Ecpay' => flamelin\ECPay\Facade\Ecpay::class,
     ],
 
 ];

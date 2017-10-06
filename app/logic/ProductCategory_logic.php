@@ -19,6 +19,7 @@ class ProductCategory_logic extends Basetool
 
 	}
 
+
 	// 主檔新增格式
 
 	public static function insert_main_format( $data )
@@ -26,17 +27,26 @@ class ProductCategory_logic extends Basetool
 
 		$_this = new self();
 
-		$shop_id = Session::get( 'Store' );
+		$result = array();
 
-		$result = array(
-		            "shop_id"     		=> $shop_id,
-		            "parents_id"     	=> isset($data["parents_category"]) ? intval($data["parents_category"]) : 0,
-		            "name"				=> isset($data["name"]) ? $_this->strFilter($data["name"]) : ""
-		         );
+		if ( !empty($data) && is_array($data) ) 
+		{
+
+			$shop_id = Session::get( 'Store' );
+
+			$result = array(
+			            "shop_id"     		=> $shop_id,
+			            "parents_id"     	=> isset($data["parents_category"]) ? intval($data["parents_category"]) : 0,
+			            "name"				=> isset($data["name"]) ? $_this->strFilter($data["name"]) : ""
+			         );
+
+
+		}
 
 		return $result;
 
 	}
+
 
 	// 主檔更新格式
 
@@ -45,14 +55,22 @@ class ProductCategory_logic extends Basetool
 
 		$_this = new self();
 
-		$result = array(
-		            "parents_id"     	=> isset($data["parents_category"]) ? intval($data["parents_category"]) : 0,
-		            "name"				=> isset($data["name"]) ? $_this->strFilter($data["name"]) : ""
-		         );
+		$result = array();
+
+		if ( !empty($data) && is_array($data) ) 
+		{
+
+			$result = array(
+			            "parents_id"     	=> isset($data["parents_category"]) ? intval($data["parents_category"]) : 0,
+			            "name"				=> isset($data["name"]) ? $_this->strFilter($data["name"]) : ""
+			         );
+
+		}
 
 		return $result;
 
 	}
+
 
 	// 取得類別清單
 
@@ -71,16 +89,29 @@ class ProductCategory_logic extends Basetool
 
 		$data = ProductCategory::get_product_category_data( $shop_id );
 
-		foreach ($data as &$row) 
+		if ( !empty($data) )
 		{
-		
-			$row->parents_name = isset($parents_category[$row->parents_id]) ? $parents_category[$row->parents_id] : $txt['none'] ;
+
+			foreach ($data as &$row) 
+			{
+			
+				if ( is_object($row) ) 
+				{
+				
+					$row->parents_name = isset($parents_category[$row->parents_id]) ? $parents_category[$row->parents_id] : $txt['none'] ;
+				
+				}
+
+			}
+
+			$result = $data;
 
 		}
 
-		return $data;
+		return $result;
 
 	}
+
 
 	// 取得所有類別清單
 
@@ -93,16 +124,27 @@ class ProductCategory_logic extends Basetool
 
 		$data = ProductCategory::get_product_category_data( $shop_id );
 
-		foreach ($data as $row) 
+		if ( !empty($data) )
 		{
 
-			$result[$row->id] = $row->name;
+			foreach ($data as $row) 
+			{
+
+				if ( is_object($row) ) 
+				{
+
+					$result[$row->id] = $row->name;
+
+				}
+
+			}
 
 		}
 
 		return $result;
 
 	}
+
 
 	// 取得父類別清單
 
@@ -118,13 +160,19 @@ class ProductCategory_logic extends Basetool
 		foreach ($data as $row) 
 		{
 
-			$result[$row->id] = $row->name;
+			if ( is_object($row) ) 
+			{
+
+				$result[$row->id] = $row->name;
+
+			}
 
 		}
 
 		return $result;
 
 	}
+
 
 	// 取得單一商品
 
@@ -133,29 +181,60 @@ class ProductCategory_logic extends Basetool
 
 		$result = array();
 
-		$data = ProductCategory::get_single_product_category( $id );
+		if ( !empty($id) && is_int($id) ) 
+		{
 
-		return $data;
+			$result = ProductCategory::get_single_product_category( $id );
+
+		}
+
+		return $result;
 
 	}
+
 
 	// 新增商品
 
 	public static function add_product_category( $data )
 	{
 
-		ProductCategory::add_product_category( $data );
+		$result = false;
+
+		if ( !empty($data) && is_array($data) ) 
+		{
+	
+			ProductCategory::add_product_category( $data );
+
+			$result = true;
+
+		}
+
+		return $result;
 
 	}
+
 
 	// 主檔更新
 
 	public static function edit_product_category( $data, $product_category_id )
 	{
 
-		ProductCategory::edit_product_category( $data, $product_category_id );
+		$result = false;
+
+		if ( !empty($data) && is_array($data) && !empty($product_category_id) && is_int($product_category_id) ) 
+		{
+
+			ProductCategory::edit_product_category( $data, $product_category_id );
+
+			$result = true;
+
+		}
+
+		return $result;
+
 
 	}
+
 
 	// 取得該父類別子項
 
@@ -164,15 +243,20 @@ class ProductCategory_logic extends Basetool
 
 		$result = array();
 
-		$data = ProductCategory::get_child_product_category( $parents_id );
-
-		if ( $data->count() > 0 ) 
+		if ( !empty($parents_id) && is_int($parents_id) ) 
 		{
 
-			foreach ($data as $row) 
+			$data = ProductCategory::get_child_product_category( $parents_id );
+
+			if ( $data->count() > 0 ) 
 			{
-				
-				$result[$row->id] = $row->name; 
+
+				foreach ($data as $row) 
+				{
+					
+					$result[$row->id] = $row->name; 
+
+				}
 
 			}
 
@@ -188,20 +272,21 @@ class ProductCategory_logic extends Basetool
 	public static function get_parents_category_id( $child_id )
 	{
 
-		$result = 0;
+		$result = false;
 
-		$data = ProductCategory::get_parents_category_id( $child_id );
-
-		if ( !empty($data) ) 
+		if ( !empty($child_id) && is_int($child_id) ) 
 		{
 
-			$result = $data->parents_id;
+			$data = ProductCategory::get_parents_category_id( $child_id );
+
+			$result = is_object($data) ? $data->parents_id : false ;
 
 		}
 
 		return $result;
 
 	}
+
 
 	// 取得該父類別id 多筆
 
@@ -210,16 +295,21 @@ class ProductCategory_logic extends Basetool
 
 		$result = array();
 
-		$data = ProductCategory::get_mutli_parents_category_id( $child_id_array );
-
-		if ( $data->count() > 0 ) 
+		if ( !empty($child_id_array) && is_array($child_id_array) ) 
 		{
 
-			foreach ($data as $key => $row) 
+			$data = ProductCategory::get_mutli_parents_category_id( $child_id_array );
+
+			if ( $data->count() > 0 ) 
 			{
 
-				$result[$row->id] = $row->parents_id;
-			
+				foreach ($data as $key => $row) 
+				{
+
+					$result[$row->id] = $row->parents_id;
+				
+				}
+
 			}
 
 		}
@@ -228,7 +318,8 @@ class ProductCategory_logic extends Basetool
 
 	}
 
-	// 取得該父類別id 多筆
+
+	// 取得父類別id 多筆
 
 	public static function get_parents_id_name_trans()
 	{

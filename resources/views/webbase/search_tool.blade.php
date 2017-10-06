@@ -1,4 +1,6 @@
 @if(!empty($search_tool))
+<!-- 暫時隱藏 -->
+@if( 1 == 0 )
 <div><h2 class="sub-header"><input type="button" value="{{ $txt['Show'] }}" class="ShowHide d3"><a href="#">{{ $txt['search_tool'] }}</a></h2></div>
 
 <form method="get" id="search_form" class="d3">
@@ -81,7 +83,8 @@
 	<div><input type="submit" value="{{ $txt['filter'] }}" name="filter"></div>
 
 </form>
-@endif
 
 	<br />
 	<br />
+@endif
+@endif

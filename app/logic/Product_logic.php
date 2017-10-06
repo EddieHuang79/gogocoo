@@ -27,12 +27,19 @@ class Product_logic extends Basetool
 
 		$_this = new self();
 
-		$result = array(
-		            "product_name"      => isset($data["product_name"]) ? $_this->strFilter($data["product_name"]) : "",
-		            "safe_amount"       => isset($data["safe_amount"]) ? intval($data["safe_amount"]) : 0,
-		            "created_at"    	=> date("Y-m-d H:i:s"),
-		            "updated_at"    	=> date("Y-m-d H:i:s")
-		         );
+		$result = array();
+
+		if ( is_array($data) && !empty($data) ) 
+		{
+
+			$result = array(
+			            "product_name"      => isset($data["product_name"]) ? $_this->strFilter($data["product_name"]) : "",
+			            "safe_amount"       => isset($data["safe_amount"]) ? intval($data["safe_amount"]) : 0,
+			            "created_at"    	=> date("Y-m-d H:i:s"),
+			            "updated_at"    	=> date("Y-m-d H:i:s")
+			         );
+
+		}
 
 		return $result;
 
@@ -46,31 +53,38 @@ class Product_logic extends Basetool
 
 		$_this = new self();
 
+		$result = array();
+
 		$filter_data = array();
 
-		$shop_id = Session::get( 'Store' );		
-
-		$result["shop_id"] = !empty($shop_id) ? $shop_id : 1;
-
-		$result["product_id"] = $product_id;
-
-		foreach ($product_extra_column as $row_data) 
+		if ( !empty($data) && !empty($product_extra_column) && intval($product_id) > 0 && is_array($data) && is_array($product_extra_column) ) 
 		{
 
-			switch ($row_data['name']) 
+			$shop_id = Session::get( 'Store' );		
+
+			$result["shop_id"] = !empty($shop_id) ? $shop_id : 1;
+
+			$result["product_id"] = $product_id;
+
+			foreach ($product_extra_column as $row_data) 
 			{
 
-				default:
+				switch ($row_data['name']) 
+				{
 
-					$default_value = $row_data['type'] == 'number' ? 0 : "" ;
+					default:
 
-					$filter_data[$row_data['name']] = isset($data[$row_data['name']]) && !empty($data[$row_data['name']]) ? trim($data[$row_data['name']]) : $default_value ;
+						$default_value = $row_data['type'] == 'number' ? 0 : "" ;
 
-					break;
+						$filter_data[$row_data['name']] = isset($data[$row_data['name']]) && !empty($data[$row_data['name']]) ? trim($data[$row_data['name']]) : $default_value ;
+
+						break;
+
+				}
+
+				$result[$row_data['name']] = $filter_data[$row_data['name']];
 
 			}
-
-			$result[$row_data['name']] = $filter_data[$row_data['name']];
 
 		}
 
@@ -85,11 +99,18 @@ class Product_logic extends Basetool
 
 		$_this = new self();
 
-		$result = array(
-		            "product_name"      => isset($data["product_name"]) ? $_this->strFilter($data["product_name"]) : "",
-		            "safe_amount"       => isset($data["safe_amount"]) ? intval($data["safe_amount"]) : 0,
-		            "updated_at"    	=> date("Y-m-d H:i:s")
-		         );
+		$result = array();
+
+		if ( !empty($data) && is_array($data) ) 
+		{
+
+			$result = array(
+			            "product_name"      => isset($data["product_name"]) ? $_this->strFilter($data["product_name"]) : "",
+			            "safe_amount"       => isset($data["safe_amount"]) ? intval($data["safe_amount"]) : 0,
+			            "updated_at"    	=> date("Y-m-d H:i:s")
+			         );
+
+		}
 
 		return $result;
 
@@ -105,29 +126,36 @@ class Product_logic extends Basetool
 
 		$filter_data = array();
 
-		foreach ($product_extra_column as $row_data) 
+		$result = array();
+
+		if ( !empty($data) && !empty($product_extra_column) && is_array($data) && is_array($product_extra_column) ) 
 		{
 
-			switch ($row_data['name']) 
+			foreach ($product_extra_column as $row_data) 
 			{
 
-				case 'category':
+				switch ($row_data['name']) 
+				{
 
-					$filter_data['category'] = isset($data['category']) && !empty($data['category']) ? trim($data['category']) : trim($data['ori_category']) ;					
+					case 'category':
 
-					break;
+						$filter_data['category'] = isset($data['category']) && !empty($data['category']) ? trim($data['category']) : trim($data['ori_category']) ;					
 
-				default:
+						break;
 
-					$default_value = $row_data['type'] == 'number' ? 0 : "" ;
+					default:
 
-					$filter_data[$row_data['name']] = isset($data[$row_data['name']]) && !empty($data[$row_data['name']]) ? trim($data[$row_data['name']]) : $default_value ;
+						$default_value = $row_data['type'] == 'number' ? 0 : "" ;
 
-					break;
+						$filter_data[$row_data['name']] = isset($data[$row_data['name']]) && !empty($data[$row_data['name']]) ? trim($data[$row_data['name']]) : $default_value ;
+
+						break;
+
+				}
+
+				$result[$row_data['name']] = $filter_data[$row_data['name']];
 
 			}
-
-			$result[$row_data['name']] = $filter_data[$row_data['name']];
 
 		}
 
@@ -219,7 +247,9 @@ class Product_logic extends Basetool
 	public static function add_product( $data )
 	{
 
-		return product::add_product( $data );
+		$result = !empty($data) && is_array($data) && !empty($data["product_name"]) ? Product::add_product( $data ) : false;
+
+		return $result;
 
 	}
 
@@ -228,7 +258,9 @@ class Product_logic extends Basetool
 	public static function add_extra_data( $data )
 	{
 
-		return product::add_extra_data( $data );
+		$result = !empty($data) && is_array($data) ? Product::add_extra_data( $data ) : false;
+
+		return $result;
 
 	}
 
@@ -246,7 +278,9 @@ class Product_logic extends Basetool
 	public static function edit_product( $data, $product_id )
 	{
 
-		return product::edit_product( $data, $product_id );
+		$result = !empty($data) && is_array($data) && intval($product_id) > 0 ? Product::edit_product( $data, $product_id ) : false;
+
+		return $result;
 
 	}
 
@@ -256,7 +290,9 @@ class Product_logic extends Basetool
 	public static function edit_product_extra_data( $data, $product_id )
 	{
 
-		return product::edit_product_extra_data( $data, $product_id );
+		$result = !empty($data) && is_array($data) && intval($product_id) > 0 ? Product::edit_product_extra_data( $data, $product_id ) : false;
+
+		return $result;
 
 	}
 
@@ -279,33 +315,36 @@ class Product_logic extends Basetool
 
 		$data = Product::get_product_extra_column();
 
-		unset($data[0]);
-		unset($data[1]);
-		unset($data[2]);
+		unset( $data[0], $data[1], $data[2] );
 
-		foreach ($data as $key => $row) 
+		if ( !empty($data) ) 
 		{
 
-			$result[$key]["name"] = $row->Field;
-
-			if ( strpos($row->Type, "varchar") !== false ) 
-			{
-				$result[$key]["type"] = "text";
-			}
-
-			if ( strpos($row->Type, "int") !== false ) 
-			{
-				$result[$key]["type"] = "number";
-			}
-
-			switch ( $result[$key]["name"] ) 
+			foreach ($data as $key => $row) 
 			{
 
-				case 'category':
+				$result[$key]["name"] = $row->Field;
 
-					$result[$key]["type"] = "select";
+				if ( strpos($row->Type, "varchar") !== false ) 
+				{
+					$result[$key]["type"] = "text";
+				}
 
-					break;
+				if ( strpos($row->Type, "int") !== false ) 
+				{
+					$result[$key]["type"] = "number";
+				}
+
+				switch ( $result[$key]["name"] ) 
+				{
+
+					case 'category':
+
+						$result[$key]["type"] = "select";
+
+						break;
+
+				}
 
 			}
 
@@ -346,20 +385,6 @@ class Product_logic extends Basetool
 
 	}
 
-	// 取得商品選項
-
-	public static function get_product_option( $data = array() )
-	{
-
-		$result = array();
-
-		$shop_id = Session::get( 'Store' );
-
-		$data = Product::get_product_list( $data, $shop_id );
-
-		return $data;
-
-	}
 
 	// 取得商品資料
 
@@ -370,18 +395,26 @@ class Product_logic extends Basetool
 
 		$shop_id = Session::get( 'Store' );
 
-		$data = Product::get_product_list( $data, $shop_id );
-
-		foreach ($data as &$row) 
+		if ( is_array($data) ) 
 		{
 
-			$row->keep_for_days = $row->keep_for_days > 0 ? $row->keep_for_days : "無效期限制" ;
+			$data = Product::get_product_list( $data, $shop_id );
+
+			foreach ($data as &$row) 
+			{
+
+				$row->keep_for_days = $row->keep_for_days > 0 ? $row->keep_for_days : "無效期限制" ;
+
+			}
+
+			$result = $data;
 
 		}
 
-		return $data;
+		return $result;
 
 	}
+
 
 	// 將商品轉成陣列
 
@@ -390,21 +423,36 @@ class Product_logic extends Basetool
 
 		$result = array();
 
-		foreach ($data as $key1 => $row) 
+		if ( !empty($data) ) 
 		{
 
-			foreach ($row as $key2 => $data) 
+			foreach ($data as $key1 => $row) 
 			{
 
-				$result[$key1][$key2] = $data;
+				if ( is_object($row) ) 
+				{
 
-			}
+					foreach ($row as $key2 => $data) 
+					{
 
-			foreach ($option_data as $key2 => $data) 
-			{
+						$result[$key1][$key2] = $data;
 
-				$result[$key1][$key2.'_txt'] = isset( $data[$row->$key2] ) ? $data[$row->$key2] : "" ;
-			
+					}
+
+					if ( !empty($option_data) && is_array($option_data) ) 
+					{
+
+						foreach ($option_data as $key2 => $data) 
+						{
+
+							$result[$key1][$key2.'_txt'] = isset( $data[$row->$key2] ) ? $data[$row->$key2] : "" ;
+						
+						}
+
+					}
+
+				}
+
 			}
 
 		}
@@ -412,6 +460,7 @@ class Product_logic extends Basetool
 		return $result;
 
 	}
+
 
 	// 取得單一商品
 
@@ -422,11 +471,17 @@ class Product_logic extends Basetool
 
 		$shop_id = Session::get( 'Store' );
 
-		$data = Product::get_single_product( $id, $shop_id );
+		if ( !empty($id) ) 
+		{
 
-		return $data;
+			$result = Product::get_single_product( $id, $shop_id );
+
+		}
+
+		return $result;
 
 	}
+
 
 	// 取得單一商品規格
 
@@ -435,20 +490,26 @@ class Product_logic extends Basetool
 
 		$result = array();
 
-		$data = Product::get_product_spec( $id );
-
-		foreach ($data as $key => $row) 
+		if ( !empty($id) ) 
 		{
 
-			$result[$key]["id"] = $row->id;
+			$data = Product::get_product_spec( $id );
 
-			$result[$key]["value"] = json_decode($row->spec_data, true);
+			foreach ($data as $key => $row) 
+			{
+
+				$result[$key]["id"] = $row->id;
+
+				$result[$key]["value"] = json_decode($row->spec_data, true);
+
+			}
 
 		}
 
 		return $result;
 
 	}
+
 
 	// 將商品轉成自動完成用的陣列
 
@@ -457,34 +518,53 @@ class Product_logic extends Basetool
 
 		$result = array();
 
-		foreach ($data as $key => $row) 
+		if ( !empty($data) && is_object($data) ) 
 		{
 
-			$result[$row->product_id] = $row->product_name;
+			foreach ($data as $key => $row) 
+			{
+
+				if ( is_object($row) ) 
+				{
+
+					$result[$row->product_id] = $row->product_name;
+
+				}
+
+			}
 
 		}
 
 		return $result;
 
 	}
+
 
 	// 取得collection中的商品id
 
 	public static function get_product_id_from_collection( $data )
 	{
 
-		$result = array();
+		$result = 0;
 
-		foreach ($data as $key => $row) 
+		if ( !empty($data) ) 
 		{
 
-			$result = $row->product_id;
+			foreach ($data as $key => $row) 
+			{
+
+				$result = is_object($row) ? $row->product_id : 0 ;
+
+			}
 
 		}
 
 		return $result;
 
 	}
+
+
+	// 轉換規格名稱
 
 	public static function trans_product_spec_name( $data )
 	{
@@ -494,6 +574,8 @@ class Product_logic extends Basetool
 		$product_spec_column = $_this->get_product_spec_column(); 
 
 		$mapping_array = array();
+
+		$result = array();
 
 		foreach ($product_spec_column as $row) 
 		{
@@ -507,21 +589,32 @@ class Product_logic extends Basetool
 	
 		}		
 
-		foreach ($data as &$row) 
+
+		if ( !empty($data[0]['value']) ) 
 		{
 
-			foreach ($row['value'] as $key => &$row2) 
+			foreach ($data as &$row) 
 			{
 
-				$row2 = $mapping_array[$key][$row2];
-			
+				foreach ($row['value'] as $key => &$row2) 
+				{
+
+					$row2 = $mapping_array[$key][$row2];
+				
+				}
+
 			}
+
+			$result = $data;
 
 		}
 
-		return $data;
+		return $result;
 
 	}
+
+
+	// 規格
 
 	public static function is_spec_function_active()
 	{
@@ -535,6 +628,9 @@ class Product_logic extends Basetool
 		return $result;
 
 	}
+
+
+	// 商品上傳範例
 
 	public static function product_upload_sample_output( $column_header )
 	{
@@ -553,12 +649,17 @@ class Product_logic extends Basetool
 
 		$select_option["category"] = ProductCategory_logic::get_all_category_list();
 
-		foreach ($column_header as $row) 
-		{
+        if ( !empty($column_header) && is_array($column_header) ) 
+        {
 
-			$column[] = $row['name'];
+			foreach ($column_header as $row) 
+			{
 
-		}
+				$column[] = $row['name'];
+
+			}
+
+        }
 
 		if (!empty($data)) 
 		{
@@ -588,21 +689,37 @@ class Product_logic extends Basetool
 
 	}
 
+
+	// 規格表頭
+
 	public static function product_spec_header_download_format( $spec_data )
 	{
 
 		$result = array();
 
-		foreach ($spec_data as $row) 
+		if ( !empty($spec_data) && is_array($spec_data) ) 
 		{
 
-			$result[] = array( "name" => $row->name );
+			foreach ($spec_data as $row) 
+			{
+
+				if ( is_object($row) ) 
+				{
+
+					$result[] = array( "name" => $row->name );
+				
+				}
+
+			}
 
 		}
 
 		return $result;
 
 	}
+
+
+	// 規格範例
 
 	public static function spec_upload_sample_output( $column_header )
 	{
@@ -619,39 +736,54 @@ class Product_logic extends Basetool
 
 		$data = Product::spec_upload_sample_output( $shop_id );
 
-		foreach ($data as &$row) 
+		if ( $data->count() > 0 ) 
 		{
 
-			$spec = json_decode( $row->spec_data );
-
-			$spec = $_this->trans_product_spec_name(array( array( "value" => $spec ) ));
-
-			foreach ($spec[0]['value'] as $key => $value) 
+			foreach ($data as &$row) 
 			{
-				
-				$row->$key = $value;
+
+				$spec = json_decode( $row->spec_data );
+
+				$spec = $_this->trans_product_spec_name(array( array( "value" => $spec ) ));
+
+				foreach ($spec[0]['value'] as $key => $value) 
+				{
+					
+					$row->$key = $value;
+
+				}
 
 			}
 
 		}
 
-		foreach ($column_header as $row) 
+		if ( !empty($column_header) ) 
 		{
 
-			$column[] = $row['name'];
+			foreach ($column_header as $row) 
+			{
+
+				$column[] = $row['name'];
+
+			}
 
 		}
 
-		foreach ($data as $index => $row) 
+		if ( $data->count() > 0 ) 
 		{
 
-			foreach ($row as $key => $value) 
+			foreach ($data as $index => $row) 
 			{
 
-				if ( in_array($key, $column) ) 
+				foreach ($row as $key => $value) 
 				{
 
-					$result[$index][$key] = $value;
+					if ( in_array($key, $column) ) 
+					{
+
+						$result[$index][$key] = $value;
+
+					}
 
 				}
 

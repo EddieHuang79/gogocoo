@@ -32,14 +32,14 @@
 		@foreach($service_list as $row)
 		<li class="treeview">
 			@if(!empty($row['child']))
-			<a href="#"><i class="fa {{ $icon[$row['id']] }}"></i> <span>{{ $row['name'] }}</span> <i class="fa fa-angle-left pull-right"></i></a>
+			<a href="#"><i class="fa {{ $icon[$row['name']] }}"></i> <span>{{ $row['name'] }}</span> <i class="fa fa-angle-left pull-right"></i></a>
 			<ul class="treeview-menu">
 				@foreach($row['child'] as $child)
 				<li><a href="{{ $child['link'] }}?service_id={{ $child['id'] }}" page="page{{ $child['id'] }}">{{ $child['name'] }}</a></li>
 				@endforeach
 			</ul>
 			@else
-			<a href="{{ $row['link'] }}?service_id={{ $row['id'] }}" page="page{{ $row['id'] }}"><i class="fa {{ $icon[$row['id']] }}"></i> <span>{{ $row['name'] }}</span> <i class="fa fa-angle-left pull-right"></i></a>
+			<a href="{{ $row['link'] }}?service_id={{ $row['id'] }}" page="page{{ $row['id'] }}"><i class="fa {{ $icon[$row['name']] }}"></i> <span>{{ $row['name'] }}</span> <i class="fa fa-angle-left pull-right"></i></a>
 			@endif
 		</li>				
 		@endforeach

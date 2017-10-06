@@ -23,6 +23,7 @@ class Upload_logic extends Basetool
 
 	}
 
+
 	// 欄位轉英文
 
 	public static function column_name_to_english( $data )
@@ -34,17 +35,22 @@ class Upload_logic extends Basetool
 
 		$result = array();
 
-		foreach ($data as $key => $row) 
+		if ( !empty($data) && is_array($data) ) 
 		{
 
-			$new_key = !empty( $key ) ? array_keys($txt, $key) : array() ;
-
-			$new_key = !empty($new_key) ? $new_key[0] : "" ;
-
-			if (!empty($new_key)) 
+			foreach ($data as $key => $row) 
 			{
 
-				$result[$new_key] = $row;
+				$new_key = !empty( $key ) ? array_keys($txt, $key) : array() ;
+
+				$new_key = !empty($new_key) ? $new_key[0] : "" ;
+
+				if (!empty($new_key)) 
+				{
+
+					$result[$new_key] = $row;
+
+				}
 
 			}
 
@@ -54,50 +60,65 @@ class Upload_logic extends Basetool
 
 	}
 
+
 	// 商品上傳格式
 
 	public static function product_upload_format( $data )
 	{
 
-		$_this = new self();
-
-		$txt = $_this->txt;
-
-		$result = array();
-
-		$output_data = array();
-
-		$column_header = array();
-
-		$file_name = date("Ymd")."product_upload_format";
-
-		foreach ($data as $row) 
+		if ( !empty($data) ) 
 		{
 
-			$column_header[] = $txt[$row['name']];
+			$_this = new self();
+
+			$txt = $_this->txt;
+
+			$result = array();
+
+			$output_data = array();
+
+			$column_header = array();
+
+			$column_desc = array();
+
+			$file_name = date("YmdHis")."product_upload_format";
+
+			$title = $txt["product_upload_format"];
+
+			foreach ($data as $row) 
+			{
+
+				$column_header[] = $txt[$row['name']];
+
+			}
+
+			$output_data[] = $column_header;
+
+			// foreach ($data as $row) 
+			// {
+
+			// 	$column_desc[] = $txt[$row['name']."_upload_desc"];
+
+			// }
+
+			// $output_data[] = $column_desc;
+
+			$output_data[] = Product_logic::product_upload_sample_output( $data );
+
+			$final_column = $_this->ASC_Decimal_value( count($column_header) );
+
+			$final_row = count($output_data);
+
+			$result = $_this->export_excel( $output_data, $title, $final_column, $final_row, $file_name );
+
+			$result->download('xlsx');
+
+			exit();
 
 		}
 
-		$output_data[] = $column_header;
-
-		$output_data[] = Product_logic::product_upload_sample_output( $data );
-
-		$result = Excel::create($file_name, function($excel) use($output_data,$txt) {
-			// Set the title
-			$excel->setTitle($txt["product_upload_format"]);
-			$excel->setDescription('report file');
-
-			$excel->sheet('sheet1', function($sheet) use($output_data) {
-				$sheet->fromArray($output_data, null, 'A1', false, false);
-				$sheet->cells('A1:Z1', function($cells) {
-					$cells->setBackground('#FFFF00');
-				});
-			});
-		});
-
-		return $result;
-
 	}
+
 
 	// 商品上傳流程
 
@@ -191,157 +212,63 @@ class Upload_logic extends Basetool
 
 	}
 
-	// 商品規格上傳格式
-
-	public static function product_spec_upload_format( $data )
-	{
-
-		$_this = new self();
-
-		$txt = $_this->txt;
-
-		$result = array();
-
-		$output_data = array();
-
-		$column_header = array();
-
-		$file_name = date("Ymd")."product_spec_upload_format";
-
-		foreach ($data as $row) 
-		{
-
-			$column_header[] = $txt[$row['name']];
-
-		}
-
-		$output_data[] = $column_header;
-
-		$data =  Product_logic::spec_upload_sample_output( $data );
-
-		foreach ($data as $row) 
-		{
-
-			$output_data[] = $row;
-
-		}
-
-		$result = Excel::create($file_name, function($excel) use($output_data,$txt) {
-			// Set the title
-			$excel->setTitle($txt["product_spec_upload_format"]);
-			$excel->setDescription('report file');
-
-			$excel->sheet('sheet1', function($sheet) use($output_data) {
-				$sheet->fromArray($output_data, null, 'A1', false, false);
-				$sheet->cells('A1:Z1', function($cells) {
-					$cells->setBackground('#FFFF00');
-				});
-			});
-		});
-
-		return $result;
-
-	}
-
-	// 商品規格上傳流程
-
-	public static function product_spec_upload_process( $path )
-	{
-
-		$_this = new self();
-
-		$data = Excel::load($path)->toArray();
-
-		$Login_user = Session::get("Login_user");
-
-		$product_name = array();
-
-		try 
-		{
-
-			if (empty($data)) 
-			{
-
-				$error_msg = "資料無法解析，上傳失敗！";
-
-			   throw new \Exception($error_msg);
-
-			}
-
-			foreach ($data as $row) 
-			{
-
-				$row = $_this->column_name_to_english( $row );
-
-				$product_name[] = $row->product_name;
-
-			}
-
-			
-
-		} 
-		catch (\Exception $e) 
-		{
-			
-    		$subject = "商品上傳失敗";
-
-    		$content = "商品上傳失敗！失敗原因: ". $e->getMessage();
-
-    		Msg_logic::add_notice_msg( $subject, $content, $Login_user["user_id"] );
-
-		}
-
-		$subject = $content = "商品上傳成功！";
-
-		Msg_logic::add_notice_msg( $subject, $content, $Login_user["user_id"] );
-
-
-	}
 
 	// 進貨上傳格式
 
 	public static function purchase_upload_format( $data )
 	{
 
-		$_this = new self();
-
-		$txt = $_this->txt;
-
-		$result = array();
-
-		$output_data = array();
-
-		$column_header = array();
-
-		$file_name = date("Ymd")."purchase_upload_format";
-
-		foreach ($data as $row) 
+		if ( !empty($data) && is_array($data) ) 
 		{
 
-			$column_header[] = $txt[$row['name']];
+			$_this = new self();
+
+			$txt = $_this->txt;
+
+			$result = array();
+
+			$output_data = array();
+
+			$column_header = array();
+
+			$file_name = date("YmdHis")."purchase_upload_format";
+
+			$title = $txt["purchase_upload_format"];
+
+			foreach ($data as $row) 
+			{
+
+				$column_header[] = $txt[$row['name']];
+
+			}
+
+			$output_data[] = $column_header;
+
+			// foreach ($data as $row) 
+			// {
+
+			// 	$column_desc[] = $txt[$row['name']."_upload_desc"];
+
+			// }
+
+			// $output_data[] = $column_desc;
+
+			$output_data[] = Purchase_logic::purchase_upload_sample_output( $data );
+
+			$final_column = $_this->ASC_Decimal_value( count($column_header) );
+
+			$final_row = count($output_data);
+
+			$result = $_this->export_excel( $output_data, $title, $final_column, $final_row, $file_name );
+
+			$result->download('xlsx');
+
+			exit();
 
 		}
 
-		$output_data[] = $column_header;
-
-		$output_data[] = Purchase_logic::purchase_upload_sample_output( $data );
-
-		$result = Excel::create($file_name, function($excel) use($output_data,$txt) {
-			// Set the title
-			$excel->setTitle($txt["product_upload_format"]);
-			$excel->setDescription('report file');
-
-			$excel->sheet('sheet1', function($sheet) use($output_data) {
-				$sheet->fromArray($output_data, null, 'A1', false, false);
-				$sheet->cells('A1:Z1', function($cells) {
-					$cells->setBackground('#FFFF00');
-				});
-			});
-		});
-
-		return $result;
-
 	}
+
 
 	// 進貨上傳流程
 
@@ -432,48 +359,60 @@ class Upload_logic extends Basetool
 
 	}
 
+
 	// 訂單上傳格式
 
 	public static function order_upload_format( $data )
 	{
 
-		$_this = new self();
-
-		$txt = $_this->txt;
-
-		$result = array();
-
-		$output_data = array();
-
-		$column_header = array();
-
-		$file_name = date("Ymd")."order_upload_format";
-
-		foreach ($data as $row) 
+		if ( !empty($data) && is_array($data) ) 
 		{
 
-			$column_header[] = $txt[$row['name']];
+			$_this = new self();
+
+			$txt = $_this->txt;
+
+			$result = array();
+
+			$output_data = array();
+
+			$column_header = array();
+
+			$file_name = date("Ymd")."order_upload_format";
+
+			$title = $txt["order_upload_format"];
+
+			foreach ($data as $row) 
+			{
+
+				$column_header[] = $txt[$row['name']];
+
+			}
+
+			$output_data[] = $column_header;
+
+			// foreach ($data as $row) 
+			// {
+
+			// 	$column_desc[] = $txt[$row['name']."_upload_desc"];
+
+			// }
+
+			// $output_data[] = $column_desc;
+
+			$output_data[] = Order_logic::order_upload_sample_output( $data );
+
+			$final_column = $_this->ASC_Decimal_value( count($column_header) );
+
+			$final_row = count($output_data);
+
+			$result = $_this->export_excel( $output_data, $title, $final_column, $final_row, $file_name );
+
+			$result->download('xlsx');
+
+			exit();
 
 		}
-
-		$output_data[] = $column_header;
-
-		$output_data[] = Order_logic::order_upload_sample_output( $data );
-
-		$result = Excel::create($file_name, function($excel) use($output_data,$txt) {
-			// Set the title
-			$excel->setTitle($txt["product_upload_format"]);
-			$excel->setDescription('report file');
-
-			$excel->sheet('sheet1', function($sheet) use($output_data) {
-				$sheet->fromArray($output_data, null, 'A1', false, false);
-				$sheet->cells('A1:Z1', function($cells) {
-					$cells->setBackground('#FFFF00');
-				});
-			});
-		});
-
-		return $result;
 
 	}
 
@@ -572,6 +511,10 @@ class Upload_logic extends Basetool
 	public static function upload_data_en_int( $data, $select_option )
 	{
 
+		$_this = new self();
+
+		$result = array();
+
 		$target = array('category'); 
 
 		if ( !empty( $data ) && !empty( $select_option ) )
@@ -585,22 +528,30 @@ class Upload_logic extends Basetool
 
 					if ( isset($select_option[$index]) ) 
 					{
+
 						$row = array_keys($select_option[$index], $row);
 
-						$row = array_shift($row);
+						$row = !empty($row) ? array_shift($row) : -1 ;
+
+						$row = intval($row);
+
 					}
 					else
 					{
-						$row = 0;
+
+						$row = -1;
+					
 					}
 
 				}
 
 			}
 
+			$result = $data;
+
 		}
 
-		return $data;
+		return $result;
 
 	}
 

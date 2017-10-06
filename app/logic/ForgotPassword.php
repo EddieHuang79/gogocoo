@@ -15,12 +15,19 @@ class ForgotPassword extends Basetool
          
 		$_this = new self();
 
-		$result = array(
-		            "account"       => isset($data["email"]) && !empty($data["email"]) ? trim($data["email"]) : "",
-		            "verify_code"   => isset($data["verify"]) && !empty($data["verify"]) ? intval($data["verify"]) : 0,
-		            "token"         => isset($data["_token"]) && !empty($data["_token"]) ? $_this->strFilter($data["_token"]) : "",
-		            "created_at"    => date("Y-m-d H:i:s")
-		         );
+		$result = array();
+
+		if ( !empty($data) && is_array($data) ) 
+		{
+
+			$result = array(
+			            "account"       => isset($data["email"]) && !empty($data["email"]) ? trim($data["email"]) : "",
+			            "verify_code"   => isset($data["verify"]) && !empty($data["verify"]) ? intval($data["verify"]) : 0,
+			            "token"         => isset($data["_token"]) && !empty($data["_token"]) ? $_this->strFilter($data["_token"]) : "",
+			            "created_at"    => date("Y-m-d H:i:s")
+			         );
+
+		}
 
 		return $result;
 
@@ -35,67 +42,75 @@ class ForgotPassword extends Basetool
 
    		$txt = Web_cht::get_txt();
 
-   		$result = "";
+   		$result = json_encode(array("error"));
 
-		try{
+   		if ( !empty($data) && is_array($data) ) 
+   		{
 
-			// 驗證碼
+			try{
 
-			$compare = Verifycode::auth_verify_code( $data["verify_code"] );
+				// 驗證碼
 
-			if (!$compare) 
-			{
+				$compare = Verifycode::auth_verify_code( $data["verify_code"] );
 
-			   $error_msg[] = $txt["verify_code_error"];
-			   
-			} 
+				if (!$compare) 
+				{
 
-            // 更新db 
-            
-            $user_id = Admin_user_logic::get_user_id( $data );
-            
-			if (empty($user_id)) 
-			{
+				   $error_msg[] = $txt["verify_code_error"];
+				   
+				} 
 
-			   $error_msg[] = $txt["accont_error"];
-			   
+	            // 更新db 
+	            
+	            $user_id = Admin_user_logic::get_user_id( $data );
+	            
+				if (empty($user_id)) 
+				{
+
+				   $error_msg[] = $txt["accont_error"];
+				   
+				}
+
+				// 錯誤處理
+
+				if (!empty($error_msg)) 
+				{
+
+				   throw new \Exception(json_encode($error_msg));
+
+				}
+
+	            // 產生密碼
+
+	            $new_password = Admin_user_logic::get_rand_string( 12 );
+
+	            $new_password_hash = array( "password" => bcrypt( $new_password ));
+
+
+	            Session::forget("new_pwd");
+
+	            Session::put("new_pwd", $new_password);
+
+
+				// 更新資料庫
+
+				Admin_user_logic::edit_user( $new_password_hash, $user_id );
+
+	            // 寄信
+
+	            $aa = Mail::to($data["account"])->send(new ForgetPassword_notice());	
+
+	            $result = "";		
+
 			}
-
-			// 錯誤處理
-
-			if (!empty($error_msg)) 
+			catch(\Exception $e)
 			{
 
-			   throw new \Exception(json_encode($error_msg));
+				$result = $_this->show_error_to_user( json_decode($e->getMessage() ,true) );
 
-			}
+			}   
 
-            // 產生密碼
-
-            $new_password = Admin_user_logic::get_rand_string( 12 );
-            $new_password_hash = array( "password" => bcrypt( $new_password ));
-
-
-            Session::forget("new_pwd");
-
-            Session::put("new_pwd", $new_password);
-
-
-			// 更新資料庫
-
-			Admin_user_logic::edit_user( $new_password_hash, $user_id );
-
-            // 寄信
-
-            $aa = Mail::to($data["account"])->send(new ForgetPassword_notice());			
-
-		}
-		catch(\Exception $e)
-		{
-
-			$result = $_this->show_error_to_user( json_decode($e->getMessage() ,true) );
-
-		}   	
+   		}	
 
 		return $result;	
 

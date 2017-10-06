@@ -95,13 +95,18 @@ class OrderController extends Controller
         else
         {
 
-            $data = order_logic::insert_format( $_POST );
+            if ( isset($_POST["product_name"]) ) 
+            {
 
-            $order_id = order_logic::add_order( $data );
+                $data = order_logic::insert_format( $_POST );
 
-            $extra_data = order_logic::insert_extra_format( $_POST, $order_extra_column, $order_id );
+                $order_id = order_logic::add_order( $data );
 
-            order_logic::add_extra_order( $extra_data );
+                $extra_data = order_logic::insert_extra_format( $_POST, $order_extra_column, $order_id );
+
+                order_logic::add_extra_order( $extra_data );
+
+            }
 
         }
 
@@ -124,7 +129,7 @@ class OrderController extends Controller
 
         $has_spec = Product_logic::is_spec_function_active();
 
-        $order = order_logic::get_single_order_data( $id );  
+        $order = order_logic::get_single_order_data( (int)$id );  
 
         $order = get_object_vars($order[0]);  
 
