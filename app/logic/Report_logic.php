@@ -25,6 +25,8 @@ class Report_logic extends Basetool
 
 		$Redis_key = $shop_id."_".$search_deadline;
 
+		$result = 0;
+
 		$cnt = Redis_tool::get_week_order_cnt( $Redis_key );
 
 		if ( is_null($cnt) || !is_numeric($cnt) ) 
@@ -34,15 +36,20 @@ class Report_logic extends Basetool
 
 			$cnt = Order_logic::get_order_cnt( $week_date, $shop_id, $status = array(1,2) );
 
-			$cnt = $cnt->cnt;
-	
-			Redis_tool::set_week_order_cnt( $Redis_key, $cnt );
+			if ( !empty($cnt) ) 
+			{
+
+				$cnt = $cnt->cnt;
+		
+				Redis_tool::set_week_order_cnt( $Redis_key, $cnt );
+
+				$result = number_format($cnt);
+
+			}
 
 		}
 
-		$cnt = number_format($cnt);
-
-		return $cnt;
+		return $result;
 
 	}
 
@@ -60,6 +67,8 @@ class Report_logic extends Basetool
 
 		$Redis_key = $shop_id."_".$search_deadline;
 
+		$result = 0;
+
 		$cnt = Redis_tool::get_week_cancel_order_cnt( $Redis_key );
 
 		if ( is_null($cnt) || !is_numeric($cnt) ) 
@@ -69,15 +78,20 @@ class Report_logic extends Basetool
 
 			$cnt = Order_logic::get_order_cnt( $week_date, $shop_id, $status = array(3) );
 
-			$cnt = $cnt->cnt;
-	
-			Redis_tool::set_week_cancel_order_cnt( $Redis_key, $cnt );
+			if ( !empty($cnt) ) 
+			{
+
+				$cnt = $cnt->cnt;
+		
+				Redis_tool::set_week_cancel_order_cnt( $Redis_key, $cnt );
+
+				$result = number_format($cnt);
+
+			}
 
 		}
 
-		$cnt = number_format($cnt);
-
-		return $cnt;
+		return $result;
 
 	}
 
@@ -95,6 +109,8 @@ class Report_logic extends Basetool
 
 		$Redis_key = $shop_id."_".$search_deadline;
 
+		$result = 0;
+
 		$cnt = Redis_tool::get_today_in_ws_cnt( $Redis_key );
 
 		if ( is_null($cnt) || !is_numeric($cnt) ) 
@@ -104,15 +120,20 @@ class Report_logic extends Basetool
 
 			$cnt = Purchase_logic::get_purchase_sum( $date, $shop_id, $status = array(2) );
 
-			$cnt = $cnt->cnt;
-	
-			Redis_tool::set_today_in_ws_cnt( $Redis_key, $cnt );
+			if ( !empty($cnt->cnt) ) 
+			{
+
+				$cnt = $cnt->cnt;
+		
+				Redis_tool::set_today_in_ws_cnt( $Redis_key, $cnt );
+
+				$result = number_format($cnt);
+
+			}
 
 		}
 
-		$cnt = number_format($cnt);
-
-		return $cnt;
+		return $result;
 
 	}
 
@@ -130,6 +151,8 @@ class Report_logic extends Basetool
 
 		$Redis_key = $shop_id."_".$search_deadline;
 
+		$result = 0;
+
 		$cnt = Redis_tool::get_today_out_ws_cnt( $Redis_key );
 
 		if ( is_null($cnt) || !is_numeric($cnt) ) 
@@ -139,15 +162,20 @@ class Report_logic extends Basetool
 
 			$cnt = Order_logic::get_order_sum( $date, $shop_id, $status = array(1,2) );
 
-			$cnt = $cnt->cnt;
-	
-			Redis_tool::set_today_out_ws_cnt( $Redis_key, $cnt );
+			if ( !empty($cnt) ) 
+			{
+
+				$cnt = $cnt->cnt;
+		
+				Redis_tool::set_today_out_ws_cnt( $Redis_key, $cnt );
+
+				$result = number_format($cnt);
+
+			}
 
 		}
 
-		$cnt = number_format($cnt);
-
-		return $cnt;
+		return $result;
 
 	}
 
@@ -169,9 +197,11 @@ class Report_logic extends Basetool
 
 		$Redis_key = $shop_id."_".$search_deadline;
 
-		$data = Redis_tool::get_month_order_view( $Redis_key );
+		$result = array();
 
-		if ( is_null($data) || empty($data) ) 
+		$result = Redis_tool::get_month_order_view( $Redis_key );
+
+		if ( is_null($result) || empty($result) ) 
 		{
 
 			$date = $_this->month_of_year_date();
@@ -180,16 +210,23 @@ class Report_logic extends Basetool
 			{
 
 				$tmp = Order_logic::get_order_sum( $row, $shop_id, $status = array(1,2) );
+
+				if ( !empty($tmp) ) 
+				{
+
+					$cnt[] = (int)$tmp->cnt;
+
+					$data = Redis_tool::set_month_order_view( $Redis_key, $cnt );
+
+					$result = $data;
+
+				}
 				
-				$cnt[] = (int)$tmp->cnt;
-
 			}
-
-			$data = Redis_tool::set_month_order_view( $Redis_key, $cnt );
 
 		}
 
-		return $data;
+		return $result;
 
 	}
 
@@ -211,40 +248,48 @@ class Report_logic extends Basetool
 
 		$Redis_key = $shop_id."_".$search_deadline;
 
-		$data = Redis_tool::get_year_stock_view( $Redis_key );
+		$result = array();
 
-		if ( is_null($data) || empty($data) ) 
+		$result = Redis_tool::get_year_stock_view( $Redis_key );
+
+		if ( is_null($result) || empty($result) ) 
 		{
 
 			$date = $_this->month_of_year_date();
 
-			// 入庫
-
-			foreach ($date as $index => $row) 
+			if ( !empty($date) ) 
 			{
 
-				$tmp = Purchase_logic::get_purchase_sum( $row, $shop_id, $status = array(2) );
-				
-				$cnt["in"][] = $tmp->cnt * -1;
+				// 入庫
+
+				foreach ($date as $index => $row) 
+				{
+
+					$tmp = Purchase_logic::get_purchase_sum( $row, $shop_id, $status = array(2) );
+					
+					$cnt["in"][] = $tmp->cnt * -1;
+
+				}
+
+				// 出庫
+
+				foreach ($date as $index => $row) 
+				{
+
+					$tmp = Order_logic::get_order_sum( $row, $shop_id, $status = array(1,2) );
+					
+					$cnt["out"][] = $tmp->cnt;
+
+				}
+
+				$result = Redis_tool::set_year_stock_view( $Redis_key, $cnt );
+
 
 			}
-
-			// 出庫
-
-			foreach ($date as $index => $row) 
-			{
-
-				$tmp = Order_logic::get_order_sum( $row, $shop_id, $status = array(1,2) );
-				
-				$cnt["out"][] = $tmp->cnt;
-
-			}
-
-			$data = Redis_tool::set_year_stock_view( $Redis_key, $cnt );
 
 		}
 
-		return $data;
+		return $result;
 
 	}
 
@@ -266,35 +311,42 @@ class Report_logic extends Basetool
 
 		$Redis_key = $shop_id."_".$search_deadline;
 
-		$data = Redis_tool::get_year_stock_view( $Redis_key );
+		$result = array();
 
-		if ( is_null($data) || empty($data) ) 
+		if ( !empty($shop_id) ) 
 		{
 
-			// 取得資料
+			$result = Redis_tool::get_year_stock_view( $Redis_key );
 
-			$data = Stock_logic::get_stock_analytics( $shop_id );
+			if ( is_null($result) || empty($result) ) 
+			{
 
-			// 加入父類別翻譯
+				// 取得資料
 
-			$data = Stock_logic::get_stock_analytics_add_parents_category( $data );
+				$data = Stock_logic::get_stock_analytics( $shop_id );
 
-			// 轉成第一層類別資料格式
+				// 加入父類別翻譯
 
-			$parents_data = $_this->stock_analytics_level1_data( $data );
+				$data = Stock_logic::get_stock_analytics_add_parents_category( $data );
 
-			$child_data = $_this->stock_analytics_level2_data( $data );
+				// 轉成第一層類別資料格式
 
-			$result	= array(
-							"level1" => $parents_data,
-							"level2" => $child_data,
-						);
+				$parents_data = $_this->stock_analytics_level1_data( $data );
 
-			$data = Redis_tool::set_year_stock_view( $Redis_key, $result );
+				$child_data = $_this->stock_analytics_level2_data( $data );
+
+				$result	= array(
+								"level1" => $parents_data,
+								"level2" => $child_data,
+							);
+
+				$result = Redis_tool::set_year_stock_view( $Redis_key, $result );
+
+			}
 
 		}
 
-		return $data;
+		return $result;
 
 	}
 
@@ -316,9 +368,11 @@ class Report_logic extends Basetool
 
 		$Redis_key = $shop_id."_".$search_deadline;
 
-		$data = Redis_tool::get_year_product_top5( $Redis_key );
+		$result = array();
 
-		if ( is_null($data) || empty($data) ) 
+		$result = Redis_tool::get_year_product_top5( $Redis_key );
+
+		if ( is_null($result) || empty($result) ) 
 		{
 
 			$date = $_this->month_of_year_date();
@@ -348,10 +402,16 @@ class Report_logic extends Basetool
 
 				foreach ($tmp as $row1) 
 				{
-					$dataArray[] =  array(
-											$row1->product_name,
-											(int)$row1->cnt,
-										);
+
+					if ( is_object($row1) ) 
+					{
+
+						$dataArray[] =  array(
+												$row1->product_name,
+												(int)$row1->cnt,
+											);
+
+					}
 
 				}
 
@@ -359,11 +419,11 @@ class Report_logic extends Basetool
 
 			}
 
-			$data = Redis_tool::set_year_product_top5( $Redis_key, $cnt );
+			$result = Redis_tool::set_year_product_top5( $Redis_key, $cnt );
 
 		}
 
-		return $data;
+		return $result;
 
 	}
 

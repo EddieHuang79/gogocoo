@@ -33,9 +33,7 @@ var Show_current_position = function(){
 		});
 	},
 	Search_tool_display = function() {
-		var txt = $("#search_form:visible").length <= 0 ? "隱藏" : "顯示" ;
-		$("#search_form").toggle();
-		$(".ShowHide").val(txt);
+		$(".search_tool").toggle('slow');
 	},
 	Refresh_verify_code = function() {
 		$.ajax({
@@ -43,9 +41,7 @@ var Show_current_position = function(){
 			data: "",
 			type: 'POST',
 			success: function( response ) {
-				response.forEach(function(value, key){
-					$(".verify_code>img").eq(key).attr("src", "../_images/"+value+".png");
-				});
+				$(".verify_code").attr("src", response);
 			}
 		});
 	},
@@ -460,8 +456,8 @@ count_lightbox_width();
 $(".addbtn").on("click", AddBtn);
 $(document).on("click", ".removeLabel", RemoveBtn);
 $("[alt='main']").on("click", ClickAll);
-$("#search_tool>.search_block>.tool>[name='date']").datepicker({format: "yy-mm-dd"});
-$(".ShowHide").on("click", Search_tool_display);
+$(".search_tool").find("[name='date']").datepicker({format: "yy-mm-dd"});
+// $(".ShowHide").on("click", Search_tool_display);
 $(".refresh_verify_code").on("click", Refresh_verify_code);
 $(".RoleListBtn").on("click", RoleListBtn);
 $(".close_btn").on("click", ClosePopup);
@@ -482,3 +478,4 @@ $(".autocomplete").on("click", AutoComplete);
 $(".clickAll").on("click", clickAllFunction);
 $(".extend_account_deadline").on("click", extend_account_deadline);
 $("#category").on("change", product_category);
+$(".fa-search").on("click", Search_tool_display)

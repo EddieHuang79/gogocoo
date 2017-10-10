@@ -14,7 +14,6 @@
 
 #Verify>div{
 	float: left;
-	font-size: 25pt;
 	margin-right: 5px;
 }
 
@@ -460,4 +459,12 @@ img {
 }
 .child_store_type_id{
 	display: none;
+}
+
+.no-print{
+	display: none;
+}
+
+.content-header{
+	overflow: hidden;
 }

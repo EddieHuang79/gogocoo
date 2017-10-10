@@ -1,52 +1,58 @@
 <section class="content-header">
 	<h1>{{ $txt['Site'] }}</h1>
-	<div class="Report">
-		<div class="row">
-			<div class="col-lg-3 col-xs-6">
-				<div class="small-box bg-aqua">
-					<div class="inner">
-						<h3>{{ $week_order_cnt }}</h3>
-						<p>{{ $txt['this_week_order_cnt'] }}</p>
-					</div>
-					<div class="icon">
-						<i class="ion ion-bag"></i>
-					</div>
+	@include('webbase.breadcrumb')
+</section>
+
+<section class="content">
+
+	<div class="row">
+		<div class="col-lg-3 col-xs-6">
+			<div class="small-box bg-aqua">
+				<div class="inner">
+					<h3>{{ $week_order_cnt }}</h3>
+					<p>{{ $txt['this_week_order_cnt'] }}</p>
 				</div>
-			</div>
-			<div class="col-lg-3 col-xs-6">
-				<div class="small-box bg-green">
-					<div class="inner">
-						<h3>{{ $week_cancel_order_cnt }}</h3>
-						<p>{{ $txt['this_week_cancel_order_cnt'] }}</p>
-					</div>
-					<div class="icon">
-						<i class="ion ion-stats-bars"></i>
-					</div>
-				</div>
-			</div>
-			<div class="col-lg-3 col-xs-6">
-				<div class="small-box bg-yellow">
-					<div class="inner">
-						<h3>{{ $today_in_ws_cnt }}</h3>
-						<p>{{ $txt['today_in_ws'] }}</p>
-					</div>
-					<div class="icon">
-						<i class="ion ion-person-add"></i>
-					</div>
-				</div>
-			</div>
-			<div class="col-lg-3 col-xs-6">
-				<div class="small-box bg-red">
-					<div class="inner">
-						<h3>{{ $today_out_ws_cnt }}</h3>
-						<p>{{ $txt['today_out_ws'] }}</p>
-					</div>
-					<div class="icon">
-						<i class="ion ion-pie-graph"></i>
-					</div>
+				<div class="icon">
+					<i class="ion ion-bag"></i>
 				</div>
 			</div>
 		</div>
+		<div class="col-lg-3 col-xs-6">
+			<div class="small-box bg-green">
+				<div class="inner">
+					<h3>{{ $week_cancel_order_cnt }}</h3>
+					<p>{{ $txt['this_week_cancel_order_cnt'] }}</p>
+				</div>
+				<div class="icon">
+					<i class="ion ion-stats-bars"></i>
+				</div>
+			</div>
+		</div>
+		<div class="col-lg-3 col-xs-6">
+			<div class="small-box bg-yellow">
+				<div class="inner">
+					<h3>{{ $today_in_ws_cnt }}</h3>
+					<p>{{ $txt['today_in_ws'] }}</p>
+				</div>
+				<div class="icon">
+					<i class="ion ion-person-add"></i>
+				</div>
+			</div>
+		</div>
+		<div class="col-lg-3 col-xs-6">
+			<div class="small-box bg-red">
+				<div class="inner">
+					<h3>{{ $today_out_ws_cnt }}</h3>
+					<p>{{ $txt['today_out_ws'] }}</p>
+				</div>
+				<div class="icon">
+					<i class="ion ion-pie-graph"></i>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="row">
 
 		<section class="col-lg-6 connectedSortable">
 			<div class="box box-success">
@@ -66,9 +72,6 @@
 			</div>
         </section>
 
-<!-- 		<div class="ReportrRow">
-			<div id="HotSellTop5Stack" class="HotSellTop5Stack"></div>
-			<div></div>
-		</div> -->
 	</div>
+
 </section>

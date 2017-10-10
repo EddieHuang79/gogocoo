@@ -368,6 +368,7 @@ class Shop extends Model
 		DB::table($_this->record_table)
 			->where("store_id", "=", $data["store_id"])
 			->where("MerchantTradeNo", "=", $data["seq"])
+			->whereBetween('created_at', array( date("Y-m-d 00:00:00", $data["created_at"]) , date("Y-m-d 23:59:59", $data["created_at"])))
 			->update( array( "status" => 1, "paid_at" => $data["PaymentDate"] ) );
 
     }

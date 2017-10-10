@@ -9,6 +9,7 @@
 			<div class="box">
 				<div class="box-header">
 					<h3 class="box-title">{{ $txt["service_list"] }}</h3>
+					<i class="fa fa-search"></i>
 				</div>
 				<div class="box-body">
 					<table class="table table-bordered table-striped">

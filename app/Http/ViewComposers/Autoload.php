@@ -241,7 +241,7 @@ class Autoload extends Basetool
                         "角色管理"          =>    'fa-group',
                         "服務管理"          =>    'fa-briefcase',
                         "GO商城"           =>    'fa-shopping-cart',
-                        "店鋪管理"          =>    'fa-cog',
+                        "店鋪管理"          =>    'fa-scribd',
                         "訊息管理"          =>    'fa-comment',
                         "商品管理"          =>    'fa-cube',
                         "商城管理"          =>    'fa-building',

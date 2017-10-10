@@ -247,7 +247,7 @@ class Shop_logic extends Basetool
                                 "mall_product_id"       => $mall_product_id,
                                 "type"                  => 0,
                                 "active_item_id"        => 0,
-                                "status"                => 2,
+                                "status"                => 1,
                                 "use_time"              => "0000-00-00 00:00:00"
                             );
 
@@ -902,8 +902,8 @@ class Shop_logic extends Basetool
     {
 
         //基本參數(請依系統規劃自行調整)
-        Ecpay::i()->Send['ReturnURL']         = "http://www.gogocoo.com/DataReceive" ;
-        Ecpay::i()->Send['ClientBackURL']     = "http://www.gogocoo.com/buy_record" ;
+        Ecpay::i()->Send['ReturnURL']         = "https://www.gogocoo.com/DataReceive" ;
+        Ecpay::i()->Send['ClientBackURL']     = "https://www.gogocoo.com/buy_record" ;
         Ecpay::i()->Send['MerchantTradeNo']   = $data["MerchantTradeNo"];               //訂單編號
         Ecpay::i()->Send['MerchantTradeDate'] = date('Y/m/d H:i:s');                    //交易時間
         Ecpay::i()->Send['TotalAmount']       = $data["Price"];                         //交易金額
@@ -1035,12 +1035,15 @@ class Shop_logic extends Basetool
 
             $store_id = is_object($store_obj) ? (int)$store_obj->id : 0 ;
 
+            $created_at = strtotime( substr( $MerchantTradeNo, 3, 8 ) );
+
             $seq = (int)substr( $MerchantTradeNo, 11, 8 );
 
             $data = array(
 
                       "store_id"          => $store_id,
                       "seq"               => $seq,
+                      "created_at"        => $created_at,
                       "PaymentDate"       => $data->PaymentDate
 
                     );

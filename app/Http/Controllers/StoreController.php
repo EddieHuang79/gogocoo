@@ -85,7 +85,7 @@ class StoreController extends Controller
 
         $store_info = Store_logic::get_store_info();
 
-        $store_info = $store_info[0];
+        $store_info = isset($store_info[0]) ? $store_info[0] : new \stdClass() ;
 
         $data = compact('assign_page', 'store', 'store_type', 'store_status', 'store_info', 'deadline');
 
