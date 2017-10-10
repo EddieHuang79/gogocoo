@@ -16,12 +16,12 @@ class AddHeaders
     public function handle($request, Closure $next)
     {
 
-        $response = $next($request);
-        $response->header('Access-Control-Allow-Origin', env('APP_URL'));
-        $response->header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-        $response->header('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Accept');
+        // $response = $next($request);
+        // $response->header('Access-Control-Allow-Origin', env('APP_URL'));
+        // $response->header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+        // $response->header('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Accept');
     
-        return $response;
+        // return $response;
 
     }
 
