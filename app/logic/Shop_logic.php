@@ -902,8 +902,8 @@ class Shop_logic extends Basetool
     {
 
         //基本參數(請依系統規劃自行調整)
-        Ecpay::i()->Send['ReturnURL']         = "http://www.gogocoo.com/DataReceive" ;
-        Ecpay::i()->Send['ClientBackURL']     = "http://www.gogocoo.com/buy_record" ;
+        Ecpay::i()->Send['ReturnURL']         = url('/')."/DataReceive" ;
+        Ecpay::i()->Send['ClientBackURL']     = url('/')."/buy_record" ;
         Ecpay::i()->Send['MerchantTradeNo']   = $data["MerchantTradeNo"];               //訂單編號
         Ecpay::i()->Send['MerchantTradeDate'] = date('Y/m/d H:i:s');                    //交易時間
         Ecpay::i()->Send['TotalAmount']       = $data["Price"];                         //交易金額
