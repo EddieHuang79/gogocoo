@@ -106,6 +106,8 @@ class ShopController extends Controller
     public static function DataReceive()
     {
 
+        Record_logic::write_log( "testPayment", json_encode($_POST) ) ;
+
         Shop_logic::DataReceive( $_POST );
 
         echo "1|OK";
