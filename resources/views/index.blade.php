@@ -52,8 +52,8 @@
 		</div>
 	</div>
 
-	<div class="row">
-		<img src="{{ URL::asset('webimage/loading.gif') }}" alt="loadingImg" class="loadingImg">
+	<div class="row loadingImg">
+		<img src="{{ URL::asset('webimage/loading.gif') }}" alt="loadingImg">
 	</div>
 
 	<div class="row report">

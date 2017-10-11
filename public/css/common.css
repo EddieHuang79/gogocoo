@@ -393,9 +393,8 @@ img {
 }
 
 .loadingImg{
-	position: relative;
-	left: 750px;
-	top: 200px;
+	text-align: center;
+	padding: 50px 0px;
 }
 
 .report{

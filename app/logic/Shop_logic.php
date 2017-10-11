@@ -1000,7 +1000,8 @@ class Shop_logic extends Basetool
 
             $mac = $_this->get_mac( $order_number_data );
 
-            if ( !isset($data["CheckMacValue"]) || !isset($mac["mac"]) || ( isset($data["CheckMacValue"]) && $data["CheckMacValue"] == $mac["mac"] ) ) 
+            // if ( !isset($data["CheckMacValue"]) || !isset($mac["mac"]) || ( isset($data["CheckMacValue"]) && $data["CheckMacValue"] == $mac["mac"] ) ) 
+            if ( !isset($data["CheckMacValue"]) || !isset($mac["mac"]) ) 
             {
 
                 $error_msg = "mac錯誤||訂單編號錯誤||訂單狀態錯誤！";
