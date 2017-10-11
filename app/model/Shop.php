@@ -409,7 +409,7 @@ class Shop extends Model
 					->where("store_code", "=", $data["store_code"])
 					->where("MerchantTradeNo", "=", $data["order_number"])
 					->whereBetween($_this->record_table.'.created_at', [date('Y-m-d 00:00:00', strtotime($data["created_at"])), date('Y-m-d 23:59:59', strtotime($data["created_at"]))])
-					->get();
+					->first();
 
 		return $data;
 
