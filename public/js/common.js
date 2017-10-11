@@ -5,6 +5,7 @@ var Show_current_position = function(){
 			$("[page='page"+service_id+"']").parents(".treeview-menu").addClass("active");
 			$("[page='page"+service_id+"']").parents(".treeview-menu").toggle();
 		};
+
 	},
 	RemoveBtn = function(){
 		var target_class = $(this).attr("target"),
@@ -17,11 +18,13 @@ var Show_current_position = function(){
 		{
 			$(this).parents(".clone").find("input[type='text'],select,input[type='hidden']").val('');
 		}
+
 	},
 	AddBtn = function(){
 		var target_class = $(this).attr("target");
 		$("."+target_class+":first").clone().insertAfter("."+target_class+":last");
 		$("."+target_class+":last").find("input[type='text'],select,input[type='hidden']").val('');
+	
 	},
 	ClickAll = function(){
 		var group = $(this).attr("group"),
@@ -31,9 +34,11 @@ var Show_current_position = function(){
 		Dom.each(function(e){
 			$(this).prop("checked", status);
 		});
+	
 	},
 	Search_tool_display = function() {
 		$(".search_tool").toggle('slow');
+	
 	},
 	Refresh_verify_code = function() {
 		$.ajax({
@@ -44,6 +49,7 @@ var Show_current_position = function(){
 				$(".verify_code").attr("src", response);
 			}
 		});
+	
 	},
 	Ajax_init = function() {
 		$.ajaxSetup({
@@ -51,17 +57,20 @@ var Show_current_position = function(){
 		    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
 		  }
 		});
+	
 	},
 	RoleListBtn = function() {
 		var label_txt = $(this).parents(".auth-div").find("ul.auth:visible").length > 0 ? "+" : "-" ;
 		$(this).parents(".auth-div").find("ul.auth").toggle();
 		$(this).text(label_txt);
+	
 	},
 	ClosePopup = function() {
 		$(".lightbox").hide();
 		var placeholder = $("[name='store_type']").attr("placeholder_bk");
 		if ( placeholder !== "undefined" &&  placeholder != "") 
 			$("[name='store_type']").attr("placeholder", placeholder);
+	
 	},
 	call_store_type = function() {
 		var placeholder = $(this).attr("placeholder");
@@ -71,6 +80,7 @@ var Show_current_position = function(){
 		$(".store_type>li").hide();
 		$(".store_type>li.parent").show();
 		$(".store_type>li").removeClass('store_type_choose');
+	
 	}
 	store_type_find_child = function() {
 		var optid = $(this).val();
@@ -78,6 +88,7 @@ var Show_current_position = function(){
 		$("[name='store_type_id']").val("");
 		$("[name='store_type_id']>option").hide();
 		$("[name='store_type_id']>option[parentsid='"+optid+"']").show();
+	
 	},
 	set_store_type = function() {
 		var choose_opt = $(this).text(),
@@ -85,6 +96,7 @@ var Show_current_position = function(){
 		$("[name='store_type']").val(choose_opt);
 		$("[name='store_type_id']").val(optid);
 		$(".store_type_border").hide();
+	
 	},
 	change_store = function() {
 		var store_id = $(this).attr("storeId"),
@@ -129,6 +141,7 @@ var Show_current_position = function(){
 				$(".mall_product_lightbox").fadeIn(200);
 			}
 		});		
+	
 	},
 	plus = function(){
 		var target = $(this).attr("target"),
@@ -159,6 +172,7 @@ var Show_current_position = function(){
 			total_price = isNaN(total) ? 0 : total ;
 		$(".mall_product_cost").text(price_txt);
 		$("#ShopForm").find("[name='total']").val(total);
+	
 	},
 	ShopSubmit = function(){
 		var mall_shop_id = $(".mall_shop_id"),
@@ -176,9 +190,11 @@ var Show_current_position = function(){
 				$(".shop_finish").fadeIn();
 			}
 		});	
+	
 	},
 	dragHandler = function(e){
 		e.preventDefault();
+	
 	},
 	dropImage = function(e){
 		e.preventDefault();
@@ -226,6 +242,7 @@ var Show_current_position = function(){
 
 			});
 		};
+	
 	},
 	upload_crop_image = function(e){
 		// Upload cropped image to server if the browser supports `HTMLCanvasElement.toBlob`
@@ -247,6 +264,7 @@ var Show_current_position = function(){
 					}
 				});
 		});
+	
 	},
 	getRoundedCanvas = function(sourceCanvas){
 		var canvas = document.createElement('canvas'),
@@ -264,6 +282,7 @@ var Show_current_position = function(){
 		context.drawImage(sourceCanvas, 0, 0, width, height);
 
 		return canvas;
+	
 	},
 	AutoComplete = function(){
 		var type = $(this).attr("AutoCompleteType"),
@@ -301,6 +320,7 @@ var Show_current_position = function(){
 	count_lightbox_width = function(){
 		var lightbox_width = ( $(".lightbox").width() / 2 ) * -1;
 		$(".lightbox").css( "margin-left", lightbox_width );
+	
 	},
 	extend_account_deadline = function(){
 		
@@ -344,6 +364,7 @@ var Show_current_position = function(){
 			
 			}
 		});	
+	
 	},
 	ExtendSubmit = function(){
 		
@@ -377,6 +398,7 @@ var Show_current_position = function(){
 
 			}
 		});	
+	
 	},
 	MallSubmit = function(){
 		
@@ -425,7 +447,7 @@ var Show_current_position = function(){
 
 				$('<select>', {
 					    name: 'new_category',
-					    class: "append"
+					    class: "append form-control"
 					}
 				).insertAfter("#category");
 

@@ -10,7 +10,7 @@
 	        <div class="col-xs-12">
 				<div class="box">
 					<div class="box-header">
-						<h3 class="box-title">{{ $txt["purchase_list"] }}<input type="submit" name="verify" value="{{ $txt['purchase_verify'] }}"></h3>
+						<input type="submit" name="verify" value="{{ $txt['purchase_verify'] }}" class="btn btn-primary">
 					</div>
 					<div class="box-body">
 						<table class="table table-bordered table-striped">

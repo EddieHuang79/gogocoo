@@ -16,6 +16,7 @@ class Shop extends Model
 	protected $mall_product_rel_table = "mall_product_rel";
 	protected $mall_product_use_table = "mall_product_use";
 	protected $mall_pay_record_table = "mall_pay_record";
+	protected $store_table = "store";
 
 
 	public static function shop_product_list()
@@ -382,5 +383,36 @@ class Shop extends Model
 		return DB::table($_this->record_table)->select("*")->find( $id );
 
     }
+
+
+    public static function set_mac( $record_id, $mac )
+    {
+
+		$_this = new self();
+
+		DB::table($_this->record_table)->where("id", "=", $record_id)->update( array("mac" => $mac) );
+
+    }
+
+
+	public static function get_mac( $data )
+	{
+
+		$_this = new self();
+
+		$data = DB::table($_this->record_table)
+					->leftJoin($_this->store_table, $_this->record_table.'.store_id', '=', $_this->store_table.'.id')
+					->select(
+						"mac"
+					)
+					->where($_this->record_table.".status", "=", "0")
+					->where("store_code", "=", $data["store_code"])
+					->where("MerchantTradeNo", "=", $data["order_number"])
+					->whereBetween($_this->record_table.'.created_at', [date('Y-m-d 00:00:00', strtotime($data["created_at"])), date('Y-m-d 23:59:59', strtotime($data["created_at"]))])
+					->get();
+
+		return $data;
+
+	}
 
 }

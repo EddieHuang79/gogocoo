@@ -183,35 +183,35 @@ var	month_order_view = function(){
 
 
 			var data1 = JSON.parse(data),
-				times = 0,
+				times = 1,
 				times2 = 0,
-				level1 = $.map(data1['level1'], function(value,index) { 
+				level1 = $.map(data1['level1'], function(value, index) { 
 							
 							var colors = Highcharts.getOptions().colors;
 
 							data = {
 								name: index,
 								y: value,
-								colors: colors[times],
+								color: colors[times],
 							};
 
 							times++;
 
 							return data;
 						}),
-				level2 = $.map(data1['level2'], function(value,index) { 
+				level2 = $.map(data1['level2'], function(value, index) { 
 
 								var colors = Highcharts.getOptions().colors,
 									size = Object.keys(value).length;
 
-								data =  $.map(value, function(value2,index2){
+								data =  $.map(value, function(value2, index2){
 
 											var brightness = 0.2 - (times2 / size) / 2;
 
 											data = {
 												name: index2,
 												y: value2,
-												colors: Highcharts.Color(colors[index]).brighten(brightness).get()
+												color: Highcharts.Color(colors[index]).brighten(brightness).get()
 											};
 
 											times2++;
@@ -435,10 +435,26 @@ var	month_order_view = function(){
 			}
 		});
 
+	},
+	loading = function(){
+
+		if ( $(".report").length > 0 && $(".loadingImg").length > 0 ) 
+		{
+
+			setTimeout(function(){
+
+				$(".report").fadeIn(500);
+				$(".loadingImg").fadeOut(100);
+
+			},2500);
+
+		};
+
 	};
 
 month_order_view();
 year_stock_view();
 stock_analytics();
 month_top_five();
+loading();
 // product_top5_stack();

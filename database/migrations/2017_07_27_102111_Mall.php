@@ -78,6 +78,7 @@ class Mall extends Migration
             $table->integer('total');
             $table->integer('status');
             $table->dateTime('paid_at');
+            $table->string('mac');
             $table->timestamps();
             $table->engine = 'InnoDB';
         });    
@@ -210,6 +211,8 @@ class Mall extends Migration
             $table->string('PaymentType');
             $table->integer('PaymentTypeChargeFee');
             $table->dateTime('TradeDate');
+            $table->string('CheckMacValue');
+            $table->string('sysMsg');
             $table->timestamps();
             $table->engine = 'InnoDB';
         });   

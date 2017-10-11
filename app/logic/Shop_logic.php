@@ -273,6 +273,8 @@ class Shop_logic extends Basetool
 
       $result = array();
 
+      Session::forget('record_id');
+
       if ( !empty($data) && is_array($data) ) 
       {
 
@@ -294,7 +296,9 @@ class Shop_logic extends Basetool
 
         $record_id = Shop::shop_buy_insert( $insert_record );
 
-        $insert_record["record_id"] = $record_id;
+        $insert_record["record_id"] = (int)$record_id;
+
+        Session::put("record_id", (int)$record_id);
 
         $use_data = $_this->use_data_format( $insert_record, $mall_product );
 
@@ -308,6 +312,7 @@ class Shop_logic extends Basetool
                     "id"                  =>  $record_id,
                     "MerchantTradeNo"     =>  $_this->order_number_encode( $record_data ),
                     "mall_product_name"   =>  $mall_product["mall_product_name"],
+                    "mall_product_desc"   =>  $mall_product["mall_product_description"],
                     "Price"               =>  $data["Price"],
                     "Quantity"            =>  $data["mall_product_number"],
                   );
@@ -885,9 +890,14 @@ class Shop_logic extends Basetool
         if ( !empty($order_number) ) 
         {
 
-          $result = !empty($order_number) ? substr($order_number, 11) : false ;
+          $result = array(
+                      "store_code"    =>  substr($order_number, 0, 3),
+                      "order_number"  =>  substr($order_number, 11),
+                      "created_at"    =>  substr($order_number, 3, 8)
+                    );
 
-          $result = !empty($result) ? intval($result) : false ;
+
+          $result = !empty($result) ? $result : false ;
 
         }
 
@@ -907,7 +917,7 @@ class Shop_logic extends Basetool
         Ecpay::i()->Send['MerchantTradeNo']   = $data["MerchantTradeNo"];               //訂單編號
         Ecpay::i()->Send['MerchantTradeDate'] = date('Y/m/d H:i:s');                    //交易時間
         Ecpay::i()->Send['TotalAmount']       = $data["Price"];                         //交易金額
-        Ecpay::i()->Send['TradeDesc']         = "good to drink" ;                       //交易描述
+        Ecpay::i()->Send['TradeDesc']         = $data["mall_product_desc"];             //交易描述
         Ecpay::i()->Send['ChoosePayment']     = \ECPay_PaymentMethod::ALL ;             //付款方式
 
         //訂單的商品資料
@@ -921,19 +931,110 @@ class Shop_logic extends Basetool
     }
 
 
-    // 檢查資料來源
+    // 接收付款完成
 
-    public static function check_source( $data )
+    public static function DataReceive( $data )
     {
 
-        $result = false;
+        $_this = new self();
 
-        if ( !empty($data) && is_array($data) ) 
+        $result = true;
+
+        try 
+        {
+         
+            if ( empty($data) || !is_array($data) ) 
+            {
+
+                $error_msg = "資料格式錯誤！";
+
+                throw new \Exception($error_msg);
+
+            }
+
+
+            if ( !isset($data["MerchantID"]) || ( isset($data["MerchantID"]) && $data["MerchantID"] != env('PAY_MERCHANT_ID') ) ) 
+            {
+
+                $error_msg = "特店編號錯誤！";
+
+                throw new \Exception($error_msg);
+
+            }
+
+
+            if ( !isset($data["MerchantTradeNo"]) ) 
+            {
+
+                $error_msg = "未回傳訂單編號！";
+
+                throw new \Exception($error_msg);
+
+            }
+
+
+            if ( !isset($data["RtnCode"]) || ( isset($data["RtnCode"]) && (int)$data["RtnCode"] !== 1 ) ) 
+            {
+
+                $error_msg = "授權失敗！";
+
+                throw new \Exception($error_msg);
+
+            }
+
+
+            // 解碼
+
+            $order_number_data = $_this->order_number_decode( $data["MerchantTradeNo"] );
+
+
+            if ( empty($order_number_data) || !is_array($order_number_data) ) 
+            {
+
+                $error_msg = "訂單編號為空||訂單解碼失敗！";
+
+                throw new \Exception($error_msg);                
+
+            }
+
+
+            $mac = $_this->get_mac( $order_number_data );
+
+            if ( !isset($data["CheckMacValue"]) || !isset($mac["mac"]) || ( isset($data["CheckMacValue"]) && $data["CheckMacValue"] == $mac["mac"] ) ) 
+            {
+
+                $error_msg = "mac錯誤||訂單編號錯誤||訂單狀態錯誤！";
+
+                throw new \Exception($error_msg);
+
+            }
+
+            // 過濾變數
+
+            $data = $_this->PaymentData_format( $data );
+
+        } 
+        catch (\Exception $e) 
         {
 
-          $result = !empty($data["CheckMacValue"]) ? true : false;
+            $result = false;
 
-          $result = $data["MerchantID"] != env('PAY_MERCHANT_ID') ? false : $result;
+            // 過濾變數
+
+            $data = $_this->PaymentData_format( $data );
+
+            $data["sysMsg"] = $e->getMessage();
+
+        }
+
+        // 寫入紀錄
+
+        $payment_id = $_this->add_payment_data( $data );
+
+        if ( $result === true ) 
+        {
+
+            $_this->active_mall_service_process( $payment_id );
 
         }
 
@@ -963,6 +1064,8 @@ class Shop_logic extends Basetool
                       "PaymentType"           =>  isset($data['PaymentType']) ? trim($data['PaymentType']) : "" ,
                       "PaymentTypeChargeFee"  =>  isset($data['PaymentTypeChargeFee']) ? intval($data['PaymentTypeChargeFee']) : "" ,
                       "TradeDate"             =>  isset($data['TradeDate']) ? date("Y-m-d H:i:s", strtotime($data['TradeDate'])) : "" ,
+                      "CheckMacValue"         =>  isset($data['CheckMacValue']) ? trim($data['CheckMacValue']) : "" ,
+                      "sysMsg"                =>  isset($data['sysMsg']) ? trim($data['sysMsg']) : "" ,
                       "created_at"            =>  date("Y-m-d H:i:s") ,
                       "updated_at"            =>  date("Y-m-d H:i:s") 
 
@@ -1078,43 +1181,6 @@ class Shop_logic extends Basetool
     }
 
 
-    // 接收付款完成
-
-    public static function DataReceive( $data )
-    {
-
-        $_this = new self();
-
-        $result = false;
-
-        // 檢查變數
-
-        $check_result = $_this->check_source( $data );
-
-        if ( $check_result === true ) 
-        {
-
-            // 過濾變數
-
-            $data = $_this->PaymentData_format( $data );
-
-            // 寫入紀錄
-
-            $payment_id = $_this->add_payment_data( $data );
-            
-            // 啟用對應服務
-
-            $_this->active_mall_service_process( $payment_id );
-
-            $result = true;
-
-        }
-
-        return $result;
-
-    }
-
-
     // 取得單筆訂單紀錄
 
     public static function get_single_record_data( $record_id )
@@ -1132,5 +1198,48 @@ class Shop_logic extends Basetool
       return $result;
 
     }
+
+
+    // 儲存驗證碼
+
+    public static function set_mac( $record_id, $mac )
+    {
+
+        $result = false;
+
+        if ( !empty($record_id) && is_int($record_id) && !empty($mac) ) 
+        {
+
+            Shop::set_mac( $record_id, $mac );
+
+            $result = true;
+
+        }
+
+
+        return $result;
+
+    }
+
+
+    // 取得驗證碼
+
+    public static function get_mac( $data )
+    {
+
+        $result = array();
+
+        if ( !empty($data) && is_array($data) ) 
+        {
+
+            $result = Shop::get_mac( $data );
+
+        }
+
+
+        return $result;
+
+    }
+
 
 }

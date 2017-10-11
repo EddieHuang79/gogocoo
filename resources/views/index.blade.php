@@ -53,6 +53,10 @@
 	</div>
 
 	<div class="row">
+		<img src="{{ URL::asset('webimage/loading.gif') }}" alt="loadingImg" class="loadingImg">
+	</div>
+
+	<div class="row report">
 
 		<section class="col-lg-6 connectedSortable">
 			<div class="box box-success">

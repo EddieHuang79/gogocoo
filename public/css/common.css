@@ -305,14 +305,6 @@ div.mall_product_number,.popup_option_right{
 	text-align: center;
 }
 
-.mall_product_btn>input[type='button']{
-	margin: calc(2%);
-	background-color: #3c8dbc;
-	color: #FFF;	
-	width: 100px;
-	height: 50px;
-}
-
 .mall_product_cost{
 	text-align: right;
 	color: #F00;
@@ -372,61 +364,6 @@ img {
 	display: none;
 }
 
-.Report{
-	position: relative;
-	width: 90%;
-	height: auto;
-	/*border: 1px solid #000;*/
-	margin: 0px auto;
-	margin-top: 50px;
-	padding: 1px;
-}
-.DataRow{
-	overflow: auto;
-	/*padding: 40px auto;*/
-	/*border: 1px solid #000;*/
-}
-.ChildRow{
-	overflow: auto;
-	float: left;
-	/*border: 1px solid #000;*/
-	margin: 20px 20px;
-}
-.ChildRow>div{
-	width: 280px;
-	height: 180px;
-	border: 2px solid #CCC;
-	float: left;
-	margin: 10px;
-	
-}
-.ChildRow>div:hover{
-	/*border: 2px solid #000;*/
-}
-.ChildRow>div>div{
-	padding: 35px;
-}
-.ChildRow>div>div>h1{
-	width: 80%;
-	text-align: right;
-}
-.ReportrRow{
-	overflow: auto;
-	/*border: 1px solid #000;*/
-	width: 100%;
-	margin: 20px auto;	
-}
-.ReportrRow>div{
-	width: 46%;
-	min-width: 320px;
-	height: 300px;
-	border: 1px solid #CCC;
-	float: left;
-	margin: 10px 20px;
-}
-.ReportrRow>div:hover{
-	/*border: 2px solid #000;*/
-}
 .content-header{
 	overflow: auto;
 }
@@ -439,24 +376,6 @@ img {
 	font-size: 12px !important;	
 }
 
-/* For PC */
-@media screen and (min-width: 1200px) and (max-width: 2000px) {
-	.position-absolute-center{
-		position: absolute;
-		left: 35%;
-		top: 10%;	
-	}
-	.Report{
-		width: 80%;
-		padding: 5px;
-	}
-	.form-signin{
-		width: 30%;
-	}
-	.ReportrRow>div{
-		height: 500px;
-	}
-}
 .child_store_type_id{
 	display: none;
 }
@@ -468,3 +387,18 @@ img {
 .content-header{
 	overflow: hidden;
 }
+
+#category{
+	margin-bottom: 10px;
+}
+
+.loadingImg{
+	position: relative;
+	left: 750px;
+	top: 200px;
+}
+
+.report{
+	display: none;
+}
+

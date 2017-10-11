@@ -11,8 +11,7 @@
 				<div class="box">
 					<div class="box-header">
 						<h3 class="box-title">
-							{{ $txt["order_list"] }}
-							<input type="submit" name="verify" value="{{ $txt['purchase_verify'] }}">
+							<input type="submit" name="verify" value="{{ $txt['purchase_verify'] }}" class="btn btn-primary">
 						</h3>
 					</div>
 					<div class="box-body">
