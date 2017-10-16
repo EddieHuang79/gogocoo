@@ -110,20 +110,10 @@ class Order_logic extends Basetool
 
 			$spec_id = isset($data["spec_id"]) ? intval($data["spec_id"]) : 0 ;
 
-			// 商品data
+			$product_id = isset($data["product_id"]) ? intval($data["product_id"]) : 0 ;
 
-			$product_name = isset($data["product_name"]) ? $_this->strFilter($data["product_name"]) : "" ;
-
-	        if ( !empty($product_name) ) 
+	        if ( !empty($product_id) ) 
 	        {
-
-		        $option = array( array("product_name", "=", $product_name) );
-
-		        $product_data = Product_logic::get_product_data( $option );
-
-		        $product_id = $product_data[0]->product_id;
-
-				// 訂單編號
 
 				$order_number = $_this->get_order_number();
 
@@ -135,7 +125,7 @@ class Order_logic extends Basetool
 				            "spec_id"				=> $spec_id,
 				            "order_number"			=> $order_number,
 				            "number"       			=> $number,
-				            "out_warehouse_date" 	=> isset($data["out_warehouse_date"]) ? date("Y-m-d", strtotime($data["out_warehouse_date"])) : date("Y-m-d"),
+				            "out_warehouse_date" 	=> isset($data["out_warehouse_date"]) && !empty($data["out_warehouse_date"]) ? date("Y-m-d", strtotime($data["out_warehouse_date"])) : date("Y-m-d"),
 				            "category"    			=> isset($data["category"]) ? intval($data["category"]) : 1,
 				            "status"    			=> 1,
 				            "created_at"    		=> date("Y-m-d H:i:s"),
@@ -195,21 +185,13 @@ class Order_logic extends Basetool
 
 			$spec_id = isset($data["spec_id"]) ? intval($data["spec_id"]) : 0 ;
 
-			// 商品data
-
-			$product_name = isset($data["product_name"]) ? $_this->strFilter($data["product_name"]) : "" ;
-
-	        $option = array( array("product_name", "=", $product_name) );
-
-	        $product_data = Product_logic::get_product_data( $option );
-
-	        $product_id = $product_data[0]->product_id;
+			$product_id = isset($data["product_id"]) ? intval($data["product_id"]) : 0 ;
 
 			$result = array(
 			            "product_id"      		=> $product_id,
 			            "spec_id"      			=> $spec_id,
 			            "number"       			=> isset($data["number"]) ? intval($data["number"]) : 0,
-			            "out_warehouse_date" 	=> isset($data["out_warehouse_date"]) ? date("Y-m-d", strtotime($data["out_warehouse_date"])) : date("Y-m-d"),
+			            "out_warehouse_date" 	=> isset($data["out_warehouse_date"]) && !empty($data["out_warehouse_date"]) ? date("Y-m-d", strtotime($data["out_warehouse_date"])) : date("Y-m-d"),
 			            "category"    			=> isset($data["category"]) ? intval($data["category"]) : 1,
 			            "updated_at"    		=> date("Y-m-d H:i:s")
 			        );

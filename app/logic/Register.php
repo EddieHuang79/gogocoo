@@ -76,7 +76,9 @@ class register extends Basetool
 
                if ( !$_this->is_email( $data["account"] ) ) 
                {
+               
                   $error_msg[] = $txt["account_format_fail"];
+               
                }
 
                
@@ -85,17 +87,23 @@ class register extends Basetool
 
                if ( $data["social_register"] <= 0 && !$_this->string_length( $data["password"] ) ) 
                {
+               
                   $error_msg[] = $txt["pwd_length_fail"];
+               
                }
 
                if ( $data["social_register"] <= 0 && !$_this->pwd_complex( $data["password"] ) ) 
                {
+                 
                   $error_msg[] = $txt["pwd_format_fail"];
+               
                }
 
                if ( $data["social_register"] <= 0 && empty($data["parents_id"]) && $data["password"] != $data["re_check_pwd"] ) 
                {
+               
                   $error_msg[] = $txt["pwd_recheck_fail"];
+               
                }
 
 
@@ -103,7 +111,9 @@ class register extends Basetool
 
                if ( !$_this->is_phone( $data["mobile"] ) ) 
                {
+               
                   $error_msg[] = $txt["phone_format_fail"];
+               
                }
 
 
@@ -111,7 +121,9 @@ class register extends Basetool
 
                if ( !$_this->strFilter( $data["real_name"] ) ) 
                {
+                  
                   $error_msg[] = $txt["real_name_fail"];
+               
                }
 
 
@@ -124,7 +136,9 @@ class register extends Basetool
 
                   if ( !$_this->strFilter( $data["StoreName"] ) ) 
                   {
+                  
                      $error_msg[] = $txt["store_name_fail"];
+                  
                   }
 
 
@@ -132,7 +146,9 @@ class register extends Basetool
 
                   if ( intval( $data["store_type_id"] ) < 1 ) 
                   {
+                  
                      $error_msg[] = $txt["store_type_fail"];
+                  
                   }
 
 
@@ -140,7 +156,9 @@ class register extends Basetool
 
                   if ( !empty( $data["StoreCode"] ) && Admin_user_logic::check_store_code_repeat( $data["StoreCode"] ) > 0 )
                   {
+
                      $error_msg[] = $txt["Store_code_fail"];
+                 
                   }
 
 
@@ -148,7 +166,9 @@ class register extends Basetool
          
                   if (!$compare) 
                   {
+
                      $error_msg[] = $txt["verify_code_error"];
+                  
                   } 
 
                }
@@ -157,7 +177,9 @@ class register extends Basetool
 
                if (!empty($error_msg)) 
                {
+
                   throw new \Exception(json_encode($error_msg));
+               
                }
 
                $result = "";
@@ -165,6 +187,8 @@ class register extends Basetool
             }
             catch(\Exception $e)
             {
+
+               Session::put( 'OriData', $data );
 
                $result = $_this->show_error_to_user( json_decode($e->getMessage() ,true) );
 

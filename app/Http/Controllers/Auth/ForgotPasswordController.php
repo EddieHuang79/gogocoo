@@ -42,6 +42,8 @@ class ForgotPasswordController extends Controller
 
         $ErrorMsg = Session::get('ErrorMsg');
 
+        Session::forget('ErrorMsg');
+
         $Verifycode_img = Session::get('Verifycode_img');
 
         $assign_page = "auth/forgot_password";

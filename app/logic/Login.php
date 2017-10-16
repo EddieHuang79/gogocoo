@@ -118,6 +118,8 @@ class Login extends Basetool
             catch(\Exception $e)
             {
 
+               Session::put( 'OriData', $data );
+
                $result = $_this->show_error_to_user( json_decode($e->getMessage() ,true) );
 
             }
@@ -192,6 +194,8 @@ class Login extends Basetool
    {
          
          Session::forget('Login_user');
+         
+         Session::forget('Store');
 
    }
 

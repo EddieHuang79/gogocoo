@@ -12,6 +12,14 @@
 				<form action="/msg" method="POST">
 					<div class="box-body">
 						<div class="form-group">
+							<label>{{ $txt["notice_range"] }} - {{ $txt["start_date"] }}</label>
+							<input type="text" id="start_datetime" name="start_date" class="form-control" value="@if(!empty($msg)){{ $msg->start_date }}@endif" required/>
+						</div>
+						<div class="form-group">
+							<label>{{ $txt["notice_range"] }} - {{ $txt["end_date"] }}</label>
+							<input type="text" id="end_datetime" name="end_date" class="form-control" value="@if(!empty($msg)){{ $msg->end_date }}@endif" required/>
+						</div>
+						<div class="form-group">
 							<label>{{ $txt["subject"] }}</label>
 							@if(!empty($msg))
 								<input type="hidden" name="msg_id" value="{{ $msg->id }}">						
@@ -62,14 +70,7 @@
 								</label>
 							</div>								
 						</div>
-						<div class="form-group">
-							<label>{{ $txt["notice_range"] }} - {{ $txt["start_date"] }}</label>
-							<input type="text" name="start_date" class="form-control" value="@if(!empty($msg)){{ $msg->start_date }}@endif" required/> <br />
-						</div>
-						<div class="form-group">
-							<label>{{ $txt["notice_range"] }} - {{ $txt["end_date"] }}</label>
-							<input type="text" name="end_date" class="form-control" value="@if(!empty($msg)){{ $msg->end_date }}@endif" required/>
-						</div>
+
 						<div class="form-group">
 							<th colspan="2"><input type="submit" class="btn btn-primary" value="{{ $txt['send'] }}"/></label>
 						</div>															

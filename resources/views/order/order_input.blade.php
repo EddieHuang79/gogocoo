@@ -13,7 +13,8 @@
 					<div class="box-body">
 						<div class="form-group">
 							<label>{{ $txt["product_name"] }}</label>
-							<input type="text" name="product_name" class="form-control" value="@if(!empty($order)){{ $order['product_name'] }}@endif" placeholder="{{ $txt['product_name_key_input'] }}" class="autocomplete" AutoCompleteType="product_name" site="{{ $site }}" specId="@if(!empty($order)){{ $order['spec_id'] }}@endif" required/>
+							<input type="text" name="product_name" class="form-control autocomplete" value="@if(!empty($order)){{ $order['product_name'] }}@endif" placeholder="{{ $txt['product_name_key_input'] }}" AutoCompleteType="product_name" site="{{ $site }}" specId="@if(!empty($order)){{ $order['spec_id'] }}@endif" required/>
+							<input type="hidden" name="product_id" value="@if(!empty($order)){{ $order['product_id'] }}@endif">
 						</div>
 						@if( $has_spec == true )
 						<div class="form-group">
@@ -25,7 +26,7 @@
 						@endif
 						<div class="form-group">
 							<label>{{ $txt["number"] }}</label>
-							<input type="number" name="number" class="form-control" value="@if(!empty($order)){{ $order['number'] }}@endif" placeholder="{{ $txt['number_input'] }}" required/>							
+							<input type="number" name="number" class="form-control" value="@if(!empty($order)){{ $order['number'] }}@endif" placeholder="{{ $txt['number_input'] }}" min="1" required/>							
 						</div>		
 						<div class="form-group">
 							<label>{{ $txt["out_warehouse_date"] }}</label>

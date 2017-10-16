@@ -32,7 +32,7 @@
 									<td>{{ $row->deadline }}</td>
 									<td>
 										<input type="button" class="btn btn-primary" value="{{ $txt['edit'] }}" onClick="location.href='/store/{{ $row->id }}/edit?';"/>
-										<input type="button" class="btn btn-primary" value="{{ $txt['extend_deadline'] }}" class="extend_account_deadline" account="{{ $row->store_name }}" userId="{{ $row->id }}"/>				
+										<input type="button" class="btn btn-primary extend_account_deadline" value="{{ $txt['extend_deadline'] }}" class="extend_account_deadline" account="{{ $row->store_name }}" userId="{{ $row->id }}"/>				
 									</td>
 								</tr>
 								@endforeach													

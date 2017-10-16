@@ -90,11 +90,11 @@
 						</div>
 						<div class="form-group">
 							<label>{{ $txt["product_live_date"] }} - {{ $txt["start_date"] }}</label>
-							<input type="text" name="start_date" class="form-control" value="@if( !empty($mall) &&  strtotime($mall->start_date) > 0 ){{ $mall->start_date }}@endif"  placeholder="{{ $txt['start_date_input'] }}" required/> <br />
+							<input type="text" id="start_date" name="start_date" class="form-control" value="@if( !empty($mall) &&  strtotime($mall->start_date) > 0 ){{ $mall->start_date }}@endif"  placeholder="{{ $txt['start_date_input'] }}" required/> <br />
 						</div>
 						<div class="form-group">
 							<label>{{ $txt["product_live_date"] }} - {{ $txt["end_date"] }}</label>
-							<input type="text" name="end_date" class="form-control" value="@if( !empty($mall) &&  strtotime($mall->end_date) > strtotime('1970-01-01 23:59:59') ){{ $mall->end_date }}@endif" placeholder="{{ $txt['end_date_input'] }}" required/>
+							<input type="text" id="end_date" name="end_date" class="form-control" value="@if( !empty($mall) &&  strtotime($mall->end_date) > strtotime('1970-01-01 23:59:59') ){{ $mall->end_date }}@endif" placeholder="{{ $txt['end_date_input'] }}" required/>
 						</div>
 						<div class="form-group">
 							<label><input type="button" class="btn btn-primary" value="{{ $txt['send'] }}" onclick="MallSubmit();"/></label>

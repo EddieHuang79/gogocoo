@@ -361,4 +361,75 @@ class Store_logic extends Basetool
 
 	}	
 
+
+	// 店鋪驗證
+
+	public static function store_verify( $data )
+	{
+
+		$_this = new self();
+
+		$txt = Web_cht::get_txt();
+
+		$result = array();
+
+		$ErrorMsg = array();
+
+		if ( !empty($data) && is_array($data) ) 
+		{
+
+			try 
+			{
+
+				// 店名
+
+				if ( !$_this->strFilter( $data["StoreName"] ) ) 
+				{
+
+					$ErrorMsg[] = $txt["store_name_fail"];
+
+				}
+
+
+				// 行業別
+
+				if ( intval( $data["store_type_id"] ) < 1 ) 
+				{
+
+					$ErrorMsg[] = $txt["store_type_fail"];
+
+				}
+
+
+				// 商家代號產生
+
+				if ( !empty( $data["StoreCode"] ) && Admin_user_logic::check_store_code_repeat( $data["StoreCode"] ) > 0 )
+				{
+
+					$ErrorMsg[] = $txt["Store_code_fail"];
+
+				}
+
+
+	            if ( !empty($ErrorMsg) ) 
+	            {
+
+	               throw new \Exception(json_encode($ErrorMsg));
+
+	            }
+
+			} 
+			catch (\Exception $e) 
+			{
+
+				$result = json_decode($e->getMessage() ,true);
+
+			}
+
+		}
+
+		return $result;
+
+	}
+
 }

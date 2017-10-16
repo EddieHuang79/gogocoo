@@ -31,11 +31,11 @@
 									<td>{{ $row->real_name }}</td>
 									<td>{{ $row->mobile }}</td>
 									<td> @if( !empty($row->auth) ) @foreach($row->auth as $role) {{$role}} <br /> @endforeach  @endif </td>
-									<td>{{ $active_to_text[$row->status] }}</td>
+									<td> @if( isset($active_to_text[$row->status]) ) {{ $active_to_text[$row->status] }} @endif</td>
 									<td>{{ $row->deadline }}</td>
 									<td>
 										<input type="button" class="btn btn-primary" value="{{ $txt['edit'] }}" onClick="location.href='/user/{{ $row->id }}/edit?';"/>
-										<input type="button" class="btn btn-primary" value="{{ $txt['extend_deadline'] }}" class="extend_account_deadline" account="{{ $row->account }}" userId="{{ $row->id }}"/>
+										<input type="button" class="btn btn-primary extend_account_deadline" value="{{ $txt['extend_deadline'] }}" class="extend_account_deadline" account="{{ $row->account }}" userId="{{ $row->id }}"/>
 									</td>
 								</tr>
 							@endforeach													

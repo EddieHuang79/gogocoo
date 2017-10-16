@@ -39,6 +39,7 @@ class Stock
 
 		if ($has_spec) 
 		{
+
 			$result = DB::table($_this->table)
 						->leftJoin($_this->purchase_table, $_this->table.'.purchase_id', '=', $_this->purchase_table.'.id')
 						->leftJoin($_this->product_table, $_this->product_table.'.id', '=', $_this->purchase_table.'.product_id')
@@ -53,9 +54,11 @@ class Stock
 								)
 						->where("stock", ">=", "0")
 						->paginate( $_this->page_size );
+
 		}
 		else
 		{
+
 			$result = DB::table($_this->table)
 						->leftJoin($_this->purchase_table, $_this->table.'.purchase_id', '=', $_this->purchase_table.'.id')
 						->leftJoin($_this->product_table, $_this->product_table.'.id', '=', $_this->purchase_table.'.product_id')
@@ -66,8 +69,12 @@ class Stock
 									$_this->purchase_table.".in_warehouse_date",
 									$_this->purchase_table.".deadline"
 								)
-						->where("stock", ">=", "0")
-						->paginate( $_this->page_size );			
+						->where("stock", ">=", "0");
+		
+			$result = (int)$data["shop_id"] > 0 ? $result->where($_this->purchase_table.".shop_id", "=", $data["shop_id"]) : $result ;
+
+			$result = $result->paginate( $_this->page_size );			
+		
 		}
 
 		return $result;
@@ -81,6 +88,7 @@ class Stock
 
 		if ($has_spec) 
 		{
+
 			$result = DB::table($_this->table)
 						->leftJoin($_this->purchase_table, $_this->table.'.purchase_id', '=', $_this->purchase_table.'.id')
 						->leftJoin($_this->product_table, $_this->product_table.'.id', '=', $_this->purchase_table.'.product_id')
@@ -96,9 +104,11 @@ class Stock
 						->orderBy("stock", "desc")
 						->orderBy($_this->table.".id", "desc")
 						->get();
+
 		}
 		else
 		{
+
 			$result = DB::table($_this->table)
 						->leftJoin($_this->purchase_table, $_this->table.'.purchase_id', '=', $_this->purchase_table.'.id')
 						->leftJoin($_this->product_table, $_this->product_table.'.id', '=', $_this->purchase_table.'.product_id')
@@ -106,11 +116,16 @@ class Stock
 									\DB::raw('SUM(stock) as stock'),
 									$_this->product_table.".product_name"
 								)
-						->where("stock", ">=", "0")
+						->where("stock", ">=", "0");
+
+			$result = (int)$data["shop_id"] > 0 ? $result->where($_this->purchase_table.".shop_id", "=", $data["shop_id"]) : $result ;
+
+			$result = $result
 						->groupBy($_this->purchase_table.".product_id")
 						->orderBy("stock", "desc")
 						->orderBy($_this->table.".id", "desc")
-						->get();		
+						->get();	
+
 		}
 
 		return $result;
@@ -124,6 +139,7 @@ class Stock
 
 		if ($has_spec) 
 		{
+
 			$result = DB::table($_this->table)
 						->leftJoin($_this->purchase_table, $_this->table.'.purchase_id', '=', $_this->purchase_table.'.id')
 						->leftJoin($_this->product_table, $_this->product_table.'.id', '=', $_this->purchase_table.'.product_id')
@@ -140,9 +156,11 @@ class Stock
 						->where("stock", ">", "0")
 						->orderBy("deadline", "ASC")
 						->paginate( $_this->page_size );
+
 		}
 		else
 		{
+
 			$result = DB::table($_this->table)
 						->leftJoin($_this->purchase_table, $_this->table.'.purchase_id', '=', $_this->purchase_table.'.id')
 						->leftJoin($_this->product_table, $_this->product_table.'.id', '=', $_this->purchase_table.'.product_id')
@@ -154,9 +172,12 @@ class Stock
 									$_this->purchase_table.".deadline"
 								)
 						->where("deadline", "<=", DB::raw('curdate() + INTERVAL 1 MONTH'))
-						->where("stock", ">", "0")
-						->orderBy("deadline", "ASC")
-						->paginate( $_this->page_size );			
+						->where("stock", ">", "0");
+
+			$result = (int)$data["shop_id"] > 0 ? $result->where($_this->purchase_table.".shop_id", "=", $data["shop_id"]) : $result ;
+
+			$result = $result->orderBy("deadline", "ASC")->paginate( $_this->page_size );	
+
 		}
 
 		return $result;
@@ -198,7 +219,11 @@ class Stock
 									$_this->product_table.".product_name",
 									$_this->product_table.".safe_amount"
 								)
-						->where("stock", ">=", "0")
+						->where("stock", ">=", "0");
+
+			$result = (int)$data["shop_id"] > 0 ? $result->where($_this->purchase_table.".shop_id", "=", $data["shop_id"]) : $result ;
+
+			$result = $result
 						->groupBy($_this->purchase_table.".product_id")
 						->havingRaw('SUM(stock) <= safe_amount')
 						->orderBy("stock", "desc")

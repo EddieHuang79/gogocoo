@@ -218,7 +218,7 @@
 .mall_product_lightbox{
 	/*overflow: auto;*/
 	height: 600px;
-	top: 20%;
+	top: 10%;
 	display: none;
 }
 

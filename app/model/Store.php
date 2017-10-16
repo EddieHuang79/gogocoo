@@ -10,6 +10,8 @@ class Store extends Model
  
 	protected $table = "store";
 
+	protected $user = "user";
+
 	protected $page_size = 15;
 
 	public static function get_store_cnt( $user_id )
@@ -17,7 +19,11 @@ class Store extends Model
 	     
 		$_this = new self();
 
-		$result = DB::table($_this->table)->where("user_id", "=", $user_id)->get()->count();
+		$parents_data = DB::table($_this->user)->select("parents_id")->where("id", "=", $user_id)->first();
+
+		$find_id = (int)$parents_data->parents_id > 0 ? (int)$parents_data->parents_id : $user_id ;
+
+		$result = DB::table($_this->table)->where("user_id", "=", $find_id)->get()->count();
 
 		return $result;
 
@@ -28,7 +34,11 @@ class Store extends Model
 	     
 		$_this = new self();
 
-		$result = DB::table($_this->table)->where("user_id", "=", $user_id)->orderBy("id", "asc")->get();
+		$parents_data = DB::table($_this->user)->select("parents_id")->where("id", "=", $user_id)->first();
+
+		$find_id = (int)$parents_data->parents_id > 0 ? (int)$parents_data->parents_id : $user_id ;
+
+		$result = DB::table($_this->table)->where("user_id", "=", $find_id)->orderBy("id", "asc")->get();
 
 		return $result;
 

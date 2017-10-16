@@ -445,4 +445,27 @@ class AdminUserLogic extends TestCase
 
 	}
 
+	public function testAccountVerify()
+	{
+
+		$test1 = Admin_user_logic::account_verify( "" );
+
+		$this->assertTrue( empty($test1) );
+		$this->assertTrue( is_array($test1) );
+		$this->assertEquals($test1, array());
+
+		$test1 = Admin_user_logic::account_verify( 0 );
+
+		$this->assertTrue( empty($test1) );
+		$this->assertTrue( is_array($test1) );
+		$this->assertEquals($test1, array());
+
+		$test1 = Admin_user_logic::account_verify( array() );
+
+		$this->assertTrue( empty($test1) );
+		$this->assertTrue( is_array($test1) );
+		$this->assertEquals($test1, array());
+
+	}
+
 }

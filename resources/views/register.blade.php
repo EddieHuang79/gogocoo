@@ -11,7 +11,7 @@
                 @endforeach
             @endif
             <div class="form-group has-feedback">
-                <input type="email" id="inputStoreEmail" name="StoreEmail" class="form-control" placeholder="{{ $txt['account_input'] }}" @if(!empty($Social_login)) value="{{ $Social_login['account'] }}" style="display: none;" @endif required autofocus>
+                <input type="email" id="inputStoreEmail" name="StoreEmail" class="form-control" placeholder="{{ $txt['account_input'] }}" @if(!empty($Social_login)) value="{{ $Social_login['account'] }}" style="display: none;" @endif  @if(!empty($OriData)) value="{{ $OriData['account'] }}" @endif required autofocus>
                 <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
             </div>            
             <div class="form-group has-feedback">
@@ -23,18 +23,18 @@
                 <span class="glyphicon glyphicon-lock form-control-feedback"></span>
             </div>              
             <div class="form-group has-feedback">
-                <input type="text" id="inputMobile" name="Mobile" class="form-control" placeholder="{{ $txt['phone_input'] }}" required>
+                <input type="text" id="inputMobile" name="Mobile" class="form-control" placeholder="{{ $txt['phone_input'] }}" @if(!empty($OriData)) value="{{ $OriData['mobile'] }}" @endif required>
                 <span class="glyphicon glyphicon-user form-control-feedback"></span>
             </div>              
             <div class="form-group has-feedback">
-                <input type="text" id="inputRealName" name="RealName" class="form-control" placeholder="{{ $txt['real_name_input'] }}" required>
+                <input type="text" id="inputRealName" name="RealName" class="form-control" placeholder="{{ $txt['real_name_input'] }}" @if(!empty($OriData)) value="{{ $OriData['real_name'] }}" @endif required>
             </div>   
             @include('tool.store_type')           
             <div class="form-group has-feedback">
-                <input type="text" id="inputStoreName" name="StoreName" class="form-control" placeholder="{{ $txt['store_name_input'] }}" maxlength="6" required>
+                <input type="text" id="inputStoreName" name="StoreName" class="form-control" placeholder="{{ $txt['store_name_input'] }}" @if(!empty($OriData)) value="{{ $OriData['StoreName'] }}" @endif maxlength="6" required>
             </div>              
             <div class="form-group has-feedback">
-                <input type="text" id="inputStoreCode" name="StoreCode" class="form-control" placeholder="{{ $txt['store_code_input'] }}" maxlength="3">
+                <input type="text" id="inputStoreCode" name="StoreCode" class="form-control" placeholder="{{ $txt['store_code_input'] }}" @if(!empty($OriData)) value="{{ $OriData['StoreCode'] }}" @endif maxlength="3">
             </div>              
         	@include('webbase.verify_code')
             <div class="row">

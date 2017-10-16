@@ -527,7 +527,11 @@ class Product_logic extends Basetool
 				if ( is_object($row) ) 
 				{
 
-					$result[$row->product_id] = $row->product_name;
+					$result[$row->product_id]["label"] = $row->product_name;
+
+					$result[$row->product_id]["index"] = $row->product_id;
+
+					$result[$row->product_id]["keep_for_days"] = $row->keep_for_days;
 
 				}
 

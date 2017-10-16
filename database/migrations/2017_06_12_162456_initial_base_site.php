@@ -910,6 +910,24 @@ class InitialBaseSite extends Migration
             )
         );
 
+        DB::table($this->role_table)->insert(
+            array(
+                'name'          => '倉管人員',
+                'status'        => 1,
+                'created_at'    => date("Y-m-d H:i:s"),
+                'updated_at'    => date("Y-m-d H:i:s")
+            )
+        );
+
+        DB::table($this->role_table)->insert(
+            array(
+                'name'          => '財會人員',
+                'status'        => 1,
+                'created_at'    => date("Y-m-d H:i:s"),
+                'updated_at'    => date("Y-m-d H:i:s")
+            )
+        );
+
         // service
         DB::table($this->service_table)->insert(
             array(
@@ -924,7 +942,7 @@ class InitialBaseSite extends Migration
             )
         );
 
-        $sub_admin_service_id = array();
+        $sub_admin_service_id = array(1);
 
 
         $user_service_id = DB::table($this->service_table)->insertGetId(
@@ -1072,7 +1090,9 @@ class InitialBaseSite extends Migration
                                     'updated_at'    => date("Y-m-d H:i:s")
                                 )
                             );
+
         $sub_admin_service_id[] = $buy_service_id;
+        
         $sub_admin_service_id[] = DB::table($this->service_table)->insertGetId(
                                 array(
                                     'name'          => '加值服務',
@@ -1109,7 +1129,9 @@ class InitialBaseSite extends Migration
                                     'updated_at'    => date("Y-m-d H:i:s")
                                 )
                             );
+
         $sub_admin_service_id[] = $store_service_id;
+        
         $sub_admin_service_id[] = DB::table($this->service_table)->insertGetId(
             array(
                 'name'          => '新增店鋪',
@@ -1164,6 +1186,26 @@ class InitialBaseSite extends Migration
                 )
             );
         }
+
+        foreach (array(1, 5) as $row) 
+        {
+
+            DB::table($this->role_service_table)->insert(
+                array(
+                    'role_id'      => 3,
+                    'service_id'   => $row
+                )
+            );
+
+            DB::table($this->role_service_table)->insert(
+                array(
+                    'role_id'      => 4,
+                    'service_id'   => $row
+                )
+            );
+
+        }
+
 
     }
 

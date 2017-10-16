@@ -26,8 +26,6 @@ class IndexController extends Controller
     public function admin_index()
     {
 
-        Report_logic::month_order_view();
-
         Session::forget('service_id');
 
         // 本週訂單
@@ -75,7 +73,7 @@ class IndexController extends Controller
             $data = [ 'name' => $name, 'email' => $email, 'phone' => $phone, 'msg' => $msg ];
 
             Mail::send('frontpage.custom_mail', $data, function($message) {
-                $message->to('jkcs0616@gmail.com')->subject('From GoGoCoo - 客戶來信');
+                $message->to('gogocooma@gmail.com')->subject('From GoGoCoo - 客戶來信');
             });
 
         }

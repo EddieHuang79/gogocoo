@@ -13,6 +13,8 @@ class Purchase
 
 	protected $product = "product";
 
+	protected $product_extra = "product_extra";
+
 	protected $page_size = 15;
 
 	public static function get_purchase_extra_column()
@@ -112,10 +114,12 @@ class Purchase
 					->select(
 								$_this->table.".*", 
 								$_this->product.".product_name",
+								$_this->product_extra.".keep_for_days",
 								$_this->extra_table.".*"
 							)
 				    ->leftJoin($_this->product, $_this->product.'.id', '=', $_this->table.'.product_id')
 				    ->leftJoin($_this->extra_table, $_this->table.'.id', '=', $_this->extra_table.'.purchase_id')
+				    ->leftJoin($_this->product_extra, $_this->product.'.id', '=', $_this->product_extra.'.product_id')
 				    ->where($_this->table.".id", "=", $id)
 				    ->get();
 

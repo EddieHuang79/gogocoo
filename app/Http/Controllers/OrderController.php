@@ -131,7 +131,7 @@ class OrderController extends Controller
 
         $order = order_logic::get_single_order_data( (int)$id );  
 
-        $order = get_object_vars($order[0]);  
+        $order = isset($order[0]) && is_object($order[0]) ? get_object_vars($order[0]) : array();  
 
         $order_extra_column = order_logic::get_order_extra_column();
 

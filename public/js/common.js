@@ -302,7 +302,17 @@ var Show_current_position = function(){
 			$( "[name='"+type+"']" ).autocomplete({
 		    	source: url,
 		    	close: function( event, ui ) {
-		    		$( "[name='product_name']" ).attr("specId", "");
+		    		// $( "[name='product_name']" ).attr("specId", "");
+		    		// get_product_spec();
+		    	},
+		    	select: function( event, ui ) {
+		    		var product_id = ui.item.index,
+		    			keep_for_days = ui.item.keep_for_days;
+		    		$("[name='product_id']").val(product_id);
+		    		$("[name='keep_for_days']").val(keep_for_days);
+		    	},
+		    	response: function( event, ui ){
+		    		// console.log(ui);
 		    	}
 		    });
 
@@ -483,8 +493,10 @@ $(".search_tool").find("[name='date']").datepicker({format: "yy-mm-dd"});
 $(".refresh_verify_code").on("click", Refresh_verify_code);
 $(".RoleListBtn").on("click", RoleListBtn);
 $(".close_btn").on("click", ClosePopup);
-$("[name='start_date']").datepicker({format: "yyyy-mm-dd"});
-$("[name='end_date']").datepicker({format: "yyyy-mm-dd"});
+$("#start_datetime").datetimepicker({format: "YYYY-MM-DD HH:mm"});
+$("#end_datetime").datetimepicker({format: "YYYY-MM-DD HH:mm"});
+$("#start_date").datepicker({format: "yyyy-mm-dd"});
+$("#end_date").datepicker({format: "yyyy-mm-dd"});
 $("[name='in_warehouse_date']").datepicker({format: "yyyy-mm-dd"});
 $("[name='out_warehouse_date']").datepicker({format: "yyyy-mm-dd"});
 $("[name='store_type']").on("click", call_store_type);

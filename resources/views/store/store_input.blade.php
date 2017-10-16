@@ -3,6 +3,11 @@
 	@if(!empty($store_status["free"]))
 		<h5>{{ $txt["store_input_desc"] }}</h5>
 	@endif
+    @if(!empty($ErrorMsg))
+    	@foreach($ErrorMsg as $error)
+            <div class="error">{{ $error }}</div>
+        @endforeach
+    @endif
 	@include('webbase.breadcrumb')
 </section>
 <section class="content">
@@ -18,11 +23,11 @@
 					<div class="box-body">
 						<div class="form-group">
 							<label>{{ $txt["store_name"] }}</label>
-							<input type="text" id="inputStoreName" name="StoreName" class="form-control" value="@if(!empty($store)){{ $store->store_name }}@endif" placeholder="{{ $txt['store_name_input'] }}" maxlength="6" required>
+							<input type="text" id="inputStoreName" name="StoreName" class="form-control" @if(!empty($store)) value="{{ $store->store_name }}" @endif @if( !empty($OriData['StoreName']) ) value="{{ $OriData['StoreName'] }}" @endif placeholder="{{ $txt['store_name_input'] }}" maxlength="6" required>
 						</div>
 						<div class="form-group">
 							<label>{{ $txt["store_code"] }}</label>
-							<input type="text" id="inputStoreCode" name="StoreCode" class="form-control" value="@if(!empty($store)){{ $store->store_code }}@endif" placeholder="{{ $txt['store_code_input'] }}" maxlength="3" @if(!empty($edit)) readonly="true" @endif >
+							<input type="text" id="inputStoreCode" name="StoreCode" class="form-control" @if(!empty($store)) value="{{ $store->store_code }}" @endif @if( empty($store) && !empty($OriData['StoreCode']) ) value="{{ $OriData['StoreCode'] }}" @endif placeholder="{{ $txt['store_code_input'] }}" maxlength="3" @if(!empty($edit)) readonly="true" @endif >
 						</div>
 						<div class="form-group">
 							<label>{{ $txt["store_type"] }}</label>

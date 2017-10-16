@@ -14,6 +14,8 @@
 						<div class="form-group">
 							<label>{{ $txt["product_name"] }}</label>
 							<input type="text" name="product_name" class="form-control autocomplete" value="@if(!empty($purchase)){{ $purchase['product_name'] }}@endif" placeholder="{{ $txt['product_name_key_input'] }}" AutoCompleteType="product_name" site="{{ $site }}" specId="@if(!empty($purchase)){{ $purchase['spec_id'] }}@endif" required/>
+							<input type="hidden" name="product_id" value="@if(!empty($purchase)){{ $purchase['product_id'] }}@endif">
+							<input type="hidden" name="keep_for_days" value="@if(!empty($purchase)){{ $purchase['keep_for_days'] }}@endif">
 						</div>
 						@if( $has_spec == true )
 						<div class="form-group">
@@ -31,7 +33,7 @@
 						@endif
 						<div class="form-group">
 							<label>{{ $txt["number"] }}</label>
-							<input type="number" name="number" class="form-control" value="@if(!empty($purchase)){{ $purchase['number'] }}@endif" placeholder="{{ $txt['number_input'] }}" required/>
+							<input type="number" name="number" class="form-control" value="@if(!empty($purchase)){{ $purchase['number'] }}@endif" placeholder="{{ $txt['number_input'] }}" min="1" required/>
 						</div>		
 						<div class="form-group">
 							<label>{{ $txt["in_warehouse_date"] }}</label>
@@ -58,7 +60,8 @@
 									<select name="{{ $row['name'] }}" class="form-control" id="">
 										<option value="">{{ $txt['select_default'] }}</option>
 										@foreach($select_option[$row['name']] as $key => $value)
-										<option value="{{ $key }}"  @if( !empty($purchase) && $purchase[$row['name']] == $key ) selected @endif>{{ $value }}</option>
+										<option value="{{ $key }}" selected>{{ $value }}</option>
+										<!-- <option value="{{-- $key --}}"  @if( !empty($purchase) && $purchase[$row['name']] == $key ) selected @endif >{{-- $value --}}</option> -->
 										@endforeach
 									</select>
 									@endif

@@ -11,8 +11,9 @@ use App\logic\Msg_logic;
 use App\logic\Shop_logic;
 use Illuminate\Support\Facades\Session;
 use App\logic\Web_cht;
+use App\logic\Basetool;
 
-class StoreController extends Controller
+class StoreController extends Basetool
 {
     /**
      * Display a listing of the resource.
@@ -87,7 +88,15 @@ class StoreController extends Controller
 
         $store_info = isset($store_info[0]) ? $store_info[0] : new \stdClass() ;
 
-        $data = compact('assign_page', 'store', 'store_type', 'store_status', 'store_info', 'deadline');
+        $ErrorMsg = Session::get('ErrorMsg');
+
+        $OriData = Session::get( 'OriData' );
+
+        Session::forget('ErrorMsg');
+
+        Session::forget('OriData');
+
+        $data = compact('assign_page', 'store', 'store_type', 'store_status', 'store_info', 'deadline', 'ErrorMsg', 'OriData');
 
         return view('webbase/content', $data);
 
@@ -103,6 +112,7 @@ class StoreController extends Controller
     public function store(Request $request, lain $lain)
     {
 
+        $_this = new self();
 
         if (!empty($_POST["store_id"])) 
         {
@@ -117,12 +127,21 @@ class StoreController extends Controller
         else
         {
 
-            $store_cnt = Store_logic::get_store_cnt();
+            try{
 
-            $_POST["is_free"] = $store_cnt["free"] > 0 ? 1 : 2 ;
 
-            if ( isset($_POST['StoreName']) ) 
-            {
+                $ErrorMsg = Store_logic::store_verify( $_POST );
+
+                if (!empty($ErrorMsg)) 
+                {
+
+                    throw new \Exception( json_encode($ErrorMsg) );
+
+                }
+
+                $store_cnt = Store_logic::get_store_cnt();
+
+                $_POST["is_free"] = $store_cnt["free"] > 0 ? 1 : 2 ;
 
                 $data = Store_logic::insert_format( $_POST );
 
@@ -140,6 +159,17 @@ class StoreController extends Controller
                     Shop_logic::add_use_record( (int)$store_id, $date_spec, $type = 2 );
 
                 }
+
+
+            }
+            catch(\Exception $e)
+            {
+
+                Session::put( 'OriData', $_POST );
+
+                Session::put( 'ErrorMsg', $_this->show_error_to_user( json_decode($e->getMessage() ,true) ) );
+
+                return back();
 
             }
 

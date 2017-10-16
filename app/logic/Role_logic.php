@@ -5,6 +5,7 @@ namespace App\logic;
 use Illuminate\Database\Eloquent\Model;
 use App\model\Role;
 use App\logic\Redis_tool;
+use Illuminate\Support\Facades\Session;
 
 class Role_logic extends Basetool
 {
@@ -240,6 +241,8 @@ class Role_logic extends Basetool
    public static function filter_admin_role( $data )
    {
 
+         $Login_user = Session::get('Login_user');
+
          $result = array();
 
          if ( !empty($data) && is_object($data) ) 
@@ -248,7 +251,7 @@ class Role_logic extends Basetool
             foreach ($data as $role_id) 
             {
 
-               if ( !in_array( $role_id->id, array( 1 ) ) ) 
+               if ( (int)$Login_user["user_id"] != 1 && !in_array( $role_id->id, array( 1 ) ) || (int)$Login_user["user_id"] == 1 ) 
                {
                
                   $result[] = $role_id;

@@ -66,6 +66,8 @@ class Purchase extends Migration
            $table->foreign('purchase_id')->references('id')->on($this->purchase_table);
         });
 
+        $sub_admin_service_id = array();
+
         // service
         $purchase_id = DB::table($this->service_table)->insertGetId(
             array(
@@ -79,7 +81,10 @@ class Purchase extends Migration
                 'updated_at'    => date("Y-m-d H:i:s")
             )
         );
-        DB::table($this->service_table)->insert(
+
+        $sub_admin_service_id[] = $purchase_id;
+
+        $sub_admin_service_id[] = DB::table($this->service_table)->insertGetId(
             array(
                 'name'          => '新增進貨',
                 'link'          => '/purchase/create',
@@ -91,7 +96,8 @@ class Purchase extends Migration
                 'updated_at'    => date("Y-m-d H:i:s")
             )
         );
-        DB::table($this->service_table)->insert(
+
+        $sub_admin_service_id[] = DB::table($this->service_table)->insertGetId(
             array(
                 'name'          => '進貨列表',
                 'link'          => '/purchase',
@@ -106,6 +112,7 @@ class Purchase extends Migration
 
          // role_service
         $service_data = DB::table('service')->select('id')->where('name', 'like', '%進貨%')->get();
+        
         foreach ($service_data as $row) 
         {
             DB::table($this->role_service_table)->insert(
@@ -114,6 +121,25 @@ class Purchase extends Migration
                     'service_id'   => $row->id
                 )
             );
+        }
+
+        foreach ($sub_admin_service_id as $row) 
+        {
+
+            DB::table($this->role_service_table)->insert(
+                array(
+                    'role_id'      => 2,
+                    'service_id'   => $row
+                )
+            );
+
+            DB::table($this->role_service_table)->insert(
+                array(
+                    'role_id'      => 3,
+                    'service_id'   => $row
+                )
+            );
+
         }
 
         $in_warehouse_category = array(

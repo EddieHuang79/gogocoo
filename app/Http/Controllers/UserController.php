@@ -89,7 +89,7 @@ class UserController extends Basetool
 
         $role_list = Role_logic::get_active_role();
 
-        // $role_list = Role_logic::filter_admin_role($role_list);
+        $role_list = Role_logic::filter_admin_role($role_list);
 
         $buy_spec_data = array();
 
@@ -111,7 +111,13 @@ class UserController extends Basetool
 
         $ErrorMsg = Session::get('ErrorMsg');
 
-        $data = compact('user', 'role_list', 'assign_page', 'ErrorMsg', 'account_status', 'deadline');
+        $OriData = Session::get( 'OriData' );
+
+        Session::forget('ErrorMsg');
+
+        Session::forget('OriData');
+
+        $data = compact('user', 'role_list', 'assign_page', 'ErrorMsg', 'account_status', 'deadline', 'OriData');
 
         return view('webbase/content', $data);
 
@@ -128,26 +134,50 @@ class UserController extends Basetool
         
         $_this = new self();
 
+        $txt = Web_cht::get_txt();
+
         if (!empty($_POST["user_id"])) 
         {
             
-            // user
+            try{
 
-            $data = Admin_user_logic::update_format( $_POST );
+                $ErrorMsg = Admin_user_logic::account_verify( $_POST );
 
-            $user_id = intval($_POST["user_id"]);
+                if (!empty($ErrorMsg)) 
+                {
 
-            Admin_user_logic::edit_user( $data, $user_id );
+                    throw new \Exception( json_encode($ErrorMsg) );
 
-            // user role delete add
+                }
 
-            Admin_user_logic::delete_user_role( $user_id );
+                // user
 
-            Redis_tool::del_user_role( $user_id );
+                $data = Admin_user_logic::update_format( $_POST );
 
-            $data = Admin_user_logic::add_user_role_format( $user_id, $_POST["auth"] );
+                $user_id = intval($_POST["user_id"]);
 
-            Admin_user_logic::add_user_role( $data );
+                Admin_user_logic::edit_user( $data, $user_id );
+
+                // user role delete add
+
+                Admin_user_logic::delete_user_role( $user_id );
+
+                Redis_tool::del_user_role( $user_id );
+
+                $data = Admin_user_logic::add_user_role_format( $user_id, $_POST["auth"] );
+
+                Admin_user_logic::add_user_role( $data );
+
+
+            }
+            catch(\Exception $e)
+            {
+
+                Session::put( 'ErrorMsg', $_this->show_error_to_user( json_decode($e->getMessage() ,true) ) );
+
+                return back();
+
+            }
 
         }
         else
@@ -162,13 +192,19 @@ class UserController extends Basetool
             $_POST["social_register"] = 0;
 
 
-            // verify process
+            try{
 
-            $ErrorMsg = Register::register_process($_POST);
-         
-            if ( empty($ErrorMsg) && isset($_POST["auth"]) ) 
-            {
-    
+                // verify process
+
+                $ErrorMsg = Admin_user_logic::account_verify( $_POST );
+
+                if (!empty($ErrorMsg)) 
+                {
+
+                    throw new \Exception( json_encode($ErrorMsg) );
+
+                }
+
                 // user
 
                 $data = Admin_user_logic::insert_format( $_POST );
@@ -193,11 +229,12 @@ class UserController extends Basetool
                 }
 
             }
-
-            if (!empty($ErrorMsg)) 
+            catch(\Exception $e)
             {
 
-                Session::put('ErrorMsg', $ErrorMsg);
+                Session::put( 'OriData', $_POST );
+
+                Session::put( 'ErrorMsg', $_this->show_error_to_user( json_decode($e->getMessage() ,true) ) );
 
                 return back();
 
@@ -243,12 +280,18 @@ class UserController extends Basetool
         $user_role = $_this->get_object_or_array_key( $user_role );
 
         $role_list = Role_logic::get_active_role();
- 
+
+        $role_list = Role_logic::filter_admin_role($role_list);
+
+        $ErrorMsg = Session::get('ErrorMsg');
+
+        Session::forget('ErrorMsg');
+
         // $role_list = Role_logic::filter_admin_role($role_list);
  
         $assign_page = "admin_user/admin_input";
 
-        $data = compact('user', 'role_list', 'user_role', 'assign_page', 'account_status');
+        $data = compact('user', 'role_list', 'user_role', 'assign_page', 'account_status', 'ErrorMsg');
 
         return view('webbase/content', $data);
 

@@ -55,9 +55,15 @@ class LoginController extends Controller
 
         $ErrorMsg = Session::get('ErrorMsg');
 
+        $OriData = Session::get( 'OriData' );
+
+        Session::forget('ErrorMsg');
+
+        Session::forget('OriData');
+
         $assign_page = "login";
 
-        return view('webbase.unlogin_content', compact("Verifycode_img", "ErrorMsg", "assign_page"));
+        return view('webbase.unlogin_content', compact("Verifycode_img", "ErrorMsg", "assign_page", "OriData"));
     
     }
 

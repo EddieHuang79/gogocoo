@@ -60,8 +60,8 @@ class Msg_logic extends Basetool
 			            "show_type"        	=> isset($data["show_type"]) ? intval($data["show_type"]) : "",
 			            "msg_type"         	=> isset($data["msg_type"]) ? intval($data["msg_type"]) : "",
 			            "public"        	=> isset($data["public"]) ? intval($data["public"]) : 0,
-			            "start_date"        => isset($data["start_date"]) ? $_this->strFilter($data["start_date"]) . " 00:00:00" : "",
-			            "end_date"          => isset($data["end_date"]) ? $_this->strFilter($data["end_date"]) . " 23:59:59" : "",
+			            "start_date"        => isset($data["start_date"]) ? date("Y-m-d H:i:00", strtotime($data["start_date"])) : "",
+			            "end_date"          => isset($data["end_date"]) ? date("Y-m-d H:i:00", strtotime($data["end_date"])) : "",
 			            "created_at"    	=> date("Y-m-d H:i:s"),
 			            "updated_at"    	=> date("Y-m-d H:i:s")
 			         );
@@ -92,8 +92,8 @@ class Msg_logic extends Basetool
 			            "show_type"        	=> isset($data["show_type"]) ? intval($data["show_type"]) : "",
 			            "msg_type"         	=> isset($data["msg_type"]) ? intval($data["msg_type"]) : "",
 			            "public"        	=> isset($data["public"]) ? intval($data["public"]) : 0,
-			            "start_date"        => isset($data["start_date"]) ? $_this->strFilter($data["start_date"]) . " 00:00:00" : "",
-			            "end_date"          => isset($data["end_date"]) ? $_this->strFilter($data["end_date"]) . " 23:59:59" : "",
+			            "start_date"        => isset($data["start_date"]) ? date("Y-m-d H:i:00", strtotime($data["start_date"])) : "",
+			            "end_date"          => isset($data["end_date"]) ? date("Y-m-d H:i:00", strtotime($data["end_date"])) : "",
 			            "updated_at"    	=> date("Y-m-d H:i:s")
 			         );
 		}
@@ -282,9 +282,9 @@ class Msg_logic extends Basetool
 			if ( is_object($data) ) 
 			{
 
-				$data->start_date = date("Y-m-d", strtotime($data->start_date));
+				$data->start_date = date("Y-m-d H:i:00", strtotime($data->start_date));
 
-				$data->end_date = date("Y-m-d", strtotime($data->end_date));
+				$data->end_date = date("Y-m-d H:i:00", strtotime($data->end_date));
 
 			}
 

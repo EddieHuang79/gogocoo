@@ -5,6 +5,7 @@ namespace App\logic;
 use App\model\Admin_user;
 use Illuminate\Support\Facades\Session;
 use App\logic\Shop_logic;
+use App\logic\Web_cht;
 
 class Admin_user_logic extends Basetool
 {
@@ -535,6 +536,7 @@ class Admin_user_logic extends Basetool
          
    }
 
+
    // 擴展帳號期限
 
    public static function extend_user_deadline( $user_id, $data )
@@ -555,6 +557,7 @@ class Admin_user_logic extends Basetool
          
    }
 
+
    // 回傳帳號原始圖片
 
    public static function get_user_image( $user_id )
@@ -571,6 +574,98 @@ class Admin_user_logic extends Basetool
 
       return $result;
          
+   }
+
+
+   // 帳號驗證
+
+   public static function account_verify( $data )
+   {
+
+      $_this = new self();
+
+      $txt = Web_cht::get_txt();
+
+      $result = array();
+
+      $ErrorMsg = array();
+
+      if ( !empty($data) && is_array($data) ) 
+      {
+
+         try 
+         {
+
+            // 密碼長度
+
+            if ( !empty($data["password"]) && !$_this->string_length( $data["password"] ) ) 
+            {
+                          
+               $ErrorMsg[] = $txt["pwd_length_fail"];
+
+            }
+
+
+            // 密碼複雜度
+
+            if ( !empty($data["password"]) && !$_this->pwd_complex( $data["password"] ) ) 
+            {
+
+               $ErrorMsg[] = $txt["pwd_format_fail"];
+
+            }
+
+
+            // 手機
+
+            if ( !$_this->is_phone( $data["mobile"] ) ) 
+            {
+
+               $ErrorMsg[] = $txt["phone_format_fail"];
+
+            }
+
+
+            // 姓名
+
+            if ( !$_this->strFilter( $data["real_name"] ) ) 
+            {
+
+               $ErrorMsg[] = $txt["real_name_fail"];
+
+            }
+
+
+            // 角色
+
+            if ( !isset($data["auth"]) ) 
+            {
+
+               $ErrorMsg[] = "未選擇角色！";
+
+            }
+
+
+            if ( !empty($ErrorMsg) ) 
+            {
+
+               throw new \Exception(json_encode($ErrorMsg));
+
+            }
+
+         } 
+         catch (\Exception $e) 
+         {
+
+            $result = json_decode($e->getMessage() ,true);
+         
+         }
+
+      }
+
+
+      return $result;
+
    }
 
 

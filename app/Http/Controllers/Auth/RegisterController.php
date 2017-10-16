@@ -28,11 +28,17 @@ class RegisterController extends Controller
 
         $ErrorMsg = Session::get('ErrorMsg');
 
+        Session::forget('ErrorMsg');
+
         $Social_login = Session::get( 'Social_login' );
+
+        $OriData = Session::get( 'OriData' );
+
+        Session::forget('OriData');
 
         $store_type = Option_logic::get_store_data();
 
-        return view('webbase.unlogin_content', compact("assign_page", "ErrorMsg", "Verifycode", "Verifycode_img", "Social_login", "store_type"));
+        return view('webbase.unlogin_content', compact("assign_page", "ErrorMsg", "Verifycode", "Verifycode_img", "Social_login", "store_type", "OriData"));
 
     }
 
@@ -41,6 +47,10 @@ class RegisterController extends Controller
 
 
         Session::forget( 'Register_user' );
+
+        Session::forget( 'Login_user' );
+        
+        Session::forget( 'Store' );
 
         // 轉格式
         
@@ -86,7 +96,9 @@ class RegisterController extends Controller
 
             $insert_store_data = Store_logic::insert_format( $register_data );
 
-            Store_logic::add_store( $insert_store_data );
+            $store_id = Store_logic::add_store( $insert_store_data );
+
+            Session::put( 'Store', $store_id );
 
 
             // welcome msg

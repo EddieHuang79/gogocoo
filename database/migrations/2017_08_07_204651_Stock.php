@@ -44,6 +44,8 @@ class Stock extends Migration
            $table->foreign('purchase_id')->references('id')->on($this->purchase_table);
         });
 
+        $sub_admin_service_id = array();
+
         // service
         $parents_id = DB::table($this->service_table)->insertGetId(
             array(
@@ -57,7 +59,10 @@ class Stock extends Migration
                 'updated_at'    => date("Y-m-d H:i:s")
             )
         );
-        DB::table($this->service_table)->insert(
+
+        $sub_admin_service_id[] = $parents_id;
+
+        $sub_admin_service_id[] = DB::table($this->service_table)->insertGetId(
             array(
                 'name'          => '庫存總量列表',
                 'link'          => '/stock_total_list',
@@ -69,7 +74,8 @@ class Stock extends Migration
                 'updated_at'    => date("Y-m-d H:i:s")
             )
         );
-        DB::table($this->service_table)->insert(
+
+        $sub_admin_service_id[] = DB::table($this->service_table)->insertGetId(
             array(
                 'name'          => '庫存批量列表',
                 'link'          => '/stock_batch_list',
@@ -81,7 +87,8 @@ class Stock extends Migration
                 'updated_at'    => date("Y-m-d H:i:s")
             )
         );
-        DB::table($this->service_table)->insert(
+
+        $sub_admin_service_id[] = DB::table($this->service_table)->insertGetId(
             array(
                 'name'          => '到期庫存列表',
                 'link'          => '/immediate_stock_list',
@@ -93,7 +100,8 @@ class Stock extends Migration
                 'updated_at'    => date("Y-m-d H:i:s")
             )
         );
-        DB::table($this->service_table)->insert(
+
+        $sub_admin_service_id[] = DB::table($this->service_table)->insertGetId(
             array(
                 'name'          => '安全庫存警示列表',
                 'link'          => '/lack_of_stock_list',
@@ -108,6 +116,7 @@ class Stock extends Migration
 
          // role_service
         $service_data = DB::table('service')->select('id')->where('name', 'like', '%庫存%')->get();
+        
         foreach ($service_data as $row) 
         {
             DB::table($this->role_service_table)->insert(
@@ -117,6 +126,33 @@ class Stock extends Migration
                 )
             );
         }
+
+        foreach ($sub_admin_service_id as $row) 
+        {
+
+            DB::table($this->role_service_table)->insert(
+                array(
+                    'role_id'      => 2,
+                    'service_id'   => $row
+                )
+            );
+
+            DB::table($this->role_service_table)->insert(
+                array(
+                    'role_id'      => 3,
+                    'service_id'   => $row
+                )
+            );
+
+            DB::table($this->role_service_table)->insert(
+                array(
+                    'role_id'      => 4,
+                    'service_id'   => $row
+                )
+            );
+
+        }
+
 
     }
 

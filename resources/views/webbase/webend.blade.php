@@ -50,6 +50,8 @@
 	<script type="text/javascript" src="{{ URL::asset('js/data.js') }}"></script>
 
 	<script type="text/javascript" src="{{ URL::asset('js/drilldown.js') }}"></script>
+	
+	<script type="text/javascript" src="{{ URL::asset('js/datetimepicker.js') }}"></script>
 
 	<script type="text/javascript" src="{{ URL::asset('js/common.js') }}"></script>
 	

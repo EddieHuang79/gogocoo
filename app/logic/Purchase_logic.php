@@ -45,25 +45,14 @@ class Purchase_logic extends Basetool
 
 			$spec_id = isset($data["spec_id"]) ? intval($data["spec_id"]) : 0 ;
 
-			// 商品data
+			$product_id = isset($data["product_id"]) ? intval($data["product_id"]) : 0 ;
 
-			$product_name = isset($data["product_name"]) ? $_this->strFilter($data["product_name"]) : "" ;
-
-			if ( !empty($product_name) ) 
+			if ( !empty($product_id) )  
 			{
 
-		        $option = array( array("product_name", "=", $product_name) );
+				$in_warehouse_date = isset($data["in_warehouse_date"]) && !empty($data["in_warehouse_date"]) ? date("Y-m-d", strtotime($data["in_warehouse_date"])) : date("Y-m-d");
 
-		        $product_data = Product_logic::get_product_data( $option );
-
-		        foreach ($product_data as $row) 
-		        {
-
-		        	$product_id = $row->product_id;
-
-		        	$deadline = (int)$row->keep_for_days > 0 ? date("Y-m-d", mktime( 0, 0, 0, date("m", strtotime($data["in_warehouse_date"])), date("d", strtotime($data["in_warehouse_date"]))+$row->keep_for_days, date("Y", strtotime($data["in_warehouse_date"])) ) ) : "2050-12-31" ;
-
-		        }
+		        $deadline = (int)$data["keep_for_days"] > 0 ? date("Y-m-d", mktime( 0, 0, 0, date("m", strtotime($in_warehouse_date)), date("d", strtotime($in_warehouse_date))+(int)$data["keep_for_days"], date("Y", strtotime($in_warehouse_date)) ) ) : "2050-12-31" ;
 
 				// 批號
 
@@ -75,7 +64,7 @@ class Purchase_logic extends Basetool
 				            "spec_id"      			=> $spec_id,
 				            "in_warehouse_number"	=> $in_warehouse_number,
 				            "number"       			=> isset($data["number"]) ? intval($data["number"]) : 0,
-				            "in_warehouse_date" 	=> isset($data["in_warehouse_date"]) ? date("Y-m-d", strtotime($data["in_warehouse_date"])) : date("Y-m-d"),
+				            "in_warehouse_date" 	=> $in_warehouse_date,
 				            "deadline" 				=> $deadline,
 				            "category"    			=> isset($data["category"]) ? intval($data["category"]) : 1,
 				            "status"    			=> 1,
@@ -138,37 +127,31 @@ class Purchase_logic extends Basetool
 
 			$spec_id = isset($data["spec_id"]) ? intval($data["spec_id"]) : 0 ;
 
-			// 商品data
+			$product_id = isset($data["product_id"]) ? intval($data["product_id"]) : 0 ;
 
-			$product_name = isset($data["product_name"]) ? $_this->strFilter($data["product_name"]) : "" ;
+			if ( !empty($product_id) ) 
+			{
 
-	        $option = array( array("product_name", "=", $product_name) );
+				$in_warehouse_date = isset($data["in_warehouse_date"]) && !empty($data["in_warehouse_date"]) ? date("Y-m-d", strtotime($data["in_warehouse_date"])) : date("Y-m-d");
 
-	        $product_data = Product_logic::get_product_data( $option );
+		        $deadline = (int)$data["keep_for_days"] > 0 ? date("Y-m-d", mktime( 0, 0, 0, date("m", strtotime($in_warehouse_date)), date("d", strtotime($in_warehouse_date))+(int)$data["keep_for_days"], date("Y", strtotime($in_warehouse_date)) ) ) : "2050-12-31" ;
 
-	        foreach ($product_data as $row) 
-	        {
+				// 批號
 
-	        	$product_id = $row->product_id;
-	        
-	        	$deadline = (int)$row->keep_for_days > 0 ? date("Y-m-d", mktime( 0, 0, 0, date("m", strtotime($data["in_warehouse_date"])), date("d", strtotime($data["in_warehouse_date"]))+$row->keep_for_days, date("Y", strtotime($data["in_warehouse_date"])) ) ) : "2050-12-31" ;        	
+				$in_warehouse_number = $_this->get_in_warehouse_number( (int)$product_id, (int)$spec_id, (int)$purchase_id );
 
-	        }
+				$result = array(
+				            "product_id"      		=> $product_id,
+				            "spec_id"      			=> $spec_id,
+				            "in_warehouse_number"	=> $in_warehouse_number,
+				            "number"       			=> isset($data["number"]) ? intval($data["number"]) : 0,
+				            "in_warehouse_date" 	=> $in_warehouse_date,
+				            "deadline" 				=> $deadline,		           
+				            "category"    			=> isset($data["category"]) ? intval($data["category"]) : 1,
+				            "updated_at"    		=> date("Y-m-d H:i:s")
+				         );
 
-			// 批號
-
-			$in_warehouse_number = $_this->get_in_warehouse_number( (int)$product_id, (int)$spec_id, (int)$purchase_id );
-
-			$result = array(
-			            "product_id"      		=> $product_id,
-			            "spec_id"      			=> $spec_id,
-			            "in_warehouse_number"	=> $in_warehouse_number,
-			            "number"       			=> isset($data["number"]) ? intval($data["number"]) : 0,
-			            "in_warehouse_date" 	=> isset($data["in_warehouse_date"]) ? date("Y-m-d", strtotime($data["in_warehouse_date"])) : date("Y-m-d"),
-			            "deadline" 				=> $deadline,		           
-			            "category"    			=> isset($data["category"]) ? intval($data["category"]) : 1,
-			            "updated_at"    		=> date("Y-m-d H:i:s")
-			         );
+			}
 
 		}
 

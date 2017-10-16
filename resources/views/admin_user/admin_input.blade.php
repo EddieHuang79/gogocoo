@@ -21,10 +21,10 @@
 						<div class="form-group">
 							<label>{{ $txt["account"] }}</label>
 							@if(!empty($user))
-							{{ $user->account }}
+								{{ $user->account }}
 							<input type="hidden" name="user_id" value="{{ $user->id }}">
 							@else
-							<input type="text" name="account" class="form-control" value="" placeholder="{{ $txt['account_input'] }}" size="40" required/>
+								<input type="text" name="account" class="form-control" @if( !empty($OriData) ) value="{{ $OriData['account'] }}" @endif placeholder="{{ $txt['account_input'] }}" size="40" required/>
 							@endif
 						</div>
 						<div class="form-group">
@@ -33,11 +33,11 @@
 						</div>
 						<div class="form-group">
 							<label>{{ $txt["real_name"] }}</label>
-							<input type="text" name="real_name" class="form-control" value="@if(!empty($user->real_name)){{ $user->real_name }}@endif" placeholder="{{ $txt['realname_input'] }}" size="40" required/>
+							<input type="text" name="real_name" class="form-control" @if(!empty($user)) value="{{ $user->real_name }}" @endif @if( empty($user) && !empty($OriData['real_name']) ) value="{{ $OriData['real_name'] }}" @endif placeholder="{{ $txt['realname_input'] }}" size="40" required/>
 						</div>
 						<div class="form-group">
 							<label>{{ $txt["telephone"] }}</label>
-							<input type="text" name="mobile" class="form-control" value="@if(!empty($user->mobile)){{ $user->mobile }}@endif" placeholder="{{ $txt['phone_input'] }}" size="40" required/>
+							<input type="text" name="mobile" class="form-control" @if(!empty($user)) value="{{ $user->mobile }}" @endif @if( empty($user) && !empty($OriData['mobile']) ) value="{{ $OriData['mobile'] }}" @endif placeholder="{{ $txt['phone_input'] }}" size="40" required/>
 						</div>
 						<div class="form-group">
 							<label>{{ $txt["auth"] }}</label>

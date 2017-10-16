@@ -85,6 +85,8 @@ class Order extends Migration
            $table->foreign('stock_id')->references('id')->on($this->stock_table);
         });
 
+        $sub_admin_service_id = array();
+
         // service
         $order_id = DB::table($this->service_table)->insertGetId(
             array(
@@ -98,7 +100,10 @@ class Order extends Migration
                 'updated_at'    => date("Y-m-d H:i:s")
             )
         );
-        DB::table($this->service_table)->insert(
+
+        $sub_admin_service_id[] = $order_id;
+        
+        $sub_admin_service_id[] = DB::table($this->service_table)->insertGetId(
             array(
                 'name'          => '新增訂單',
                 'link'          => '/order/create',
@@ -110,7 +115,8 @@ class Order extends Migration
                 'updated_at'    => date("Y-m-d H:i:s")
             )
         );
-        DB::table($this->service_table)->insert(
+        
+        $sub_admin_service_id[] = DB::table($this->service_table)->insertGetId(
             array(
                 'name'          => '訂單列表',
                 'link'          => '/order',
@@ -125,6 +131,7 @@ class Order extends Migration
 
          // role_service
         $service_data = DB::table('service')->select('id')->where('name', 'like', '%訂單%')->get();
+        
         foreach ($service_data as $row) 
         {
             DB::table($this->role_service_table)->insert(
@@ -133,6 +140,32 @@ class Order extends Migration
                     'service_id'   => $row->id
                 )
             );
+        }
+
+        foreach ($sub_admin_service_id as $row) 
+        {
+
+            DB::table($this->role_service_table)->insert(
+                array(
+                    'role_id'      => 2,
+                    'service_id'   => $row
+                )
+            );
+
+            DB::table($this->role_service_table)->insert(
+                array(
+                    'role_id'      => 3,
+                    'service_id'   => $row
+                )
+            );
+
+            DB::table($this->role_service_table)->insert(
+                array(
+                    'role_id'      => 4,
+                    'service_id'   => $row
+                )
+            );
+            
         }
 
         $out_warehouse_category = array(

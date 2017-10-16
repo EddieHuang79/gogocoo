@@ -56,6 +56,8 @@ class ProductModule extends Migration
         });
 
 
+        $sub_admin_service_id = array();
+
         // service
         $product_id = DB::table($this->service_table)->insertGetId(
             array(
@@ -69,7 +71,10 @@ class ProductModule extends Migration
                 'updated_at'    => date("Y-m-d H:i:s")
             )
         );
-        DB::table($this->service_table)->insert(
+
+        $sub_admin_service_id[] = $product_id;
+
+        $sub_admin_service_id[] = DB::table($this->service_table)->insertGetId(
             array(
                 'name'          => '新增商品',
                 'link'          => '/product/create',
@@ -81,7 +86,8 @@ class ProductModule extends Migration
                 'updated_at'    => date("Y-m-d H:i:s")
             )
         );
-        DB::table($this->service_table)->insert(
+
+        $sub_admin_service_id[] = DB::table($this->service_table)->insertGetId(
             array(
                 'name'          => '商品列表',
                 'link'          => '/product',
@@ -96,6 +102,7 @@ class ProductModule extends Migration
 
          // role_service
         $service_data = DB::table('service')->select('id')->where('name', 'like', '%商品%')->get();
+        
         foreach ($service_data as $row) 
         {
             DB::table($this->role_service_table)->insert(
@@ -104,6 +111,25 @@ class ProductModule extends Migration
                     'service_id'   => $row->id
                 )
             );
+        }
+
+        foreach ($sub_admin_service_id as $row) 
+        {
+
+            DB::table($this->role_service_table)->insert(
+                array(
+                    'role_id'      => 2,
+                    'service_id'   => $row
+                )
+            );
+
+            DB::table($this->role_service_table)->insert(
+                array(
+                    'role_id'      => 3,
+                    'service_id'   => $row
+                )
+            );
+
         }
 
     }

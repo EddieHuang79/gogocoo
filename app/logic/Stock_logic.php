@@ -10,6 +10,18 @@ use App\logic\ProductCategory_logic;
 class Stock_logic extends Basetool
 {
 
+	protected $store_id = 0;
+
+
+	public function __construct()
+	{
+
+		// 文字
+		$this->store_id = Session::get( 'Store' );
+
+	}
+
+
 	// 新增格式
 
 	public static function insert_format( $data )
@@ -22,7 +34,7 @@ class Stock_logic extends Basetool
 		if ( !empty($data) ) 
 		{
 
-			$shop_id = Session::get( 'Store' );
+			$shop_id = $_this->store_id;
 
 			foreach ($data as $row) 
 			{
@@ -60,7 +72,11 @@ class Stock_logic extends Basetool
 	public static function get_stock_batch_list( $data, $has_spec )
 	{
 
+		$_this = new self();
+
 		$stock_list = array();
+
+		$data["shop_id"] = $_this->store_id;
 
 		$data = Stock::get_stock_batch_list( $data, $has_spec );
 
@@ -142,7 +158,11 @@ class Stock_logic extends Basetool
 	public static function get_stock_total_list( $data, $has_spec )
 	{
 
+		$_this = new self();
+
 		$stock_list = array();
+
+		$data["shop_id"] = $_this->store_id;
 
 		$data = Stock::get_stock_total_list( $data, $has_spec );
 
@@ -220,7 +240,11 @@ class Stock_logic extends Basetool
 	public static function get_immediate_stock_list( $data, $has_spec )
 	{
 
+		$_this = new self();
+
 		$stock_list = array();
+
+		$data["shop_id"] = $_this->store_id;
 
 		$data = Stock::get_immediate_stock_list( $data, $has_spec );
 
@@ -301,7 +325,11 @@ class Stock_logic extends Basetool
 	public static function get_lack_of_stock_list( $data, $has_spec )
 	{
 
+		$_this = new self();
+
 		$stock_list = array();
+
+		$data["shop_id"] = $_this->store_id;
 
 		$data = Stock::get_lack_of_stock_list( $data, $has_spec );
 
