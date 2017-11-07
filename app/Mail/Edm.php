@@ -31,7 +31,7 @@ class Edm extends Mailable
     public function build()
     {
 
-        $site = URL::to('/');
+        $site = "http://www.gogocoo.com/";
 
         $edm = Edm_logic::get_edm_to_send();
 
