@@ -35,10 +35,14 @@ class Edm extends Mailable
 
         $edm = Edm_logic::get_edm_to_send();
 
+        Edm_logic::change_status( array($edm->id), 3 );
+
         $data = ['edm' => $edm, 'site' => $site];
 
+        $subject = $edm->subject;
+
         return $this->from('gogocoo@gogocoo.com')
-                    ->subject( $edm->subject )
+                    ->subject( $subject )
                     ->view('edm.send_template', $data);
 
     }

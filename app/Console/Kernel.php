@@ -30,26 +30,19 @@ class Kernel extends ConsoleKernel
 
         // EDM寄送
 
-        if ( class_exists( 'Edm_logic' ) ) 
+        $edm = Edm_logic::get_edm_to_send();
+
+        if ( !empty($edm) && is_object($edm) && isset($edm->id) ) 
         {
 
-            $edm = Edm_logic::get_edm_to_send();
+            $edm_list = array('u9735034@gms.ndhu.edu.tw', 'kivwu0106@gmail.com');
 
-            if ( !empty($edm) && is_object($edm) && isset($edm->id) ) 
-            {
+            $schedule->call(function () use ($edm_list) {
 
-                $edm_list = array('u9735034@gms.ndhu.edu.tw', 'kivwu0106@gmail.com');
-
-                Edm_logic::change_status( array($edm->id), 3 );
-
-                $schedule->call(function () use ($edm_list) {
-
-                                Mail::to( $edm_list )->send(new Edm());
-                    
-                            })
-                        ->cron("* * * * *");
-
-            }
+                            Mail::to( $edm_list )->send(new Edm());
+                
+                        })
+                    ->cron("* * * * *");
 
         }
 
