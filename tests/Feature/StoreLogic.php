@@ -176,4 +176,28 @@ class StoreLogic extends TestCase
 		$this->assertFalse( $test1 );
 
 	}
+
+	public function testGetRelShopId()
+	{
+
+		$test1 = Store_logic::get_rel_shop_id( "" );
+
+		$this->assertTrue( empty($test1) );
+		$this->assertTrue( is_array($test1) );
+		$this->assertEquals($test1, array());
+
+		$test1 = Store_logic::get_rel_shop_id( 0 );
+
+		$this->assertTrue( empty($test1) );
+		$this->assertTrue( is_array($test1) );
+		$this->assertEquals($test1, array());
+
+		$test1 = Store_logic::get_rel_shop_id( array() );
+
+		$this->assertTrue( empty($test1) );
+		$this->assertTrue( is_array($test1) );
+		$this->assertEquals($test1, array());
+
+	}
+
 }

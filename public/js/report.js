@@ -187,7 +187,8 @@ var	month_order_view = function(){
 				times2 = 0,
 				level1 = $.map(data1['level1'], function(value, index) { 
 							
-							var colors = Highcharts.getOptions().colors;
+							// var colors = Highcharts.getOptions().colors;
+							var colors = ["#00c0ef","#3c8dbc","#00a65a","#f39c12","#dd4b39","#812022","#5D5F54","#3E3E5F","#5F4810","#5F3209"];
 
 							data = {
 								name: index,
@@ -201,7 +202,8 @@ var	month_order_view = function(){
 						}),
 				level2 = $.map(data1['level2'], function(value, index) { 
 
-								var colors = Highcharts.getOptions().colors,
+								// var colors = Highcharts.getOptions().colors,
+								var colors = ["#00c0ef","#3c8dbc","#00a65a","#f39c12","#dd4b39","#812022","#5D5F54","#3E3E5F","#5F4810","#5F3209"],
 									size = Object.keys(value).length;
 
 								data =  $.map(value, function(value2, index2){

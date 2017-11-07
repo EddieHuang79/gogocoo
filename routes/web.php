@@ -182,3 +182,20 @@ Route::post('product_top5_stack', ['as'=>'report.product_top5_stack','uses'=>'Re
 Route::resource('product_category', 'ProductCategoryController');
 
 Route::post('product_category/get_child_list', ['as'=>'product_category.get_child_list','uses'=>'ProductCategoryController@get_child_list']);
+
+// EDM
+
+Route::resource('edm', 'EDMController');
+
+Route::get('edm_verify_list', ['as'=>'edm.edm_verify_list','uses'=>'EDMController@edm_verify_list']);
+
+Route::get('edm_clone', ['as'=>'edm.clone','uses'=>'EDMController@clone']);
+
+Route::post('edm_verify', ['as'=>'edm.verify','uses'=>'EDMController@verify']);
+
+Route::get('edm_cancel_list', ['as'=>'edm.edm_cancel_list','uses'=>'EDMController@edm_cancel_list']);
+
+Route::post('edm_cancel', ['as'=>'edm.cancel','uses'=>'EDMController@cancel']);
+
+Route::get('edm_example', ['as'=>'edm.edm_example','uses'=>'EDMController@edm_example']);
+

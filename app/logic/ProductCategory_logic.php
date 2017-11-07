@@ -85,9 +85,11 @@ class ProductCategory_logic extends Basetool
 
 		$shop_id = Session::get( 'Store' );
 
+		$rel_shop_id = Store_logic::get_rel_shop_id( $shop_id );
+
 		$parents_category = $_this->get_parents_category_list();
 
-		$data = ProductCategory::get_product_category_data( $shop_id );
+		$data = ProductCategory::get_product_category_data( $rel_shop_id );
 
 		if ( !empty($data) )
 		{
@@ -122,7 +124,9 @@ class ProductCategory_logic extends Basetool
 
 		$shop_id = Session::get( 'Store' );
 
-		$data = ProductCategory::get_product_category_data( $shop_id );
+		$rel_shop_id = Store_logic::get_rel_shop_id( $shop_id );
+
+		$data = ProductCategory::get_product_category_data( $rel_shop_id );
 
 		if ( !empty($data) )
 		{
@@ -155,7 +159,9 @@ class ProductCategory_logic extends Basetool
 
 		$shop_id = Session::get( 'Store' );
 
-		$data = ProductCategory::get_parents_category_list( $shop_id, $excpet_id );
+		$rel_shop_id = Store_logic::get_rel_shop_id( $shop_id );
+
+		$data = ProductCategory::get_parents_category_list( $rel_shop_id, $excpet_id );
 
 		foreach ($data as $row) 
 		{

@@ -91,7 +91,6 @@ class Store extends Model
 
 	}	
 
-
 	public static function get_store_id_by_code( $store_code )
 	{
 	     
@@ -103,4 +102,14 @@ class Store extends Model
 
 	}	
 
+	public static function get_rel_shop_id( $user_id_array )
+	{
+
+		$_this = new self;
+
+		$result = DB::table($_this->table)->whereIn("user_id", $user_id_array)->get();
+
+		return $result;
+
+	}
 }

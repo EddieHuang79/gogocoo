@@ -16,12 +16,14 @@ class ProductCategory
 
 		$_this = new self();
 
+		$shop_id[] = 0;
+
 		$result = DB::table($_this->table)
 					->select(
 								"id",
 								"name"
 							)
-					->whereIn("shop_id", array( 0, $shop_id))
+					->whereIn("shop_id", $shop_id)
 					->where("parents_id", "=", "0");
 		$result = $excpet_id > 0 ? $result->where("id", "!=", $excpet_id) : $result ;
 		$result = $result->get();
@@ -37,9 +39,11 @@ class ProductCategory
 
 		$page_size = $_this->page_size;
 
+		$shop_id[] = 0 ;
+
 		$result = DB::table($_this->table)
 					->select("*")
-					->whereIn("shop_id", array( 0, $shop_id))
+					->whereIn("shop_id", $shop_id)
 					->paginate( $page_size );
 
 		return $result;

@@ -250,6 +250,7 @@ class Autoload extends Basetool
                         "訂單管理"          =>    'fa-clipboard',
                         "資料上傳"          =>    'fa-upload',
                         "商品分類管理"      =>    'fa-pie-chart',
+                        "電子報管理"         =>    'fa-envelope',
                     );
 
         return $result;

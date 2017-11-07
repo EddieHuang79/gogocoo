@@ -16,7 +16,7 @@
 							@if(!empty($role))
 							<input type="hidden" name="role_id" value="{{ $role->id }}">						
 							@endif
-							<input type="text" name="name" class="form-control" value="@if(!empty($role)){{ $role->name }}@endif"/>
+							<input type="text" name="name" class="form-control" value="@if(!empty($role)){{ $role->name }}@endif" required/>
 						</div>
 						<div class="form-group">
 							<label>{{ $txt["auth"] }}</label>

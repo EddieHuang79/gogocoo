@@ -468,4 +468,27 @@ class AdminUserLogic extends TestCase
 
 	}
 
+	public function testGetRelUserId()
+	{
+
+		$test1 = Admin_user_logic::get_rel_user_id( "" );
+
+		$this->assertTrue( empty($test1) );
+		$this->assertTrue( is_array($test1) );
+		$this->assertEquals($test1, array());
+
+		$test1 = Admin_user_logic::get_rel_user_id( 0 );
+
+		$this->assertTrue( empty($test1) );
+		$this->assertTrue( is_array($test1) );
+		$this->assertEquals($test1, array());
+
+		$test1 = Admin_user_logic::get_rel_user_id( array() );
+
+		$this->assertTrue( empty($test1) );
+		$this->assertTrue( is_array($test1) );
+		$this->assertEquals($test1, array());
+
+	}
+
 }

@@ -432,4 +432,37 @@ class Store_logic extends Basetool
 
 	}
 
+
+	// 取得所有關連店鋪
+
+	public static function get_rel_shop_id( $shop_id )
+	{
+
+		$result = array();
+
+		if ( !empty($shop_id) && is_int($shop_id) ) 
+		{
+
+			$store_data = Store::get_single_store( $shop_id );
+
+			$rel_user_id = Admin_user_logic::get_rel_user_id( $store_data->user_id );
+
+			$data = Store::get_rel_shop_id( $rel_user_id );
+
+			foreach ($data as $row) 
+			{
+
+				$result[] = $row->id;
+			
+			}
+
+		}
+
+		return $result;
+
+	}
+
+
+
+
 }

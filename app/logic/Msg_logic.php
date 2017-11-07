@@ -35,7 +35,7 @@ class Msg_logic extends Basetool
 		$this->show_type = array(
 								1 => $this->txt["msg_icon"],
 								2 => $this->txt["popup"],
-								3 => $this->txt["mail"]
+								// 3 => $this->txt["mail"]
 							);
 
 	}

@@ -152,7 +152,6 @@ class Admin_user
 
    }
 
-
    public static function get_user_id( $data )
    {
 
@@ -189,7 +188,6 @@ class Admin_user
          return $result;      
 
    }
-
 
    public static function cnt_child_account( $user_id )
    {
@@ -257,5 +255,29 @@ class Admin_user
          
    }
 
+   public static function get_rel_user_id( $user_id )
+   {
+
+         $_this = new self;
+      
+         $data = DB::table($_this->table)
+                     ->select('id','parents_id')
+                     ->where('id', '=', $user_id)
+                     ->first();
+
+         // 如果是子帳，用本帳id找出所有相關id，若不是，則用自身id找出所有相關id
+
+         $find_id = $data->parents_id > 0 ? $data->parents_id : $data->id;
+
+         $result = DB::table($_this->table)
+                  ->select('id')
+                  ->where('id', '=', $find_id)
+                  ->orWhere('parents_id', '=', $find_id)
+                  ->get();
+
+
+         return $result;      
+
+   }
 
 }

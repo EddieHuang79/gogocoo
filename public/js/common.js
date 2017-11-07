@@ -477,28 +477,38 @@ var Show_current_position = function(){
 			}
 		});	
 
+	},
+	column_show_hide = function(){
+		
+		var choose = $(".type:checked").attr("column"),
+			type = $(".type:checked").val();
+		
+		$(".chooseType").hide();
+
+		$("."+choose).show();
+
 	};
 
 
 Show_current_position();
 Ajax_init();
 count_lightbox_width();
-
+column_show_hide();
 
 $(".addbtn").on("click", AddBtn);
 $(document).on("click", ".removeLabel", RemoveBtn);
 $("[alt='main']").on("click", ClickAll);
-$(".search_tool").find("[name='date']").datepicker({format: "yy-mm-dd"});
+$(".search_tool").find("[name='date']").datepicker({dateFormat: "yy-mm-dd"});
 // $(".ShowHide").on("click", Search_tool_display);
 $(".refresh_verify_code").on("click", Refresh_verify_code);
 $(".RoleListBtn").on("click", RoleListBtn);
 $(".close_btn").on("click", ClosePopup);
 $("#start_datetime").datetimepicker({format: "YYYY-MM-DD HH:mm"});
 $("#end_datetime").datetimepicker({format: "YYYY-MM-DD HH:mm"});
-$("#start_date").datepicker({format: "yyyy-mm-dd"});
-$("#end_date").datepicker({format: "yyyy-mm-dd"});
-$("[name='in_warehouse_date']").datepicker({format: "yyyy-mm-dd"});
-$("[name='out_warehouse_date']").datepicker({format: "yyyy-mm-dd"});
+$("#start_date").datepicker({dateFormat: "yy-mm-dd"});
+$("#end_date").datepicker({dateFormat: "yy-mm-dd"});
+$("[name='in_warehouse_date']").datepicker({dateFormat: "yy-mm-dd"});
+$("[name='out_warehouse_date']").datepicker({dateFormat: "yy-mm-dd"});
 $("[name='store_type']").on("click", call_store_type);
 $("[name='parents_store_type']").on("change", store_type_find_child);
 // $(".store_type>li.child").on("click", set_store_type);
@@ -512,4 +522,5 @@ $(".autocomplete").on("click", AutoComplete);
 $(".clickAll").on("click", clickAllFunction);
 $(".extend_account_deadline").on("click", extend_account_deadline);
 $("#category").on("change", product_category);
-$(".fa-search").on("click", Search_tool_display)
+$(".fa-search").on("click", Search_tool_display);
+$(".type").on("click", column_show_hide);

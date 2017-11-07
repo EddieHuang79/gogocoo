@@ -669,4 +669,29 @@ class Admin_user_logic extends Basetool
    }
 
 
+   // 取得所有關連id
+
+   public static function get_rel_user_id( $user_id )
+   {
+
+         $result = array() ;
+
+         if ( !empty($user_id) && is_int($user_id) )
+         {
+
+            $data = Admin_user::get_rel_user_id( $user_id );
+
+            foreach ($data as $row) 
+            {
+
+               $result[] = $row->id;
+
+            }
+
+         } 
+
+         return $result;   
+
+   }
+
 }

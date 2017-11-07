@@ -25,10 +25,11 @@
 	<!-- daterangepicker -->
 	<script type="text/javascript" src="{{ URL::asset('js/moment.js') }}"></script>
 
-	<script type="text/javascript" src="{{ URL::asset('plugins/daterangepicker/daterangepicker.js') }}"></script>
+	<!-- <script type="text/javascript" src="{{ URL::asset('plugins/daterangepicker/daterangepicker.js') }}"></script> -->
 
 	<!-- datepicker -->
-	<script type="text/javascript" src="{{ URL::asset('plugins/datepicker/bootstrap-datepicker.js') }}"></script>    
+	<!-- <script type="text/javascript" src="{{ URL::asset('plugins/datepicker/bootstrap-datepicker.js') }}"></script> -->
+	
 	<!-- Bootstrap WYSIHTML5 -->
 	<script type="text/javascript" src="{{ URL::asset('plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.all.min.js') }}"></script>	    
 	<!-- Slimscroll -->

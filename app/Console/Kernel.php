@@ -4,6 +4,9 @@ namespace App\Console;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use App\logic\Edm_logic;
+use App\Mail\Edm;
+use Mail;
 
 class Kernel extends ConsoleKernel
 {
@@ -24,8 +27,32 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')
-        //          ->hourly();
+
+        // EDM寄送
+
+        if ( class_exists( 'Edm_logic' ) ) 
+        {
+
+            $edm = Edm_logic::get_edm_to_send();
+
+            if ( !empty($edm) && is_object($edm) && isset($edm->id) ) 
+            {
+
+                $edm_list = array('u9735034@gms.ndhu.edu.tw', 'kivwu0106@gmail.com');
+
+                Edm_logic::change_status( array($edm->id), 3 );
+
+                $schedule->call(function () use ($edm_list) {
+
+                                Mail::to( $edm_list )->send(new Edm());
+                    
+                            })
+                        ->cron("* * * * *");
+
+            }
+
+        }
+
     }
 
     /**
