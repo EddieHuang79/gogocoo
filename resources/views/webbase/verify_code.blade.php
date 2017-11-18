@@ -4,7 +4,7 @@
 	</div>
 	<div class="verify_code">
 		@if(is_string( $Verifycode_img) )
-		<img src="{{ URL::asset($Verifycode_img) }}" alt="" height="36">
+		<img src="{{ URL::asset($Verifycode_img) }}" alt="" height="36" class="verify_code">
 		@endif
 	</div>
 </div>

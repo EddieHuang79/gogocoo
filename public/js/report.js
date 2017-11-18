@@ -183,12 +183,11 @@ var	month_order_view = function(){
 
 
 			var data1 = JSON.parse(data),
-				times = 1,
+				times = 0,
 				times2 = 0,
 				level1 = $.map(data1['level1'], function(value, index) { 
 							
-							// var colors = Highcharts.getOptions().colors;
-							var colors = ["#00c0ef","#3c8dbc","#00a65a","#f39c12","#dd4b39","#812022","#5D5F54","#3E3E5F","#5F4810","#5F3209"];
+							var colors = ["#F59687","#F9C884","#7AD896","#66B2EB","#81D3CD"];
 
 							data = {
 								name: index,
@@ -198,30 +197,34 @@ var	month_order_view = function(){
 
 							times++;
 
+							times = times < 5 ? times : 1 ;
+
 							return data;
 						}),
 				level2 = $.map(data1['level2'], function(value, index) { 
 
-								// var colors = Highcharts.getOptions().colors,
-								var colors = ["#00c0ef","#3c8dbc","#00a65a","#f39c12","#dd4b39","#812022","#5D5F54","#3E3E5F","#5F4810","#5F3209"],
-									size = Object.keys(value).length;
+								var colors = ["#F59687","#F9C884","#7AD896","#66B2EB","#81D3CD"];
+									size = Object.keys(value).length,
+									color_index = times2 % 5;
 
 								data =  $.map(value, function(value2, index2){
 
-											var brightness = 0.2 - (times2 / size) / 2;
+											var brightness = 0.2;
 
 											data = {
 												name: index2,
 												y: value2,
-												color: Highcharts.Color(colors[index]).brighten(brightness).get()
+												color: Highcharts.Color(colors[times2]).brighten(brightness).get()
 											};
-
-											times2++;
 
 											return data;								
 
 										});
-					
+								
+								times2++;
+
+								times2 = times2 < 5 ? times2 : 1 ;
+
 							return data 
 						});
 
