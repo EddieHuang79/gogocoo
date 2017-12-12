@@ -96,8 +96,6 @@ class Kernel extends ConsoleKernel
 
                                                             );
 
-                                                    $edmData["account"] = "u9735034@gms.ndhu.edu.tw";
-
                                                     Mail::to( array( $edmData["account"] ) )->send(new Edm( $data ));
 
                                                 }
