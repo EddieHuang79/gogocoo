@@ -7,7 +7,10 @@ use Illuminate\Support\Facades\Session;
 use App\logic\Web_cht;
 use App\logic\Mall_logic;
 use App\logic\Store_logic;
+use App\logic\Promo_logic;
 use Ecpay;
+use App\Mail\FirstBuyGift;
+use Mail;
 
 class Shop_logic extends Basetool
 {
@@ -170,6 +173,7 @@ class Shop_logic extends Basetool
                               "mall_product_name"         => $row->product_name,
                               "mall_product_description"  => $row->description,
                               "cost"                      => $row->cost,
+                              "promo"                     => Promo_logic::get_active_promo_price( $row->id ),
                               "include_service"           => $include_service,
                             );
 
@@ -998,17 +1002,17 @@ class Shop_logic extends Basetool
             }
 
 
-            $mac = $_this->get_mac( $order_number_data );
+            // $mac = $_this->get_mac( $order_number_data );
 
-            // if ( !isset($data["CheckMacValue"]) || !isset($mac["mac"]) || ( isset($data["CheckMacValue"]) && $data["CheckMacValue"] == $mac["mac"] ) ) 
-            if ( !isset($data["CheckMacValue"]) || !isset($mac->mac) ) 
-            {
+            // // if ( !isset($data["CheckMacValue"]) || !isset($mac["mac"]) || ( isset($data["CheckMacValue"]) && $data["CheckMacValue"] == $mac["mac"] ) ) 
+            // if ( !isset($data["CheckMacValue"]) || !isset($mac->mac) ) 
+            // {
 
-                $error_msg = "mac錯誤||訂單編號錯誤||訂單狀態錯誤！";
+            //     $error_msg = "mac錯誤||訂單編號錯誤||訂單狀態錯誤！";
 
-                throw new \Exception($error_msg);
+            //     throw new \Exception($error_msg);
 
-            }
+            // }
 
             // 過濾變數
 
@@ -1035,9 +1039,14 @@ class Shop_logic extends Basetool
         if ( $result === true ) 
         {
 
-            $_this->active_mall_service_process( $payment_id );
+            // $_this->active_mall_service_process( $payment_id );
 
-        }
+
+            // 首購判斷觸發
+
+            $_this->first_buy_gift_logic( (int)$payment_id );
+
+        } 
 
         return $result;
 
@@ -1129,28 +1138,7 @@ class Shop_logic extends Basetool
         if ( !empty($payment_id) && is_int($payment_id) ) 
         {
 
-            $data = $_this->get_payment_data( $payment_id );
-
-            $MerchantTradeNo = is_object($data) ? $data->MerchantTradeNo : "" ;
-
-            $store_code = substr( $MerchantTradeNo, 0, 3 );
-
-            $store_obj = Store_logic::get_store_id_by_code( $store_code );
-
-            $store_id = is_object($store_obj) ? (int)$store_obj->id : 0 ;
-
-            $created_at = strtotime( substr( $MerchantTradeNo, 3, 8 ) );
-
-            $seq = (int)substr( $MerchantTradeNo, 11, 8 );
-
-            $data = array(
-
-                      "store_id"          => $store_id,
-                      "seq"               => $seq,
-                      "created_at"        => $created_at,
-                      "PaymentDate"       => $data->PaymentDate
-
-                    );
+            $data = $_this->MerchantTradeNo_decode( $payment_id );
 
             $result = $_this->active_mall_service( $data );
 
@@ -1237,6 +1225,177 @@ class Shop_logic extends Basetool
 
         }
 
+
+        return $result;
+
+    }
+
+
+    // 判斷是否首購
+
+    public static function is_first_buy( $data )
+    {
+
+        $result = false;
+
+        if ( !empty($data) && is_array($data) ) 
+        {
+
+            $find_data = Shop::is_first_buy( $data );
+
+            $result = $find_data[0]->paid_at === $data["PaymentDate"] ? true : false;
+
+        }
+
+        return $result;
+
+    }
+
+
+    // 寫入贈送商品
+
+    public static function add_first_buy_gift( $store_id )
+    {
+
+        $result = false;
+
+        if ( !empty($store_id) && is_int($store_id) ) 
+        {
+
+            // 主資料格式
+
+            $insert_record =  array(
+
+                                // 暫定1號為首購禮
+
+                                "mall_shop_id"          => 1, 
+                                "MerchantTradeNo"       => "FirstBuyGift",
+                                "store_id"              => $store_id,
+                                "cost"                  => 0,
+                                "number"                => 1,
+                                "total"                 => 0,
+                                "status"                => 1, // 預設已付
+                                "paid_at"               => date("Y-m-d H:i:s"),
+                                "created_at"            => date("Y-m-d H:i:s"),
+                                "updated_at"            => date("Y-m-d H:i:s")
+                            );
+
+            // INSERT 主資料
+
+            $record_id = Shop::shop_buy_insert( $insert_record );
+
+            $result = true;
+
+        }
+
+        return $result;
+
+    }
+
+
+    // 首購通知信
+
+    public static function send_first_buy_mail( $user_data )
+    {
+
+        $result = false;
+
+        if ( !empty($user_data) && is_object($user_data) ) 
+        {
+
+            $mail_data = Edm_logic::insert_FirstBuyGift_mail_format( $user_data );
+
+            Edm_logic::add_edm( $mail_data );
+
+            $result = true;
+
+        }
+
+        return $result;
+
+    }
+
+
+    // Logic
+
+    public static function first_buy_gift_logic( $payment_id )
+    {
+
+        $_this = new self();
+
+        $result = false;
+
+        if ( !empty($payment_id) && is_int($payment_id) ) 
+        {
+
+            $data = $_this->MerchantTradeNo_decode( $payment_id );
+
+            $is_first_buy = $_this->is_first_buy( $data );
+
+            if ( $is_first_buy === true ) 
+            {
+
+                $user = Admin_user_logic::get_user_by_store_id( (int)$data["store_id"] );
+
+                $_this->add_first_buy_gift( (int)$data["store_id"] );
+
+                $_this->send_first_buy_mail( $user );
+
+                // 寫入贈送訊息
+
+                $subject = "首購禮已贈送！";
+
+                $content = "請前往購買紀錄查看！";
+
+                Msg_logic::add_normal_msg( $subject, $content, $user->id );
+
+            }
+
+            $result = true;
+
+        }
+
+        return $result;
+
+    }
+
+
+    // MerchantTradeNo Decode
+
+    protected function MerchantTradeNo_decode( $payment_id )
+    {
+
+        $_this = new self();
+
+        $result = array();
+
+        if ( !empty($payment_id) && is_int($payment_id) ) 
+        {
+
+            $data = $_this->get_payment_data( $payment_id );
+
+            $MerchantTradeNo = is_object($data) ? $data->MerchantTradeNo : "" ;
+
+            $store_code = substr( $MerchantTradeNo, 0, 3 );
+
+            $store_obj = Store_logic::get_store_id_by_code( $store_code );
+
+            $store_id = is_object($store_obj) ? (int)$store_obj->id : 0 ;
+
+            $created_at = strtotime( substr( $MerchantTradeNo, 3, 8 ) );
+
+            $seq = (int)substr( $MerchantTradeNo, 11, 8 );
+
+            $result = array(
+
+                      "store_id"          => $store_id,
+                      "seq"               => $seq,
+                      "created_at"        => $created_at,
+                      "PaymentDate"       => $data->PaymentDate
+
+                    );
+
+        }
 
         return $result;
 

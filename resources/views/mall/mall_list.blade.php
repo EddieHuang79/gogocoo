@@ -48,6 +48,7 @@
 								<td>{{ $row->end_date_desc }}</td>
 								<td>
 									<input type="button" class="btn btn-primary" value="{{ $txt['edit'] }}" onClick="location.href='/mall/{{ $row->id }}/edit?';"/>
+									<input type="button" class="btn btn-primary" value="{{ $txt['promo_price_setting'] }}" onClick="location.href='/promo?mall_shop_id={{ $row->id }}';"/>
 								</td>
 							</tr>
 							@endforeach													

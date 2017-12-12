@@ -67,30 +67,15 @@ class MsgController extends Controller
     public function store(Request $request)
     {
 
-        if (!empty($_POST["msg_id"])) 
-        {
-            
-            $data = Msg_logic::update_format( $_POST );
-
-            $msg_id = intval($_POST["msg_id"]);
-
-            Msg_logic::edit_msg( $data, $msg_id );
-
-        }
-        else
+        if ( isset($_POST["subject"]) ) 
         {
 
-            if ( isset($_POST["subject"]) ) 
-            {
+            $data = Msg_logic::insert_format( $_POST );
 
-                $data = Msg_logic::insert_format( $_POST );
-
-                Msg_logic::add_msg( $data );
-
-            }
+            Msg_logic::add_msg( $data );
 
         }
-
+        
         return redirect("/msg");
 
     }
@@ -136,7 +121,17 @@ class MsgController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+
+        $_POST["msg_id"] = $id;
+            
+        $data = Msg_logic::update_format( $_POST );
+
+        $msg_id = intval($_POST["msg_id"]);
+
+        Msg_logic::edit_msg( $data, $msg_id );
+
+        return redirect("/msg");
+
     }
 
     /**

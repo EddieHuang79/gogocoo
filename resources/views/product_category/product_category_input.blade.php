@@ -9,7 +9,7 @@
 				<div class="box-header">
 					<h3 class="box-title">{{ $txt["product_categeory_input"] }}</h3>
 				</div>
-				<form action="/product_category" method="POST">
+				<form @if( isset($ProductCategory->id) ) action="/product_category/{{ $ProductCategory->id }}" @else action="/product_category" @endif method="POST">
 					<div class="box-body">
 						<div class="form-group">
 							<label>{{ $txt["parents_category"] }}</label>
@@ -32,6 +32,9 @@
 						<div class="form-group">
 							<label><input type="submit" class="btn btn-primary" value="{{ $txt['send'] }}"/></label>
 						</div>
+						@if(!empty($ProductCategory))
+							<input type="hidden" name="_method" value="patch">				
+						@endif	
 						<input type="hidden" name="_token" value="{{ csrf_token() }}">															
 					</div>
 				</form>

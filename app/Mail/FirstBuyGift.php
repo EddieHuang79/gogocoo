@@ -7,8 +7,9 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use App\logic\Web_cht;
+use App\logic\Mall_logic;
 
-class Edm extends Mailable
+class FirstBuyGift extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -32,32 +33,17 @@ class Edm extends Mailable
     public function build()
     {
 
-        $EdmData = $this->init_data;
+        $user = $this->init_data;
 
         $txt = Web_cht::get_txt();
 
-        switch ( $EdmData["type"] ) 
-        {
+        $mall = Mall_logic::get_single_mall( 1 );
 
-            case 4:
+        $data = ['user' => $user, 'txt' => $txt, 'mall' => $mall];
 
-                $subject =  "歡迎加入" . $txt["Site"] . "，領取專屬您的好康禮!!";
+        $subject = "歡迎加入" . $txt["Site"] . "，領取專屬您的好康禮!!";
 
-                $send_template = "edm.edm_register_template4";
-            
-                break;
-            
-            case 5:
-
-                $subject = $txt["Site"] . "新服務邀請";
-
-                $send_template = "edm.edm_register_template5";
-                
-                break;
-        
-        }
-
-        $data = ['mall' => $EdmData["product_data"], 'real_name' => $EdmData["mail_list"]["real_name"], 'txt' => $txt];
+        $send_template = "edm.edm_register_template3";
 
         return $this->from('gogocoo@gogocoo.com')
                     ->subject( $subject )

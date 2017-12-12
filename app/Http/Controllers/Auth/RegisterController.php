@@ -108,6 +108,11 @@ class RegisterController extends Controller
             $content = "歡迎加入我們的團隊！";
 
             Msg_logic::add_normal_msg( $subject, $content, $register_data["user_id"] );
+
+
+            // 寄送註冊信
+
+            Register::send_register_email();
             
 
             return redirect("/register_finish");

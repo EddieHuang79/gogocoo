@@ -17,7 +17,6 @@
 							<tr>
 								<th>{{ $txt['id'] }}</th>
 								<th>{{ $txt['subject'] }}</th>
-								<th>{{ $txt['content'] }}</th>
 								<th>{{ $txt['status'] }}</th>
 								<th>{{ $txt['has_list'] }}</th>
 								<th>{{ $txt['edm_send_time'] }}</th>
@@ -30,13 +29,6 @@
 							<tr>
 								<td>{{ $row->id }}</td>
 								<td>{{ $row->subject }}</td>
-								<td>
-									@if( $row->type == 2 && !empty($row->content) )
-									<img src="{{ $row->content }}" alt="" height="100">
-									@else
-									{{ $row->content }}
-									@endif
-								</td>
 								<td>{{ $row->status_txt }}</td>
 								<td>{{ $row->has_list_txt }}</td>
 								<td>{{ $row->send_time }}</td>

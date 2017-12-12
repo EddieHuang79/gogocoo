@@ -56,11 +56,12 @@ class Order extends Migration
 
         // 附屬資料
         // pay_status: 1-no, 2-pay
-        // logistics_status: 1-no, 2-send
+        // logistics_type:是否親取 1 - 親自拿, 2 - 走物流
 
         Schema::create($this->order_extra_table, function (Blueprint $table) {
             $table->increments('extra_id')->unique();
             $table->integer('order_id')->unsigned();
+            $table->integer('logistics_type')->default(1);
             $table->text('remark')->default('');
             $table->engine = 'InnoDB';
         });

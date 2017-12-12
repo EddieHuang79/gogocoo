@@ -17,7 +17,6 @@
 								<tr>
 									<th><input type="checkbox" class="clickAll" target="edm_checkbox"> &nbsp; {{ $txt['select_all'] }}</th>
 									<th>{{ $txt['subject'] }}</th>
-									<th>{{ $txt['content'] }}</th>
 									<th>{{ $txt['status'] }}</th>
 									<th>{{ $txt['has_list'] }} <br /> {{ $txt["edm_verify_rule"] }} </th>
 									<th>{{ $txt['edm_send_time'] }}</th>
@@ -33,13 +32,6 @@
 										@endif					
 									</td>
 									<td>{{ $row->subject }}</td>
-									<td>
-										@if( $row->type == 2 && !empty($row->content) )
-										<img src="{{ $row->content }}" alt="" height="100">
-										@else
-										{{ $row->content }}
-										@endif
-									</td>
 									<td>{{ $row->status_txt }}</td>
 									<td>{{ $row->has_list_txt }}</td>
 									<td>{{ $row->send_time }}</td>

@@ -57,27 +57,12 @@ class ProductCategoryController extends Controller
     public function store(Request $request)
     {
 
-        if (!empty($_POST["product_category_id"])) 
-        {
-            
-            $product_category_id = intval($_POST["product_category_id"]);
-
-            $data = ProductCategory_logic::update_main_format( $_POST );
-
-            ProductCategory_logic::edit_product_category( $data, $product_category_id );
-
-        }
-        else
+        if ( isset($_POST["name"]) ) 
         {
 
-            if ( isset($_POST["name"]) ) 
-            {
+            $data = ProductCategory_logic::insert_main_format( $_POST );
 
-                $data = ProductCategory_logic::insert_main_format( $_POST );
-
-                ProductCategory_logic::add_product_category( $data );
-
-            }
+            ProductCategory_logic::add_product_category( $data );
 
         }
 
@@ -103,6 +88,26 @@ class ProductCategoryController extends Controller
         $data = compact('assign_page', 'ProductCategory', 'parents_category_list');
 
         return view('webbase/content', $data);
+
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, $id)
+    {
+
+        $product_category_id = intval($id);
+
+        $data = ProductCategory_logic::update_main_format( $_POST );
+
+        ProductCategory_logic::edit_product_category( $data, $product_category_id );
+
+        return redirect("/product_category");
 
     }
 

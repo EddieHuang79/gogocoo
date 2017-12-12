@@ -415,4 +415,19 @@ class Shop extends Model
 
 	}
 
+    public static function is_first_buy( $data )
+    {
+
+		$_this = new self();
+
+		$result = DB::table($_this->record_table)
+					->select("paid_at")
+					->where("store_id", "=", $data["store_id"])
+					->where("status", "=", "1")
+					->get();
+
+		return $result;
+
+    }
+
 }

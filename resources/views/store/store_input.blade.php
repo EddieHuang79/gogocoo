@@ -19,7 +19,7 @@
 				<div class="box-header">
 					<h3 class="box-title">{{ $txt["store_input"] }}</h3>
 				</div>
-				<form action="/store" method="POST">				    
+				<form @if( isset($store->id) ) action="/store/{{ $store->id }}" @else action="/store" @endif method="POST">				    
 					<div class="box-body">
 						<div class="form-group">
 							<label>{{ $txt["store_name"] }}</label>
@@ -58,7 +58,9 @@
 						<div class="form-group">
 							<label><input type="submit" class="btn btn-primary" value="{{ $txt['send'] }}"/></label>
 						</div>
-						<input type="hidden" name="store_id" value="@if(!empty($store)){{ $store->id }}@endif">
+						@if(!empty($store->id))
+							<input type="hidden" name="_method" value="patch">				
+						@endif		
 						<input type="hidden" name="_token" value="{{ csrf_token() }}">
 					</div>
 				</form>

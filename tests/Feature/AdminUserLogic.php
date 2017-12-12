@@ -491,4 +491,50 @@ class AdminUserLogic extends TestCase
 
 	}
 
+	public function testGetExpiringUser()
+	{
+
+		$test1 = Admin_user_logic::get_expiring_user( "" );
+
+		$this->assertTrue( empty($test1) );
+		$this->assertTrue( is_array($test1) );
+		$this->assertEquals($test1, array());
+
+		$test1 = Admin_user_logic::get_expiring_user( 0 );
+
+		$this->assertTrue( empty($test1) );
+		$this->assertTrue( is_array($test1) );
+		$this->assertEquals($test1, array());
+
+		$test1 = Admin_user_logic::get_expiring_user( array() );
+
+		$this->assertTrue( empty($test1) );
+		$this->assertTrue( is_array($test1) );
+		$this->assertEquals($test1, array());
+
+	}
+
+	public function testGetUserByStoreId()
+	{
+
+		$test1 = Admin_user_logic::get_user_by_store_id( "" );
+
+		$this->assertTrue( empty($test1) );
+		$this->assertTrue( is_array($test1) );
+		$this->assertEquals($test1, array());
+
+		$test1 = Admin_user_logic::get_user_by_store_id( 0 );
+
+		$this->assertTrue( empty($test1) );
+		$this->assertTrue( is_array($test1) );
+		$this->assertEquals($test1, array());
+
+		$test1 = Admin_user_logic::get_user_by_store_id( array() );
+
+		$this->assertTrue( empty($test1) );
+		$this->assertTrue( is_array($test1) );
+		$this->assertEquals($test1, array());
+
+	}
+
 }

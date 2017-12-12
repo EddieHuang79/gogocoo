@@ -78,35 +78,16 @@ class PurchaseController extends Controller
 
         $purchase_extra_column = Purchase_logic::get_purchase_extra_column();
 
-        if (!empty($_POST["purchase_id"])) 
-        {
-            
-            $purchase_id = intval($_POST["purchase_id"]);
-
-            $data = Purchase_logic::update_format( $_POST );
-            
-            Purchase_logic::edit_purchase( $data, $purchase_id );
-
-            $data = Purchase_logic::update_extra_format( $_POST, $purchase_extra_column);
-
-            Purchase_logic::edit_purchase_extra_data( $data, $purchase_id );        
-
-        }
-        else
+        if ( isset($_POST["product_name"]) ) 
         {
 
-            if ( isset($_POST["product_name"]) ) 
-            {
+            $data = Purchase_logic::insert_format( $_POST );
 
-                $data = Purchase_logic::insert_format( $_POST );
+            $purchase_id = Purchase_logic::add_purchase( $data );
 
-                $purchase_id = Purchase_logic::add_purchase( $data );
+            $extra_data = Purchase_logic::insert_extra_format( $_POST, $purchase_extra_column, $purchase_id );
 
-                $extra_data = Purchase_logic::insert_extra_format( $_POST, $purchase_extra_column, $purchase_id );
-
-                Purchase_logic::add_extra_purchase( $extra_data );
-
-            }
+            Purchase_logic::add_extra_purchase( $extra_data );
 
         }
 
@@ -144,6 +125,34 @@ class PurchaseController extends Controller
         $data = compact('assign_page', 'purchase', 'in_warehouse_category_data', 'site', 'has_spec', 'purchase_extra_column', 'select_option');
 
         return view('webbase/content', $data);
+
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, $id)
+    {
+
+        $purchase_extra_column = Purchase_logic::get_purchase_extra_column();
+
+        $purchase_id = intval($id);
+
+        $_POST["purchase_id"] = $purchase_id;
+
+        $data = Purchase_logic::update_format( $_POST );
+
+        Purchase_logic::edit_purchase( $data, $purchase_id );
+
+        $data = Purchase_logic::update_extra_format( $_POST, $purchase_extra_column);
+
+        Purchase_logic::edit_purchase_extra_data( $data, $purchase_id );   
+
+        return redirect("/purchase");
 
     }
 

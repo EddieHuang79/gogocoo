@@ -14,7 +14,7 @@ class Mall extends Migration
     protected $service_table = "service";
     protected $role_service_table = "role_service_relation";
     protected $mall_product_table = "mall_product";
-    protected $mall_shop_spec_table = "mall_shop_spec";
+    protected $mall_shop_promo_date_table = "mall_shop_promo_date";
     protected $mall_record_table = "mall_record";
     protected $mall_shop_table = "mall_shop";
     protected $mall_product_rel_table = "mall_product_rel";
@@ -47,21 +47,24 @@ class Mall extends Migration
             $table->engine = 'InnoDB';
         });   
 
-        // // 商品規格
+        // 商品規格
 
         // #   date_spec - unit: month
 
-        // Schema::create($this->mall_shop_spec_table, function (Blueprint $table) {
-        //     $table->increments('id');
-        //     $table->integer('mall_shop_id')->unsigned();
-        //     $table->integer('cost');
-        //     $table->integer('date_spec');
-        //     $table->engine = 'InnoDB';
-        // });    
+        Schema::create($this->mall_shop_promo_date_table, function (Blueprint $table) {
+            $table->increments('id');
+            $table->integer('mall_shop_id')->unsigned();
+            $table->integer('cost');
+            $table->integer('status');
+            $table->dateTime('start_date');
+            $table->dateTime('end_date');
+            $table->timestamps();
+            $table->engine = 'InnoDB';
+        });    
 
-        // Schema::table($this->mall_shop_spec_table, function($table) {
-        //    $table->foreign('mall_shop_id')->references('id')->on($this->mall_shop_table);
-        // });
+        Schema::table($this->mall_shop_promo_date_table, function($table) {
+           $table->foreign('mall_shop_id')->references('id')->on($this->mall_shop_table);
+        });
 
         // 購買紀錄
 
@@ -290,7 +293,7 @@ class Mall extends Migration
         Schema::dropIfExists($this->mall_product_rel_table);
         Schema::dropIfExists($this->mall_product_table);
         Schema::dropIfExists($this->mall_record_table);
-        // Schema::dropIfExists($this->mall_shop_spec_table);
+        Schema::dropIfExists($this->mall_shop_promo_date_table);
         Schema::dropIfExists($this->mall_shop_table);
 
         // role_service

@@ -136,110 +136,61 @@ class UserController extends Basetool
 
         $txt = Web_cht::get_txt();
 
-        if (!empty($_POST["user_id"])) 
+        // parents_id
+
+        $Login_user = Session::get('Login_user');
+
+        $_POST["parents_id"] = isset($Login_user["user_id"]) ? $Login_user["user_id"] : 0 ;
+        
+        $_POST["social_register"] = 0;
+
+
+        try
         {
-            
-            try{
 
-                $ErrorMsg = Admin_user_logic::account_verify( $_POST );
+            // verify process
 
-                if (!empty($ErrorMsg)) 
-                {
+            $ErrorMsg = Admin_user_logic::account_verify( $_POST );
 
-                    throw new \Exception( json_encode($ErrorMsg) );
-
-                }
-
-                // user
-
-                $data = Admin_user_logic::update_format( $_POST );
-
-                $user_id = intval($_POST["user_id"]);
-
-                Admin_user_logic::edit_user( $data, $user_id );
-
-                // user role delete add
-
-                Admin_user_logic::delete_user_role( $user_id );
-
-                Redis_tool::del_user_role( $user_id );
-
-                $data = Admin_user_logic::add_user_role_format( $user_id, $_POST["auth"] );
-
-                Admin_user_logic::add_user_role( $data );
-
-
-            }
-            catch(\Exception $e)
+            if (!empty($ErrorMsg)) 
             {
 
-                Session::put( 'ErrorMsg', $_this->show_error_to_user( json_decode($e->getMessage() ,true) ) );
+                throw new \Exception( json_encode($ErrorMsg) );
 
-                return back();
+            }
+
+            // user
+
+            $data = Admin_user_logic::insert_format( $_POST );
+
+            $user_id = Admin_user_logic::add_user( $data );
+
+            // user role add
+
+            $data = Admin_user_logic::add_user_role_format( $user_id, $_POST["auth"] );
+
+            Admin_user_logic::add_user_role( $data );
+
+            $date_spec = isset($_POST["date_spec"]) && !empty($_POST["date_spec"]) ? trim($_POST["date_spec"]) : "" ;
+
+            // 紀錄價值服務啟用列表，免費不紀錄
+
+            if ( !empty($date_spec) ) 
+            {
+
+                Shop_logic::add_use_record( (int)$user_id, $date_spec, $type = 1 );
 
             }
 
         }
-        else
+        catch(\Exception $e)
         {
 
-            // parents_id
+            Session::put( 'OriData', $_POST );
 
-            $Login_user = Session::get('Login_user');
+            Session::put( 'ErrorMsg', $_this->show_error_to_user( json_decode($e->getMessage() ,true) ) );
 
-            $_POST["parents_id"] = isset($Login_user["user_id"]) ? $Login_user["user_id"] : 0 ;
-            
-            $_POST["social_register"] = 0;
-
-
-            try{
-
-                // verify process
-
-                $ErrorMsg = Admin_user_logic::account_verify( $_POST );
-
-                if (!empty($ErrorMsg)) 
-                {
-
-                    throw new \Exception( json_encode($ErrorMsg) );
-
-                }
-
-                // user
-
-                $data = Admin_user_logic::insert_format( $_POST );
-
-                $user_id = Admin_user_logic::add_user( $data );
-
-                // user role add
-
-                $data = Admin_user_logic::add_user_role_format( $user_id, $_POST["auth"] );
-
-                Admin_user_logic::add_user_role( $data );
-
-                $date_spec = isset($_POST["date_spec"]) && !empty($_POST["date_spec"]) ? trim($_POST["date_spec"]) : "" ;
-
-                // 紀錄價值服務啟用列表，免費不紀錄
-
-                if ( !empty($date_spec) ) 
-                {
-
-                    Shop_logic::add_use_record( (int)$user_id, $date_spec, $type = 1 );
-
-                }
-
-            }
-            catch(\Exception $e)
-            {
-
-                Session::put( 'OriData', $_POST );
-
-                Session::put( 'ErrorMsg', $_this->show_error_to_user( json_decode($e->getMessage() ,true) ) );
-
-                return back();
-
-            }
-
+            return back();
 
         }
 
@@ -306,6 +257,57 @@ class UserController extends Basetool
      */
     public function update(Request $request, $id)
     {
+
+
+        $_this = new self();
+
+        $txt = Web_cht::get_txt();
+            
+        try
+        {
+
+            $ErrorMsg = Admin_user_logic::account_verify( $_POST );
+
+            if (!empty($ErrorMsg)) 
+            {
+
+                throw new \Exception( json_encode($ErrorMsg) );
+
+            }
+
+            // user
+
+            $data = Admin_user_logic::update_format( $_POST );
+
+            $user_id = intval($id);
+
+            Admin_user_logic::edit_user( $data, $user_id );
+
+            // user role delete add
+
+            Admin_user_logic::delete_user_role( $user_id );
+
+            Redis_tool::del_user_role( $user_id );
+
+            $data = Admin_user_logic::add_user_role_format( $user_id, $_POST["auth"] );
+
+            Admin_user_logic::add_user_role( $data );
+
+
+        }
+        catch(\Exception $e)
+        {
+
+            Session::put( 'ErrorMsg', $_this->show_error_to_user( json_decode($e->getMessage() ,true) ) );
+
+            return back();
+
+        }
+
+
+        $page_query = $_this->made_search_query();
+
+        return redirect("/user".$page_query);
 
     }
 

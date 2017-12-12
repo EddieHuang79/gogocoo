@@ -9,13 +9,10 @@
 				<div class="box-header">
 					<h3 class="box-title">{{ $txt["role_input"] }}</h3>
 				</div>
-				<form action="/role" method="POST">
+				<form @if( isset($role->id) ) action="/role/{{ $role->id }}" @else action="/role" @endif method="POST">
 					<div class="box-body">
 						<div class="form-group">
 							<label>{{ $txt["role_name"] }}</label>
-							@if(!empty($role))
-							<input type="hidden" name="role_id" value="{{ $role->id }}">						
-							@endif
 							<input type="text" name="name" class="form-control" value="@if(!empty($role)){{ $role->name }}@endif" required/>
 						</div>
 						<div class="form-group">
@@ -47,7 +44,10 @@
 						</div>
 						<div class="form-group">
 							<th colspan="2"><input type="submit" class="btn btn-primary"  value="{{ $txt['send'] }}"/></label>
-						</div>															
+						</div>				
+						@if(!empty($role))
+							<input type="hidden" name="_method" value="patch">				
+						@endif												
 						<input type="hidden" name="_token" value="{{ csrf_token() }}">
 					</div>
 				</form>

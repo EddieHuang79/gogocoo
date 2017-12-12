@@ -280,4 +280,33 @@ class Admin_user
 
    }
 
+   public static function get_expiring_user( $day = 27 )
+   {
+
+      $_this = new self;
+
+      $result = DB::table($_this->table)
+                  ->select('account','real_name')
+                  ->whereRaw("DATEDIFF(NOW(),created_at)  = " . $day)
+                  ->get();
+
+      return $result; 
+
+   }
+
+   public static function get_user_by_store_id( $store_id )
+   {
+
+      $_this = new self;
+
+      $result = DB::table($_this->table)
+                  ->leftJoin($_this->store, $_this->store.'.user_id', '=', $_this->table.'.id')
+                  ->select($_this->table.'.id','account','real_name')
+                  ->where($_this->store.".id", "=", $store_id)
+                  ->first();
+
+      return $result; 
+
+   }
+
 }

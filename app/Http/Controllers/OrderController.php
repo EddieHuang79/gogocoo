@@ -19,13 +19,13 @@ class OrderController extends Controller
     public function index(Request $request)
     {
 
-        $order_extra_column = order_logic::get_order_extra_column();
+        $order_extra_column = Order_logic::get_order_extra_column();
 
         $select_option = Option_logic::get_select_option( $order_extra_column );
 
-        $order_data = order_logic::get_order_data( $_GET );
+        $order_data = Order_logic::get_order_data( $_GET );
 
-        $order_list = order_logic::get_order_list( $order_data, $select_option );
+        $order_list = Order_logic::get_order_list( $order_data, $select_option );
 
         $assign_page = "order/order_list";
 
@@ -53,7 +53,7 @@ class OrderController extends Controller
 
         $has_spec = Product_logic::is_spec_function_active();
 
-        $order_extra_column = order_logic::get_order_extra_column();
+        $order_extra_column = Order_logic::get_order_extra_column();
 
         $select_option = Option_logic::get_select_option( $order_extra_column );
 
@@ -75,38 +75,18 @@ class OrderController extends Controller
     public function store(Request $request)
     {
 
-        $order_extra_column = order_logic::get_order_extra_column();
+        $order_extra_column = Order_logic::get_order_extra_column();
 
-
-        if (!empty($_POST["order_id"])) 
-        {
-            
-            $order_id = intval($_POST["order_id"]);
-
-            $data = order_logic::update_format( $_POST );
-            
-            order_logic::edit_order( $data, $order_id );
-
-            $data = order_logic::update_extra_format( $_POST, $order_extra_column);
-
-            order_logic::edit_order_extra_data( $data, $order_id );        
-
-        }
-        else
+        if ( isset($_POST["product_name"]) ) 
         {
 
-            if ( isset($_POST["product_name"]) ) 
-            {
+            $data = Order_logic::insert_format( $_POST );
 
-                $data = order_logic::insert_format( $_POST );
+            $order_id = Order_logic::add_order( $data );
 
-                $order_id = order_logic::add_order( $data );
+            $extra_data = Order_logic::insert_extra_format( $_POST, $order_extra_column, $order_id );
 
-                $extra_data = order_logic::insert_extra_format( $_POST, $order_extra_column, $order_id );
-
-                order_logic::add_extra_order( $extra_data );
-
-            }
+            Order_logic::add_extra_order( $extra_data );
 
         }
 
@@ -129,11 +109,11 @@ class OrderController extends Controller
 
         $has_spec = Product_logic::is_spec_function_active();
 
-        $order = order_logic::get_single_order_data( (int)$id );  
+        $order = Order_logic::get_single_order_data( (int)$id );  
 
         $order = isset($order[0]) && is_object($order[0]) ? get_object_vars($order[0]) : array();  
 
-        $order_extra_column = order_logic::get_order_extra_column();
+        $order_extra_column = Order_logic::get_order_extra_column();
 
         $select_option = Option_logic::get_select_option( $order_extra_column );
 
@@ -145,13 +125,39 @@ class OrderController extends Controller
 
     }
 
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, $id)
+    {
+
+        $order_extra_column = Order_logic::get_order_extra_column();
+
+        $order_id = intval($id);
+
+        $data = Order_logic::update_format( $_POST );
+        
+        Order_logic::edit_order( $data, $order_id );
+
+        $data = Order_logic::update_extra_format( $_POST, $order_extra_column);
+
+        Order_logic::edit_order_extra_data( $data, $order_id ); 
+
+        return redirect("/order");
+
+    }
+
     public function verify()
     {
 
         if ( !empty($_POST["order_id"]) ) 
         {
 
-            order_logic::order_verify( $_POST["order_id"] );
+            Order_logic::order_verify( $_POST["order_id"] );
 
         }
 

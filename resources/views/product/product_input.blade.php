@@ -9,7 +9,7 @@
 				<div class="box-header">
 					<h3 class="box-title">{{ $txt["product_input"] }}</h3>
 				</div>
-				<form action="/product" method="POST">
+				<form @if( isset($product['product_id']) ) action="/product/{{ $product['product_id'] }}" @else action="/product" @endif method="POST">
 					<div class="box-body">
 						<div class="form-group">
 							<label>{{ $txt["product_name"] }}</label>
@@ -56,7 +56,10 @@
 						</div>
 						<div class="form-group">
 							<th colspan="2"><input type="submit" class="btn btn-primary" value="{{ $txt['send'] }}"/></label>
-						</div>															
+						</div>			
+						@if(!empty($product))
+							<input type="hidden" name="_method" value="patch">				
+						@endif														
 						<input type="hidden" name="_token" value="{{ csrf_token() }}">
 					</div>
 				</form>

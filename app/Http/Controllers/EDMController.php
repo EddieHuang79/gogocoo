@@ -68,39 +68,20 @@ class EDMController extends Controller
     public function store(Request $request)
     {
 
-    	if ( $request->hasFile('edm_image') ) 
-    	{
-
-	    	Storage::makeDirectory("edm_image");
-
-	    	$_POST['edm_image'] = $request->file('edm_image')->store('edm_image');
-
-    	}
-
-        if (!empty($_POST["edm_id"])) 
-        {
-            
-            $data = Edm_logic::update_format( $_POST );
-
-            $data = Edm_logic::content_handle( $data );
-
-            $edm_id = intval($_POST["edm_id"]);
-
-            Edm_logic::edit_edm( $data, $edm_id );
-
-        }
-        else
+        if ( isset($_POST["subject"]) ) 
         {
 
-            if ( isset($_POST["subject"]) ) 
+            $data = Edm_logic::insert_format( $_POST );
+
+            $edm_id = Edm_logic::add_edm( $data );
+
+            if ( isset($_POST["mall_shop_id"]) ) 
             {
 
-                $data = Edm_logic::insert_format( $_POST );
+                $rel_data = Edm_logic::add_edm_rel_format( $_POST["mall_shop_id"], $edm_id );
 
-                $data = Edm_logic::content_handle( $data );
-
-                $edm_id = Edm_logic::add_edm( $data );
-
+                Edm_logic::add_edm_rel( $rel_data );
+            
             }
 
         }
@@ -140,11 +121,13 @@ class EDMController extends Controller
 
     	$site = URL::to('/');
 
-        $edm = Edm_logic::get_single_edm( (int)$id ); 
+        $edm = Edm_logic::get_single_edm( (int)$id );
+
+        $edm_rel = Edm_logic::get_edm_rel( (int)$id );
 
         $assign_page = "edm/edm_input";
 
-        $data = compact('assign_page', 'edm', 'site');
+        $data = compact('assign_page', 'edm', 'site', 'edm_rel');
 
         return view('webbase/content', $data);
 
@@ -159,7 +142,35 @@ class EDMController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+
+        $data = Edm_logic::update_format( $_POST );
+
+        $edm_id = intval($id);
+
+        Edm_logic::edit_edm( $data, $edm_id );
+
+        if ( isset($_POST["mall_shop_id"]) ) 
+        {
+
+            Edm_logic::del_edm_rel( $edm_id );
+
+            $rel_data = Edm_logic::add_edm_rel_format( $_POST["mall_shop_id"], $edm_id );
+
+            Edm_logic::add_edm_rel( $rel_data );
+        
+        }
+
+        if ( $request->hasFile('edm_list') ) 
+        {
+
+            Storage::makeDirectory("edm_list");
+
+            $request->file('edm_list')->storeAs( 'edm_list', $edm_id . ".txt" );
+
+        }
+
+        return redirect("/edm");
+
     }
 
     /**
@@ -283,6 +294,23 @@ class EDMController extends Controller
     {
 
         $pathToFile = storage_path('app/edm_list/edm_example.txt');
+
+        if ( file_exists($pathToFile) === false )
+        {
+
+            $data = array(
+                            "aaa@gmail.com,Mr.A",
+                            "bbb@gmail.com,Mr.B",
+                            "ccc@gmail.com,Mr.C",
+                            "ddd@gmail.com,Mr.D",
+                            "eee@gmail.com,Mr.E",
+                        );
+
+            $new_content = implode("\n", $data);
+
+            file_put_contents($pathToFile, $new_content);
+
+        }
 
         return response()->download($pathToFile);
 

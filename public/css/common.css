@@ -264,7 +264,7 @@
 }
 
 .mall_product_name,.mall_product_option,.mall_product_cost,.mall_product_cost,.mall_product_btn{
-	height: 15%;
+	height: 18%;
 }
 
 .mall_product_option,.popup_option{
@@ -401,6 +401,11 @@ img {
 	display: none;
 }
 
-.chooseType{
+.promo_price{
 	display: none;
 }
+
+.line-through{
+	text-decoration: line-through;
+}
+

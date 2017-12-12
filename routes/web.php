@@ -199,3 +199,6 @@ Route::post('edm_cancel', ['as'=>'edm.cancel','uses'=>'EDMController@cancel']);
 
 Route::get('edm_example', ['as'=>'edm.edm_example','uses'=>'EDMController@edm_example']);
 
+// mall promo price
+
+Route::resource('promo', 'PromoPriceController');

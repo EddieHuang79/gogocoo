@@ -9,7 +9,7 @@
 				<div class="box-header">
 					<h3 class="box-title">{{ $txt["mall_product_input"] }}</h3>
 				</div>
-				<form action="/mall" method="POST" enctype="multipart/form-data" id="mallForm">
+				<form @if( isset($mall->id) ) action="/mall/{{ $mall->id }}" @else action="/mall" @endif action="/mall" method="POST" enctype="multipart/form-data" id="mallForm">
 					<div class="box-body">
 						<div class="form-group">
 							<label>{{ $txt["product_name"] }}</label>
@@ -99,7 +99,9 @@
 						<div class="form-group">
 							<label><input type="button" class="btn btn-primary" value="{{ $txt['send'] }}" onclick="MallSubmit();"/></label>
 						</div>															
-						<input type="hidden" name="mall_shop_id" value="@if(!empty($mall)){{ $mall->id }}@endif">
+						@if(!empty($mall))
+							<input type="hidden" name="_method" value="patch">				
+						@endif	
 						<input type="hidden" name="_token" value="{{ csrf_token() }}">
 					</div>
 				</form>

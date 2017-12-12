@@ -9,13 +9,10 @@
 				<div class="box-header">
 					<h3 class="box-title">{{ $txt["service_input"] }}</h3>
 				</div>
-				<form action="/service" method="POST">
+				<form @if( isset($service->id) ) action="/service/{{ $service->id }}" @else action="/service" @endif method="POST">
 					<div class="box-body">
 						<div class="form-group">
 							<label>{{ $txt["service_name"] }}</label>
-							@if(!empty($service))
-							<input type="hidden" name="service_id" value="{{ $service->id }}">						
-							@endif
 							<input type="text" name="name" class="form-control" value="@if(!empty($service)){{ $service->name }}@endif"/>
 						</div>
 						<div class="form-group">
@@ -58,7 +55,10 @@
 						</div>
 						<div class="form-group">
 							<th colspan="2"><input type="submit" class="btn btn-primary" value="{{ $txt['send'] }}"/></label>
-						</div>															
+						</div>
+						@if(!empty($service))
+							<input type="hidden" name="_method" value="patch">				
+						@endif											
 						<input type="hidden" name="_token" value="{{ csrf_token() }}">
 					</div>
 				</form>

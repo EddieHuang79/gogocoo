@@ -8,9 +8,11 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use App\logic\Web_cht;
 
-class Edm extends Mailable
+class RegisterMail extends Mailable
 {
     use Queueable, SerializesModels;
+
+    protected $init_data = "";
 
     /**
      * Create a new message instance.
@@ -19,7 +21,7 @@ class Edm extends Mailable
      */
     public function __construct($init)
     {
-
+    
         $this->init_data = $init;
 
     }
@@ -32,32 +34,15 @@ class Edm extends Mailable
     public function build()
     {
 
-        $EdmData = $this->init_data;
+        $Login_user = $this->init_data;
 
         $txt = Web_cht::get_txt();
 
-        switch ( $EdmData["type"] ) 
-        {
+        $data = ['Login_user' => $Login_user, 'txt' => $txt];
 
-            case 4:
+        $subject = "恭喜您!  " . $txt["Site"] . "註冊成功通知";
 
-                $subject =  "歡迎加入" . $txt["Site"] . "，領取專屬您的好康禮!!";
-
-                $send_template = "edm.edm_register_template4";
-            
-                break;
-            
-            case 5:
-
-                $subject = $txt["Site"] . "新服務邀請";
-
-                $send_template = "edm.edm_register_template5";
-                
-                break;
-        
-        }
-
-        $data = ['mall' => $EdmData["product_data"], 'real_name' => $EdmData["mail_list"]["real_name"], 'txt' => $txt];
+        $send_template = "edm.edm_register_template1";
 
         return $this->from('gogocoo@gogocoo.com')
                     ->subject( $subject )

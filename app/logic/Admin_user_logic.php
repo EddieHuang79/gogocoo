@@ -694,4 +694,43 @@ class Admin_user_logic extends Basetool
 
    }
 
+
+   // 找出距離免費試用到期日倒數三天的帳號
+
+   public static function get_expiring_user( $day = 27 )
+   {
+
+      $result = array();
+
+      if ( !empty($day) && is_int($day) ) 
+      {
+   
+         $result = Admin_user::get_expiring_user( $day );
+   
+      }
+
+      return $result;
+
+   }
+
+
+   // 用店鋪編號找到使用者
+
+   public static function get_user_by_store_id( $store_id )
+   {
+
+      $result = array();
+
+      if ( !empty($store_id) && is_int($store_id) ) 
+      {
+   
+         $result = Admin_user::get_user_by_store_id( $store_id );
+   
+      }
+
+      return $result;
+
+   }
+
+
 }

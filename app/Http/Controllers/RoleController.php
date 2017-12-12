@@ -82,52 +82,24 @@ class RoleController extends Basetool
 
         $_this = new self();
 
-        if (!empty($_POST["role_id"])) 
+        if ( isset($_POST["name"]) ) 
         {
-            
+
             // role
 
-            $data = Role_logic::update_format( $_POST );
+            $data = Role_logic::insert_format( $_POST );
+         
+            $role_id = Role_logic::add_role( $data );
 
-            $role_id = intval($_POST["role_id"]);
-
-            Role_logic::edit_role( $data, $role_id );
-
-            // role service delete add
-
-            Role_logic::delete_role_service( $role_id ) ;
-
+            // role service add
+            
             if (!empty($_POST["auth"])) 
             {
+
                 $data = Role_logic::add_role_service_format( $role_id, 0, $_POST["auth"] );
 
-                Role_logic::add_role_service( $data );
-            }
-
-        }
-        else
-        {
-
-            if ( isset($_POST["name"]) ) 
-            {
-
-                // role
-
-                $data = Role_logic::insert_format( $_POST );
-             
-                $role_id = Role_logic::add_role( $data );
-
-                // role service add
-                
-                if (!empty($_POST["auth"])) 
-                {
-
-                    $data = Role_logic::add_role_service_format( $role_id, 0, $_POST["auth"] );
-
-                    $data = Role_logic::add_role_service( $data );
-                
-                }
-
+                $data = Role_logic::add_role_service( $data );
+            
             }
 
         }
@@ -185,7 +157,37 @@ class RoleController extends Basetool
      */
     public function update(Request $request, $id)
     {
-        //
+
+
+        $_this = new self();
+
+        // role
+
+        $_POST["role_id"] = intval( $id );
+
+        $data = Role_logic::update_format( $_POST );
+
+        $role_id = $_POST["role_id"];
+
+        Role_logic::edit_role( $data, $role_id );
+
+        // role service delete add
+
+        Role_logic::delete_role_service( $role_id ) ;
+
+        if (!empty($_POST["auth"])) 
+        {
+
+            $data = Role_logic::add_role_service_format( $role_id, 0, $_POST["auth"] );
+
+            Role_logic::add_role_service( $data );
+
+        }
+
+        $page_query = $_this->made_search_query();
+
+        return redirect("/role".$page_query);
+
     }
 
     /**

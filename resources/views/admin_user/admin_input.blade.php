@@ -16,7 +16,7 @@
 				<div class="box-header">
 					<h3 class="box-title">{{ $txt["admin_user_input"] }}</h3>
 				</div>
-				<form action="/user" method="POST" role="form">
+				<form @if( isset($user->id) ) action="/user/{{ $user->id }}" @else action="/user" @endif method="POST" role="form">
 					<div class="box-body">
 						<div class="form-group">
 							<label>{{ $txt["account"] }}</label>
@@ -83,7 +83,10 @@
 						@endif
 						<div class="form-group">
 							<label><input type="submit" class="btn btn-primary" value="{{ $txt['send'] }}"/></label>
-						</div>															
+						</div>
+						@if(!empty($user))
+							<input type="hidden" name="_method" value="patch">				
+						@endif												
 						<input type="hidden" name="_token" value="{{ csrf_token() }}">
 		        	</div>
 				</form>

@@ -28,7 +28,8 @@
 				<div class="mall_child_product">{{ $txt['include_service'] }}</div>			
 				<div class="mall_product_option">
 					<div class="mall_product_spec">
-						{{ $txt['cost_unit'] }} <label class="cost">  </label>
+						<div> {{ $txt['cost_unit'] }} <label class="cost">  </label>  </div>
+						<div class="promo_price"> {{ $txt['promo_price'] }} {{ $txt['cost_unit'] }} <label class="promo_price">  </label>  </div>
 					</div>
 					<div class="mall_product_number">
 						<div class="number_btn minus" target="[name='mall_product_number']">-</div> <div><input type="text" name="mall_product_number" value="1" size="1" style="width: 30px; text-align: center;" readonly="true"></div> <div class="number_btn plus" target="[name='mall_product_number']">+</div>

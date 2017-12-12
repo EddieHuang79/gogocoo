@@ -376,23 +376,6 @@ class ShopLogic extends TestCase
 
 	}
 
-	public function testCheckSource()
-	{
-
-		$test1 = Shop_logic::check_source( "" );
-
-		$this->assertFalse( $test1 );
-
-		$test1 = Shop_logic::check_source( 0 );
-
-		$this->assertFalse( $test1 );
-
-		$test1 = Shop_logic::check_source( array() );
-
-		$this->assertFalse( $test1 );
-
-	}
-
 	public function testPaymentDataFormat()
 	{
 
@@ -502,6 +485,74 @@ class ShopLogic extends TestCase
 		$this->assertFalse( $test1 );
 
 		$test1 = Shop_logic::active_mall_service_process( array() );
+
+		$this->assertFalse( $test1 );
+
+	}
+
+	public function testIsFirstBuy()
+	{
+
+		$test1 = Shop_logic::is_first_buy( "" );
+
+		$this->assertFalse( $test1 );
+
+		$test1 = Shop_logic::is_first_buy( 0 );
+
+		$this->assertFalse( $test1 );
+
+		$test1 = Shop_logic::is_first_buy( array() );
+
+		$this->assertFalse( $test1 );
+
+	}
+
+	public function testAddFirstBuyGift()
+	{
+
+		$test1 = Shop_logic::add_first_buy_gift( "" );
+
+		$this->assertFalse( $test1 );
+
+		$test1 = Shop_logic::add_first_buy_gift( 0 );
+
+		$this->assertFalse( $test1 );
+
+		$test1 = Shop_logic::add_first_buy_gift( array() );
+
+		$this->assertFalse( $test1 );
+
+	}
+
+	public function testSendFirstBuyMail()
+	{
+
+		$test1 = Shop_logic::send_first_buy_mail( "" );
+
+		$this->assertFalse( $test1 );
+
+		$test1 = Shop_logic::send_first_buy_mail( 0 );
+
+		$this->assertFalse( $test1 );
+
+		$test1 = Shop_logic::send_first_buy_mail( array() );
+
+		$this->assertFalse( $test1 );
+
+	}
+
+	public function testFirstBuyGiftLogic()
+	{
+
+		$test1 = Shop_logic::first_buy_gift_logic( "" );
+
+		$this->assertFalse( $test1 );
+
+		$test1 = Shop_logic::first_buy_gift_logic( 0 );
+
+		$this->assertFalse( $test1 );
+
+		$test1 = Shop_logic::first_buy_gift_logic( array() );
 
 		$this->assertFalse( $test1 );
 

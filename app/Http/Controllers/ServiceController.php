@@ -91,46 +91,19 @@ class ServiceController extends Basetool
 
         $_this = new self();
 
-        if (!empty($_POST["service_id"])) 
+        // service
+
+        $data = Service_logic::insert_format( $_POST );
+     
+        $service_id = Service_logic::add_service( $data );
+
+        // user role add
+
+        if (!empty($_POST["auth"])) 
         {
-            
-            // service
+            $data = Role_logic::add_role_service_format( 0, $service_id, $_POST["auth"] );
 
-            $data = Service_logic::update_format( $_POST );
-
-            $service_id = intval($_POST["service_id"]);
-
-            Service_logic::edit_service( $data, $service_id );
-
-            // service role delete add
-
-            Role_logic::delete_role_service( 0, $service_id );
-            
-            if (!empty($_POST["auth"])) 
-            {
-                $data = Role_logic::add_role_service_format( 0, $service_id, $_POST["auth"] );
-
-                Role_logic::add_role_service( $data );
-            }
-
-        }
-        else
-        {
-            // service
-
-            $data = Service_logic::insert_format( $_POST );
-         
-            $service_id = Service_logic::add_service( $data );
-
-            // user role add
-
-            if (!empty($_POST["auth"])) 
-            {
-                $data = Role_logic::add_role_service_format( 0, $service_id, $_POST["auth"] );
-
-                Role_logic::add_role_service( $data );
-            }
-
+            Role_logic::add_role_service( $data );
         }
 
         Redis_tool::del_menu_data_all();
@@ -186,7 +159,36 @@ class ServiceController extends Basetool
      */
     public function update(Request $request, $id)
     {
-        //
+
+        $_this = new self();
+ 
+        // service
+
+        $_POST["service_id"] = intval($id);
+
+        $data = Service_logic::update_format( $_POST );
+
+        $service_id = $_POST["service_id"];
+
+        Service_logic::edit_service( $data, $service_id );
+
+        // service role delete add
+
+        Role_logic::delete_role_service( 0, $service_id );
+        
+        if (!empty($_POST["auth"])) 
+        {
+            $data = Role_logic::add_role_service_format( 0, $service_id, $_POST["auth"] );
+
+            Role_logic::add_role_service( $data );
+        }
+
+        Redis_tool::del_menu_data_all();
+
+        $page_query = $_this->made_search_query();
+
+        return redirect("/service".$page_query);
+
     }
 
     /**

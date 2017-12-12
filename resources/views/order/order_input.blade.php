@@ -9,7 +9,7 @@
 				<div class="box-header">
 					<h3 class="box-title">{{ $txt["order_input"] }}</h3>
 				</div>
-				<form action="/order" method="POST">
+				<form @if( isset($order['id']) ) action="/order/{{ $order['id'] }}" @else action="/order" @endif method="POST">
 					<div class="box-body">
 						<div class="form-group">
 							<label>{{ $txt["product_name"] }}</label>
@@ -60,14 +60,30 @@
 									@if( in_array( $row['type'], array('textarea') ) )
 										<textarea name="{{ $row['name'] }}" class="form-control" placeholder="{{ $txt[$row['name'].'_input'] }}" cols="50" rows="5">@if(!empty($order)){{ $order[$row['name']] }}@endif</textarea>
 									@endif
+									@if( in_array( $row['type'], array('radio') ) )
+										<div class="form-group">
+											<div class="radio">
+												<label>
+													<input type="radio" value="1" name="{{ $row['name'] }}" @if( !empty($order) && $order[$row['name']] == 1 ) checked  @endif required/>{{ $txt["yes"] }}									
+												</label>
+											</div>
+											<div class="radio">
+												<label>								
+													<input type="radio" value="2" name="{{ $row['name'] }}" @if( !empty($order) && $order[$row['name']] == 2 ) checked  @endif required/>{{ $txt["no"] }}
+												</label>
+											</div>
+										</div>
+									@endif
 								</div>
 								@endif
 							@endforeach
 						@endif
 						<div class="form-group">
 							<label><input type="submit" class="btn btn-primary" value="{{ $txt['send'] }}"/></label>
-						</div>															
-						<input type="hidden" name="order_id" value="@if(!empty($order)){{ $order['id'] }}@endif">
+						</div>
+						@if(!empty($order))
+							<input type="hidden" name="_method" value="patch">				
+						@endif												
 						<input type="hidden" name="_token" value="{{ csrf_token() }}">
 					</div>	
 				</form>

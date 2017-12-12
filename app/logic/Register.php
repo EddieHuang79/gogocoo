@@ -5,6 +5,7 @@ namespace App\logic;
 use App\logic\Admin_user_logic;
 use App\logic\Verifycode;
 use Illuminate\Support\Facades\Session;
+use App\logic\Edm_logic;
 
 class register extends Basetool
 {
@@ -251,5 +252,20 @@ class register extends Basetool
 
    }
 
+
+   // 寄送註冊信
+
+   public static function send_register_email()
+   {
+
+      $result = false;
+
+      $data = Edm_logic::insert_register_mail_format();
+
+      $result = Edm_logic::add_edm( $data );
+
+      return $result;
+
+   }
 
 }

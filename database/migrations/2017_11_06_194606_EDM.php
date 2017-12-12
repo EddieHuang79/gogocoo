@@ -13,7 +13,8 @@ class EDM extends Migration
     protected $user_role_table = "user_role_relation";
     protected $role_service_table = "role_service_relation";
     protected $edm_table = "edm";
-    protected $edm_list_table = "edm_list";
+    protected $edm_rel_table = "edm_rel";
+    protected $mall_shop = "mall_shop";
 
     /**
      * Run the migrations.
@@ -23,7 +24,7 @@ class EDM extends Migration
     public function up()
     {
 
-        // type 1: text, 2: image
+        // type 1: 註冊, 2: 倒數三天召回, 3: 註冊後優惠, 4: 優惠活動, 5: 新功能種子 
 
         // status 1: 草稿, 2: 待發送, 3: 已發送, 4: 取消
 
@@ -31,23 +32,24 @@ class EDM extends Migration
             $table->increments('id')->unique();
             $table->integer('type')->default(1)->index();
             $table->string('subject');
-            $table->string('content');
+            $table->string('data');
             $table->dateTime('send_time');
             $table->integer('status')->default(1);
             $table->timestamps();
             $table->engine = 'InnoDB';
         });
 
-        // Schema::create($this->edm_list_table, function (Blueprint $table) {
-        //     $table->increments('id')->unique();
-        //     $table->integer('edm_id')->unsigned();
-        //     $table->string('email');
-        //     $table->engine = 'InnoDB';
-        // });      
+        Schema::create($this->edm_rel_table, function (Blueprint $table) {
+            $table->increments('id')->unique();
+            $table->integer('edm_id')->unsigned();
+            $table->integer('mall_shop_id')->unsigned();
+            $table->engine = 'InnoDB';
+        });      
 
-        // Schema::table($this->edm_list_table, function($table) {
-        //    $table->foreign('edm_id')->references('id')->on($this->edm_table);
-        // });
+        Schema::table($this->edm_rel_table, function($table) {
+           $table->foreign('edm_id')->references('id')->on($this->edm_table);
+           $table->foreign('mall_shop_id')->references('id')->on($this->mall_shop);
+        });
 
 
         // service
@@ -139,7 +141,7 @@ class EDM extends Migration
 
         Storage::deleteDirectory("edm_image");
         
-        // Schema::dropIfExists($this->edm_list_table);
+        Schema::dropIfExists($this->edm_rel_table);
         
         Schema::dropIfExists($this->edm_table);
 

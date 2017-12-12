@@ -6,6 +6,8 @@ use App\model\Edm;
 use App\logic\Web_cht;
 use Illuminate\Support\Facades\Storage;
 use File;
+use App\logic\Promo_logic;
+use Illuminate\Support\Facades\Session;
 
 class Edm_logic extends Basetool
 {
@@ -43,19 +45,11 @@ class Edm_logic extends Basetool
 			$result = array(
 				"subject"       => isset($data["subject"]) ? trim($data["subject"]) : "",
 				"type"     		=> isset($data["type"]) ? intval($data["type"]) : 1,
-				"content"   	=> isset($data["content"]) ? $_this->strFilter($data["content"]) : "",
 				"send_time"     => isset($data["send_time"]) ? date("Y-m-d H:i:00", strtotime($data["send_time"])) : date("Y-m-d H:i:s"),
 				"status"        => 1,
 				"created_at"    => date("Y-m-d H:i:s"),
 				"updated_at"    => date("Y-m-d H:i:s")
 			);
-
-			if ( isset($data["edm_image"]) && !empty($data["edm_image"]) ) 
-			{
-
-				$result["content"] = $data["edm_image"];
-
-			}
 
 		}
 
@@ -83,20 +77,6 @@ class Edm_logic extends Basetool
 				"updated_at"    => date("Y-m-d H:i:s")
 			);
 
-			if ( isset($data["edm_image"]) && !empty($data["edm_image"]) ) 
-			{
-
-				$result["content"] = $data["edm_image"];
-
-			}
-
-			if ( isset($data["type"]) && $data["type"] == 1 ) 
-			{
-
-				$result["content"] = isset($data["content"]) ? $_this->strFilter($data["content"]) : "";
-			
-			}
-
 		}
 
 		return $result;
@@ -104,44 +84,88 @@ class Edm_logic extends Basetool
 	}
 
 
-	// 內容處理
+	// 新增註冊信格式
 
-	public static function content_handle( $data = array() )
+	public static function insert_register_mail_format()
 	{
 
-		$_this = new self();
+		$Login_user = Session::get( 'Login_user' );
+
+		$result = array(
+			"subject"       => "註冊完成信件: " . $Login_user["account"],
+			"data"       	=> json_encode($Login_user),
+			"type"     		=> 1,
+			"send_time"     => date("Y-m-d H:i:s"),
+			"status"        => 2,
+			"created_at"    => date("Y-m-d H:i:s"),
+			"updated_at"    => date("Y-m-d H:i:s")
+		);
+			
+		return $result;
+
+	}
+
+
+	// 新增召回信格式
+
+	public static function insert_notice_mail_format( $data )
+	{
 
 		$result = array();
 
-		if ( !empty($data) && is_array($data) && isset( $data["content"] ) ) 
+		if ( !empty($data) && is_object($data) ) 
 		{
 
-			switch ($data["type"]) 
-			{
+			$user = array(
+						"account" 		=> $data->account,
+						"real_name" 	=> $data->real_name
+					);
 
-				// 文字EDM
-
-				case 1:
-
-					$data["content"] = strpos($data["content"], "edm_image") === false ? $data["content"] : "" ;
-
-					break;
+			$result = array(
+				"subject"       => "倒數三天召回信件: " . $user["account"],
+				"data"       	=> json_encode($user),
+				"type"     		=> 2,
+				"send_time"     => date("Y-m-d H:i:s"),
+				"status"        => 2,
+				"created_at"    => date("Y-m-d H:i:s"),
+				"updated_at"    => date("Y-m-d H:i:s")
+			);
 				
-				// image
-
-				case 2:
-
-					$data["content"] = strpos($data["content"], "edm_image") !== false ? $data["content"] : "" ;
-
-					break;
-			
-			}
+			return $result;
 
 		}
 
-		$result = $data;
+	}
 
-		return $result;
+
+	// 新增首購禮格式
+
+	public static function insert_FirstBuyGift_mail_format( $data )
+	{
+
+		$result = array();
+
+		if ( !empty($data) && is_object($data) ) 
+		{
+
+			$user = array(
+						"account" 		=> $data->account,
+						"real_name" 	=> $data->real_name
+					);
+
+			$result = array(
+				"subject"       => "首購禮贈送信件: " . $user["account"],
+				"data"       	=> json_encode($user),
+				"type"     		=> 3,
+				"send_time"     => date("Y-m-d H:i:s"),
+				"status"        => 2,
+				"created_at"    => date("Y-m-d H:i:s"),
+				"updated_at"    => date("Y-m-d H:i:s")
+			);
+				
+			return $result;
+
+		}
 
 	}
 
@@ -233,9 +257,7 @@ class Edm_logic extends Basetool
 		if ( !empty($edm_id) && is_int($edm_id) ) 
 		{
 
-			$data = Edm::get_single_edm( $edm_id );
-
-			$result = $data;
+			$result = Edm::get_single_edm( $edm_id );
 
 		}
 
@@ -288,20 +310,7 @@ class Edm_logic extends Basetool
 	public static function get_edm_to_send()
 	{
 
-		$_this = new self;
-
-		$result = array();
-
-		$data = Edm::get_edm_to_send();
-
-		if ( !empty($data) && is_object($data) ) 
-		{
-
-			$result = $data;
-
-			$result->edm_list = $_this->get_send_list( $result->id );
-
-		}
+		$result = Edm::get_edm_to_send();
 
 		return $result;
 
@@ -331,7 +340,7 @@ class Edm_logic extends Basetool
 
 	// 取得名單
 
-	protected function get_send_list( $id )
+	public static function get_send_list( $id )
 	{
 
 		$result = array();
@@ -341,12 +350,144 @@ class Edm_logic extends Basetool
 
 			$data = File::get( storage_path('app/edm_list/' . $id . '.txt') );
 
-			$result = explode("\n", $data);
+			$tmp = explode("\n", $data);
+
+			foreach ($tmp as $row) 
+			{
+
+				$mail_data = explode(",", $row);
+				
+				$result[] = array(
+
+								"account" 	=> isset($mail_data[0]) ? $mail_data[0] : "",
+								"real_name" => isset($mail_data[1]) ? $mail_data[1] : "",
+
+							);
+
+			}
 
 		}
 
 		return $result;
 
 	}
+
+
+	// 新增關聯格式
+
+	public static function add_edm_rel_format( $data, $edm_id )
+	{
+
+		$_this = new self();
+
+		$result = array();
+
+		if ( !empty($data) && is_array($data) ) 
+		{
+
+			foreach ($data as $mall_shop_id) 
+			{
+
+				$result[] = array(
+								"edm_id"        			=> $edm_id,
+								"mall_shop_id"     			=> $mall_shop_id
+							);
+
+			}
+
+		}
+
+		return $result;
+
+	}
+
+
+	// 新增EDM
+
+	public static function add_edm_rel( $data )
+	{
+
+		$result = false;
+
+		if ( !empty($data) ) 
+		{
+
+			$result = Edm::add_edm_rel( $data );
+
+		}
+
+		return $result;
+
+	}
+
+
+	// 取得關聯
+
+	public static function get_edm_rel( $edm_id )
+	{
+
+		$_this = new self;
+
+		$result = new \stdClass;
+
+		if ( !empty($edm_id) && is_int($edm_id) ) 
+		{
+
+			$result = Edm::get_edm_rel( $edm_id );
+
+		}
+
+		return $result;
+
+	}	
+
+
+	// 刪除EDM
+
+	public static function del_edm_rel( $edm_id )
+	{
+
+		$result = false;
+
+		if ( !empty($edm_id) && is_int($edm_id) ) 
+		{
+
+			$result = Edm::del_edm_rel( $edm_id );
+
+		}
+
+		return $result;
+
+	}
+
+
+	// 取得關聯商品
+
+	public static function get_edm_rel_product( $edm_id )
+	{
+
+		$_this = new self;
+
+		$result = new \stdClass;
+
+		if ( !empty($edm_id) && is_int($edm_id) ) 
+		{
+
+			$data = Edm::get_edm_rel_product( $edm_id );
+
+			foreach ($data as &$row) 
+			{
+				
+				$row->promo = Promo_logic::get_active_promo_price( $row->mall_shop_id );
+
+			}
+
+			$result = $data;
+
+		}
+
+		return $result;
+
+	}	
 
 }

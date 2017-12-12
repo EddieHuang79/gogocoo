@@ -75,4 +75,21 @@ class Register extends TestCase
 
 	}
 
+	public function testSendRegisterWmail()
+	{
+
+		$test1 = Register_logic::send_register_email( "" );
+
+		$this->assertFalse( $test1 );
+
+		$test1 = Register_logic::send_register_email( 0 );
+
+		$this->assertFalse( $test1 );
+
+		$test1 = Register_logic::send_register_email( array() );
+
+		$this->assertFalse( $test1 );
+
+	}
+
 }

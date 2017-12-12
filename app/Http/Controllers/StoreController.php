@@ -109,69 +109,54 @@ class StoreController extends Basetool
      * @param  \App\lain  $lain
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request, lain $lain)
+    public function store(Request $request)
     {
 
         $_this = new self();
 
-        if (!empty($_POST["store_id"])) 
-        {
-            
-            $data = Store_logic::update_format( $_POST );
-
-            $store_id = intval($_POST["store_id"]);
-
-            Store_logic::edit_store( $data, $store_id );
-
-        }
-        else
+        try
         {
 
-            try{
+            $ErrorMsg = Store_logic::store_verify( $_POST );
 
-
-                $ErrorMsg = Store_logic::store_verify( $_POST );
-
-                if (!empty($ErrorMsg)) 
-                {
-
-                    throw new \Exception( json_encode($ErrorMsg) );
-
-                }
-
-                $store_cnt = Store_logic::get_store_cnt();
-
-                $_POST["is_free"] = $store_cnt["free"] > 0 ? 1 : 2 ;
-
-                $data = Store_logic::insert_format( $_POST );
-
-                // 店鋪代號若為空 隨機產生
-
-                $store_id = Store_logic::add_store( $data );
-
-                $date_spec = isset($_POST["date_spec"]) && !empty($_POST["date_spec"]) ? trim($_POST["date_spec"]) : "" ;
-
-                // 紀錄價值服務啟用列表，免費不紀錄
-
-                if ( !empty($date_spec) ) 
-                {
-
-                    Shop_logic::add_use_record( (int)$store_id, $date_spec, $type = 2 );
-
-                }
-
-
-            }
-            catch(\Exception $e)
+            if (!empty($ErrorMsg)) 
             {
 
-                Session::put( 'OriData', $_POST );
-
-                Session::put( 'ErrorMsg', $_this->show_error_to_user( json_decode($e->getMessage() ,true) ) );
-
-                return back();
+                throw new \Exception( json_encode($ErrorMsg) );
 
             }
+
+            $store_cnt = Store_logic::get_store_cnt();
+
+            $_POST["is_free"] = $store_cnt["free"] > 0 ? 1 : 2 ;
+
+            $data = Store_logic::insert_format( $_POST );
+
+            // 店鋪代號若為空 隨機產生
+
+            $store_id = Store_logic::add_store( $data );
+
+            $date_spec = isset($_POST["date_spec"]) && !empty($_POST["date_spec"]) ? trim($_POST["date_spec"]) : "" ;
+
+            // 紀錄價值服務啟用列表，免費不紀錄
+
+            if ( !empty($date_spec) ) 
+            {
+
+                Shop_logic::add_use_record( (int)$store_id, $date_spec, $type = 2 );
+
+            }
+
+
+        }
+        catch(\Exception $e)
+        {
+
+            Session::put( 'OriData', $_POST );
+
+            Session::put( 'ErrorMsg', $_this->show_error_to_user( json_decode($e->getMessage() ,true) ) );
+
+            return back();
 
         }
 
@@ -227,9 +212,19 @@ class StoreController extends Basetool
      * @param  \DummyFullModelClass  $DummyModelVariable
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, lain $lain, DummyModelClass $DummyModelVariable)
+    public function update(Request $request, $id)
     {
-        //
+
+        $_this = new self();
+
+        $data = Store_logic::update_format( $_POST );
+
+        $store_id = intval($id);
+
+        Store_logic::edit_store( $data, $store_id );
+
+        return redirect("/store");
+
     }
 
     /**

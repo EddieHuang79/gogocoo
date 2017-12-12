@@ -77,61 +77,23 @@ class ProductController extends Controller
 
         $product_extra_column = Product_logic::get_product_extra_column(); 
 
-        if (!empty($_POST["product_id"])) 
+        if ( isset($_POST["product_name"]) ) 
         {
-            
-            $product_id = intval($_POST["product_id"]);
 
-            $data = Product_logic::update_main_format( $_POST );
+            $data = Product_logic::insert_main_format( $_POST );
 
-            Product_logic::edit_product( $data, $product_id );
+            $product_id = Product_logic::add_product( $data );
 
-            $data = Product_logic::update_extra_format( $_POST, $product_extra_column );
+            $data = Product_logic::insert_extra_format( $_POST, $product_extra_column, $product_id );
 
-            Product_logic::edit_product_extra_data( $data, $product_id );
+            Product_logic::add_extra_data( $data );
 
             if ( $has_spec ) 
             {
 
-                $spec_data = Product_logic::insert_or_update_spec_data( "update", $_POST, $product_id );
+                $data = Product_logic::insert_or_update_spec_data( "insert", $_POST, $product_id );
 
-                Product_logic::edit_product_spec_data( $spec_data );
-
-                $spec_data = Product_logic::insert_or_update_spec_data( "insert", $_POST, $product_id );
-
-                if ( !empty($spec_data) ) 
-                {
-
-                    Product_logic::add_product_spec_data( $spec_data );
-                
-                }
-
-            }
-
-
-        }
-        else
-        {
-
-            if ( isset($_POST["product_name"]) ) 
-            {
-
-                $data = Product_logic::insert_main_format( $_POST );
-
-                $product_id = Product_logic::add_product( $data );
-
-                $data = Product_logic::insert_extra_format( $_POST, $product_extra_column, $product_id );
-
-                Product_logic::add_extra_data( $data );
-
-                if ( $has_spec ) 
-                {
-
-                    $data = Product_logic::insert_or_update_spec_data( "insert", $_POST, $product_id );
-
-                    Product_logic::add_product_spec_data( $data );
-
-                }
+                Product_logic::add_product_spec_data( $data );
 
             }
 
@@ -196,6 +158,51 @@ class ProductController extends Controller
 
     }
 
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, $id)
+    {
+
+        $has_spec = Product_logic::is_spec_function_active(); 
+
+        $product_extra_column = Product_logic::get_product_extra_column(); 
+
+        $product_id = intval($id);
+
+        $data = Product_logic::update_main_format( $_POST );
+
+        Product_logic::edit_product( $data, $product_id );
+
+        $data = Product_logic::update_extra_format( $_POST, $product_extra_column );
+
+        Product_logic::edit_product_extra_data( $data, $product_id );
+
+        if ( $has_spec ) 
+        {
+
+            $spec_data = Product_logic::insert_or_update_spec_data( "update", $_POST, $product_id );
+
+            Product_logic::edit_product_spec_data( $spec_data );
+
+            $spec_data = Product_logic::insert_or_update_spec_data( "insert", $_POST, $product_id );
+
+            if ( !empty($spec_data) ) 
+            {
+
+                Product_logic::add_product_spec_data( $spec_data );
+            
+            }
+
+        }
+
+        return redirect("/product");
+
+    }
 
     public function get_product_spec()
     {

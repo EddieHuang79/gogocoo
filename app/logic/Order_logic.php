@@ -22,6 +22,11 @@ class Order_logic extends Basetool
 									1 => "自家倉庫"
 								);
 
+	protected $logistics_type_txt = array(
+									1 => "是",
+									2 => "否"
+								);
+
 
 	public function __construct()
 	{
@@ -41,7 +46,7 @@ class Order_logic extends Basetool
 
 		$data = Order::get_order_extra_column();
 
-		$not_show_on_page = array('pay_status', 'logistics_status', 'pay_time', 'refund_time', 'cancel_time');
+		$not_show_on_page = array('pay_status', 'pay_time', 'refund_time', 'cancel_time');
 
 		unset($data[0], $data[1]);
 
@@ -74,10 +79,10 @@ class Order_logic extends Basetool
 
 				// 特例
 
-				// if ( $row->Field == 'warehouse_id' ) 
-				// {
-				// 	$result[$key]["type"] = "select";
-				// }
+				if ( $row->Field == 'logistics_type' ) 
+				{
+					$result[$key]["type"] = "radio";
+				}
 
 				if ( in_array($row->Field, $not_show_on_page) ) 
 				{
@@ -158,7 +163,7 @@ class Order_logic extends Basetool
 			foreach ($order_extra_column as $row_data) 
 			{
 
-				$default_value = $row_data['type'] == 'number' ? 0 : "" ;
+				$default_value = $row_data['type'] === 'number' ? 0 : "" ;
 
 				$result[$row_data['name']] = isset($data[$row_data['name']]) && !empty($data[$row_data['name']]) ? trim($data[$row_data['name']]) : $default_value ;
 
@@ -316,6 +321,8 @@ class Order_logic extends Basetool
 
 		$out_warehouse_category_txt = $_this->out_warehouse_category;
 
+		$logistics_type_txt = $_this->logistics_type_txt;
+
 		$result = array();
 
 		if ( !empty($data) ) 
@@ -323,6 +330,7 @@ class Order_logic extends Basetool
 
 			foreach ($data as $key1 => $row) 
 			{
+				
 				foreach ($row as $key2 => $data) 
 				{
 
@@ -337,6 +345,8 @@ class Order_logic extends Basetool
 				$result[$key1]['status_txt'] = $status_txt[$row->status];
 
 				$result[$key1]['order_number_txt'] = $_this->order_number_encode($row);
+
+				$result[$key1]['logistics_type_txt'] = $logistics_type_txt[$row->logistics_type];
 
 				foreach ($option_data as $key2 => $data) 
 				{

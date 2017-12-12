@@ -124,14 +124,21 @@ var Show_current_position = function(){
 			type: 'POST',
 			success: function( response ) {
 				var data = JSON.parse(response),
-					total = parseInt(data.cost) * 1;
+					total = parseInt(data.promo) > 0 ? parseInt(data.promo) * 1 : parseInt(data.cost) * 1 ;
+
 				$(".mall_product_name").text(data.mall_product_name);
 				$(".mall_product_description").text(data.mall_product_description);
 				// $(".mall_product_pic").find("img").attr("src",data.mall_product_pic);
 				$(".mall_product_cost").text( "NT." + total );
 				$("[name='total']").val( total );
-				$(".mall_product_spec>.cost").text(data.cost);
-				$('.mall_product_spec>select').find("option[classkey='append']").remove();
+				$(".mall_product_spec").find(".cost").text(data.cost);
+				if ( data.promo > 0 ) 
+				{
+					$(".mall_product_spec").find(".cost").addClass("line-through");
+					$(".mall_product_spec").find(".promo_price").show();
+					$(".mall_product_spec").find(".promo_price").find(".promo_price").text(data.promo);
+				};
+				// $('.mall_product_spec').find("select").find("option[classkey='append']").remove();
 				$('[name="mall_product_number"]').val("1");
 				$.map(data.include_service, function(row, index) {
 					var dom = "<div> "+row['product_name']+" X "+row["number"]+" 可用"+row["date_spec"]+" 天 </div>";
@@ -164,10 +171,12 @@ var Show_current_position = function(){
 			
 	},
 	shop_calc = function(){
-		var cost = $("label.cost").text();
+		var cost = parseInt($("label.cost").text()),
+			promo = parseInt($("label.promo_price").text()),
+			price = promo > 0 ? promo : cost ;
 			number = $("[name='mall_product_number']").val(),
 			// spec_data = spec.split("/"),
-			total = parseInt(number) * parseInt(cost),
+			total = parseInt(number) * parseInt(price),
 			price_txt = isNaN(total) ? "NT. 0" : "NT. "+total,
 			total_price = isNaN(total) ? 0 : total ;
 		$(".mall_product_cost").text(price_txt);
@@ -478,22 +487,39 @@ var Show_current_position = function(){
 		});	
 
 	},
-	column_show_hide = function(){
-		
-		var choose = $(".type:checked").attr("column"),
-			type = $(".type:checked").val();
-		
-		$(".chooseType").hide();
+	add_block = function() {
+		var target = $(this).attr("target"),
+			limit = $(this).attr("limit"),
+			len = $(target).length;
 
-		$("."+choose).show();
+			if (limit > 0 && limit <= len) 
+			{
+				return false;
+			};
 
-	};
+			$(target+":first").clone().insertAfter(target+":last");
+			$(target+":last").find("input[type='text'],select,input[type='number']").val('');			
+	},
+	remove_block = function() {
+		var target = $(this).attr("target"),
+			len = $(target).length;
+
+		if (len > 1) 
+		{
+			$(this).parents(target).remove();
+		};
+
+		if (len <= 1) 
+		{
+			$(this).parents(target).find("input[type='text'],select,input[type='number']").val('');
+		};	
+		
+	},
 
 
 Show_current_position();
 Ajax_init();
 count_lightbox_width();
-column_show_hide();
 
 $(".addbtn").on("click", AddBtn);
 $(document).on("click", ".removeLabel", RemoveBtn);
@@ -523,4 +549,5 @@ $(".clickAll").on("click", clickAllFunction);
 $(".extend_account_deadline").on("click", extend_account_deadline);
 $("#category").on("change", product_category);
 $(".fa-search").on("click", Search_tool_display);
-$(".type").on("click", column_show_hide);
+$(".add_block").on("click", add_block);
+$(document).on("click", ".remove", remove_block);
