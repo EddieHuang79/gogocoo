@@ -1002,17 +1002,17 @@ class Shop_logic extends Basetool
             }
 
 
-            // $mac = $_this->get_mac( $order_number_data );
+            $mac = $_this->get_mac( $order_number_data );
 
-            // // if ( !isset($data["CheckMacValue"]) || !isset($mac["mac"]) || ( isset($data["CheckMacValue"]) && $data["CheckMacValue"] == $mac["mac"] ) ) 
-            // if ( !isset($data["CheckMacValue"]) || !isset($mac->mac) ) 
-            // {
+            // if ( !isset($data["CheckMacValue"]) || !isset($mac["mac"]) || ( isset($data["CheckMacValue"]) && $data["CheckMacValue"] == $mac["mac"] ) ) 
+            if ( !isset($data["CheckMacValue"]) || !isset($mac->mac) ) 
+            {
 
-            //     $error_msg = "mac錯誤||訂單編號錯誤||訂單狀態錯誤！";
+                $error_msg = "mac錯誤||訂單編號錯誤||訂單狀態錯誤！";
 
-            //     throw new \Exception($error_msg);
+                throw new \Exception($error_msg);
 
-            // }
+            }
 
             // 過濾變數
 
@@ -1039,7 +1039,7 @@ class Shop_logic extends Basetool
         if ( $result === true ) 
         {
 
-            // $_this->active_mall_service_process( $payment_id );
+            $_this->active_mall_service_process( $payment_id );
 
 
             // 首購判斷觸發
