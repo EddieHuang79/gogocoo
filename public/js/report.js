@@ -187,7 +187,7 @@ var	month_order_view = function(){
 				times2 = 0,
 				level1 = $.map(data1['level1'], function(value, index) { 
 							
-							var colors = ["#F59687","#F9C884","#7AD896","#66B2EB","#81D3CD"];
+							var colors = ["#FF0000","#AAAAAA","#FFFF00","#66B2EB","#00a65a"];
 
 							data = {
 								name: index,
@@ -203,7 +203,7 @@ var	month_order_view = function(){
 						}),
 				level2 = $.map(data1['level2'], function(value, index) { 
 
-								var colors = ["#F59687","#F9C884","#7AD896","#66B2EB","#81D3CD"];
+								var colors = ["#FF0000","#AAAAAA","#FFFF00","#66B2EB","#00a65a"];
 									size = Object.keys(value).length,
 									color_index = times2 % 5;
 

@@ -41,7 +41,7 @@ class Edm extends Mailable
 
             case 4:
 
-                $subject =  "歡迎加入" . $txt["Site"] . "，領取專屬您的好康禮!!";
+                $subject =  "歡迎加入" . $txt["Site"] . "，好康活動!!";
 
                 $send_template = "edm.edm_register_template4";
             
