@@ -31,111 +31,116 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
 
-        // EDM寄送
-
-        if ( class_exists('App\logic\Edm_logic') ) 
+        if ( env("APP_DEBUG") === false ) 
         {
 
-            $edm = Edm_logic::get_edm_to_send();
+            // EDM寄送
 
-            if ( $edm->isNotEmpty() === true ) 
+            if ( class_exists('App\logic\Edm_logic') ) 
             {
 
-                $schedule->call(function () use ($edm) {
+                $edm = Edm_logic::get_edm_to_send();
 
-                                foreach ($edm as $row) 
-                                {
+                if ( $edm->isNotEmpty() === true ) 
+                {
 
-                                    switch ( intval($row->type) ) 
+                    $schedule->call(function () use ($edm) {
+
+                                    foreach ($edm as $row) 
                                     {
 
-                                        case 1:
+                                        switch ( intval($row->type) ) 
+                                        {
 
-                                            $user = json_decode($row->data, true);
+                                            case 1:
 
-                                            Mail::to( array( $user['account'] ) )->send(new RegisterMail( $user ));
-                                        
-                                            break;
-                                        
-                                        case 2:
+                                                $user = json_decode($row->data, true);
 
-                                            $user = json_decode($row->data);
+                                                Mail::to( array( $user['account'] ) )->send(new RegisterMail( $user ));
+                                            
+                                                break;
+                                            
+                                            case 2:
 
-                                            Mail::to( array( $user->account ) )->send(new NoticeDeadline( $user ));
-                                        
-                                            break;
-                                        
-                                        case 3:
+                                                $user = json_decode($row->data);
 
-                                            $user = json_decode($row->data);
+                                                Mail::to( array( $user->account ) )->send(new NoticeDeadline( $user ));
+                                            
+                                                break;
+                                            
+                                            case 3:
 
-                                            Mail::to( array( $user->account ) )->send(new FirstBuyGift( $user ));
+                                                $user = json_decode($row->data);
 
-                                            break;
+                                                Mail::to( array( $user->account ) )->send(new FirstBuyGift( $user ));
 
-                                        case 4:
-                                        case 5:
+                                                break;
 
-                                            $mail_list = Edm_logic::get_send_list( $row->id );
+                                            case 4:
+                                            case 5:
 
-                                            $product_data = Edm_logic::get_edm_rel_product( $row->id );
+                                                $mail_list = Edm_logic::get_send_list( $row->id );
 
-                                            foreach ($mail_list as $edmData) 
-                                            {
+                                                $product_data = Edm_logic::get_edm_rel_product( $row->id );
 
-                                                $data = array(
+                                                foreach ($mail_list as $edmData) 
+                                                {
 
-                                                            "type"          => (int)$row->type,
+                                                    $data = array(
 
-                                                            "mail_list"     => $edmData,
+                                                                "type"          => (int)$row->type,
 
-                                                            "product_data"  => $product_data
+                                                                "mail_list"     => $edmData,
 
-                                                        );
+                                                                "product_data"  => $product_data
 
-                                                $edmData["account"] = "u9735034@gms.ndhu.edu.tw";
+                                                            );
 
-                                                Mail::to( array( $edmData["account"] ) )->send(new Edm( $data ));
+                                                    $edmData["account"] = "u9735034@gms.ndhu.edu.tw";
 
-                                            }
+                                                    Mail::to( array( $edmData["account"] ) )->send(new Edm( $data ));
 
-                                            break;
+                                                }
+
+                                                break;
+
+                                        }
+
+                                        Edm_logic::change_status( array($row->id), 3 );
 
                                     }
+                        
+                                })->cron("*/10 * * * *");
 
-                                    Edm_logic::change_status( array($row->id), 3 );
-
-                                }
-                    
-                            })->cron("*/10 * * * *");
+                }
 
             }
 
-        }
 
+            // 免費試用到期倒數三天回召
 
-        // 免費試用到期倒數三天回召
+            $schedule->call(function () {
 
-        // $schedule->call(function () {
+                            $data = Admin_user_logic::get_expiring_user( $day = 27 );
 
-        //                 $data = Admin_user_logic::get_expiring_user( $day = 27 );
+                            if ( !empty($data) && $data->isNotEmpty() === true ) 
+                            {
 
-        //                 if ( !empty($data) && $data->isNotEmpty() === true ) 
-        //                 {
+                                foreach ($data as $row) 
+                                {
+                                    
+                                    $mail_data = Edm_logic::insert_notice_mail_format( $row );
 
-        //                     foreach ($data as $row) 
-        //                     {
+                                    Edm_logic::add_edm( $mail_data );
                                 
-        //                         $mail_data = Edm_logic::insert_notice_mail_format( $row );
+                                }
 
-        //                         Edm_logic::add_edm( $mail_data );
-                            
-        //                     }
+                            }   
 
-        //                 }   
+                        })
+                        ->cron("0 1 * * *");   
 
-        //             })
-        //             ->cron("0 1 * * *");            
+        }         
 
     }
 
