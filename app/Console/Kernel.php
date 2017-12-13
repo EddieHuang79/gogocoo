@@ -49,6 +49,8 @@ class Kernel extends ConsoleKernel
                                     foreach ($edm as $row) 
                                     {
 
+                                        Edm_logic::change_status( array($row->id), 3 );
+
                                         switch ( intval($row->type) ) 
                                         {
 
@@ -103,8 +105,6 @@ class Kernel extends ConsoleKernel
                                                 break;
 
                                         }
-
-                                        Edm_logic::change_status( array($row->id), 3 );
 
                                     }
                         
