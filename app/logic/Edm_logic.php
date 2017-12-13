@@ -355,14 +355,19 @@ class Edm_logic extends Basetool
 			foreach ($tmp as $row) 
 			{
 
-				$mail_data = explode(",", $row);
-				
-				$result[] = array(
+				if ( !empty($row) ) 
+				{
+	
+					$mail_data = explode(",", $row);
+					
+					$result[] = array(
 
-								"account" 	=> isset($mail_data[0]) ? $mail_data[0] : "",
-								"real_name" => isset($mail_data[1]) ? $mail_data[1] : "",
+									"account" 	=> isset($mail_data[0]) ? $mail_data[0] : "",
+									"real_name" => isset($mail_data[1]) ? $mail_data[1] : "",
 
-							);
+								);
+			
+				}
 
 			}
 
