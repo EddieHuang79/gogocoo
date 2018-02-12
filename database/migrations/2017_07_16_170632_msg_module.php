@@ -47,39 +47,6 @@ class MsgModule extends Migration
             $table->engine = 'InnoDB';
         });
 
-        // insert msg
-        DB::table($this->msg_table)->insert(
-            array(
-                'subject'       => 'test normal',
-                'content'       => 'test msg normal',
-                'role_id'       => 0,
-                'user_id'       => 0,
-                'show_type'     => 1,
-                'msg_type'      => 1,
-                'public'        => 1,
-                'start_date'    => date("Y-m-d 00:00:00"),
-                'end_date'      => date("Y-m-d 23:59:59"),
-                'created_at'    => date("Y-m-d H:i:s"),
-                'updated_at'    => date("Y-m-d H:i:s")
-            )
-        );
-
-        DB::table($this->msg_table)->insert(
-            array(
-                'subject'       => 'test popup',
-                'content'       => 'test msg by popup',
-                'role_id'       => 0,
-                'user_id'       => 0,
-                'show_type'     => 1,
-                'msg_type'      => 1,
-                'public'        => 1,
-                'start_date'    => date("Y-m-d 00:00:00"),
-                'end_date'      => date("Y-m-d 23:59:59"),
-                'created_at'    => date("Y-m-d H:i:s"),
-                'updated_at'    => date("Y-m-d H:i:s")
-            )
-        );
-
         // service
         $msg_id = DB::table($this->service_table)->insertGetId(
             array(

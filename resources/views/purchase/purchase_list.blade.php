@@ -34,39 +34,45 @@
 								</tr>							
 							</thead>
 							<tbody>
-								@foreach($purchase_list as $row)
-								<tr>
-									<th>
-										@if( $row['status'] == 1 )
-										<input type="checkbox" class="puchase_checkbox" value="{{ $row['id'] }}" name="purchase_id[]">
-										@endif
-									</th>
-									<th>{{ $row['product_name'] }}</th>
-									<th>{{ $row['in_warehouse_number_txt'] }}</th>
-									<th>{{ $row['in_warehouse_date'] }}</th>
-									<th>{{ $row['in_warehouse_category_txt'] }}</th>
+								@if( !empty($purchase_list) )
+									@foreach($purchase_list as $row)
+									<tr>
+										<th>
+											@if( $row['status'] == 1 )
+											<input type="checkbox" class="puchase_checkbox" value="{{ $row['id'] }}" name="purchase_id[]">
+											@endif
+										</th>
+										<th>{{ $row['product_name'] }}</th>
+										<th>{{ $row['in_warehouse_number_txt'] }}</th>
+										<th>{{ $row['in_warehouse_date'] }}</th>
+										<th>{{ $row['in_warehouse_category_txt'] }}</th>
 
-									@if( !empty( $purchase_extra_column ) )
-										@foreach($purchase_extra_column as $row2)
-											<th>
-												@if( isset($row[$row2['name']."_txt"]) )
-												{{ $row[$row2['name']."_txt"] }}
-												@else
-												{{ $row[$row2['name']] }}
-												@endif
-											</th>
-										@endforeach
-									@endif
-									
-									<th>{{ $row['number'] }}</th>
-									<th>{{ $row['status_txt'] }}</th>
-									<td>
-										@if( $row['status'] == 1 )
-										<input type="button" class="btn btn-primary" value="{{ $txt['edit'] }}" onClick="location.href='/purchase/{{ $row['id'] }}/edit?';"/>
+										@if( !empty( $purchase_extra_column ) )
+											@foreach($purchase_extra_column as $row2)
+												<th>
+													@if( isset($row[$row2['name']."_txt"]) )
+													{{ $row[$row2['name']."_txt"] }}
+													@else
+													{{ $row[$row2['name']] }}
+													@endif
+												</th>
+											@endforeach
 										@endif
-									</td>
-								</tr>
-								@endforeach													
+										
+										<th>{{ $row['number'] }}</th>
+										<th>{{ $row['status_txt'] }}</th>
+										<td>
+											@if( $row['status'] == 1 )
+											<input type="button" class="btn btn-primary" value="{{ $txt['edit'] }}" onClick="location.href='/purchase/{{ $row['id'] }}/edit?';"/>
+											@endif
+										</td>
+									</tr>
+									@endforeach
+								@else
+									<tr>
+										<th colspan="8">{{ $txt['find_nothing'] }}</th>
+									</tr>
+								@endif												
 							</tbody>
 						</table>
 					</div>

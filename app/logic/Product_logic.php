@@ -33,7 +33,7 @@ class Product_logic extends Basetool
 		{
 
 			$result = array(
-			            "product_name"      => isset($data["product_name"]) ? $_this->strFilter($data["product_name"]) : "",
+			            "product_name"      => isset($data["product_name"]) ? trim($data["product_name"]) : "",
 			            "safe_amount"       => isset($data["safe_amount"]) ? intval($data["safe_amount"]) : 0,
 			            "created_at"    	=> date("Y-m-d H:i:s"),
 			            "updated_at"    	=> date("Y-m-d H:i:s")
@@ -798,6 +798,106 @@ class Product_logic extends Basetool
 		return $result;
 
 	}
+
+
+	// 查詢product_id，若沒有則建立商品
+
+	public static function get_product_id_or_create_product( $data )
+	{
+
+
+		$_this = new self();
+
+		$result = array();
+
+		if ( is_array($data) && !empty($data) ) 
+		{
+
+			$product_id = $_this->get_product_id_by_product_name( $data );
+
+			$product_extra_column = $_this->get_product_extra_column();
+
+			foreach ($data as $row) 
+			{
+
+				if ( isset($product_id[$row["ori_product_name"]]) ) 
+				{
+
+					$result[$row["ori_product_name"]] = $product_id[$row["ori_product_name"]];
+					
+				}
+				else
+				{
+
+					$insert_data = array(
+							            "product_name"      => $row["ori_product_name"],
+							            "safe_amount"       => 10,
+									);
+
+					$insert_format = $_this->insert_main_format( $insert_data );
+
+					
+
+					$new_product_id = $_this->add_product( $insert_format );
+
+					$extra_data = array(
+										"qc_number" 	=> $row["product_code"],
+										"barcode" 		=> "",
+										"category" 		=> 3,
+										"keep_for_days" => 1,
+									);
+
+					$extra_format = $_this->insert_extra_format( $extra_data, $product_extra_column, $new_product_id );
+
+					$_this->add_extra_data( $extra_format );
+
+					$product_id[$row["ori_product_name"]] = $new_product_id;
+
+					$result[$row["ori_product_name"]] = $new_product_id;
+
+				}
+
+			}
+
+
+		}
+
+		return $result;		
+
+	}
+
+	protected static function get_product_id_by_product_name( $data )
+	{
+
+		$result = array();
+
+		$product_name = array();
+
+		if ( !empty($data) && is_array($data) ) 
+		{
+
+			foreach ($data as $row) 
+			{
+			
+				$product_name[] = $row['ori_product_name'];
+
+			}
+
+			$product_data = Product::get_product_id_by_product_name( $product_name );
+
+			foreach ($product_data as $row) 
+			{
+				
+				$result[$row->product_name] = $row->id;
+
+			}
+			
+		}
+
+		return $result;
+
+	}
+
 
 }
 

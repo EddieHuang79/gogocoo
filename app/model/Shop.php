@@ -81,7 +81,9 @@ class Shop extends Model
 							// $_this->mall_product_rel_table.".*",
 							$_this->table.'.id',
 							$_this->table.'.product_name',
-							$_this->table.'.cost',
+							$_this->record_table.'.id as record_id',
+							$_this->record_table.'.cost',
+							$_this->record_table.'.total',
 							$_this->record_table.'.store_id',
 							$_this->record_table.'.paid_at',
 							$_this->record_table.'.number',
@@ -227,11 +229,13 @@ class Shop extends Model
 		$data = DB::table($_this->mall_product_use_table)
 					->select($_this->mall_product_use_table.".id")
 					->leftJoin($_this->mall_product_rel_table, $_this->mall_product_rel_table.'.mall_shop_id', '=', $_this->mall_product_use_table.'.mall_shop_id')
+					->leftJoin($_this->record_table, $_this->mall_product_use_table.'.mall_record_id', '=', $_this->record_table.'.id')
 					->where($_this->mall_product_use_table.".store_id", "=", $store_id)
 					->where($_this->mall_product_use_table.".mall_shop_id", "=", $data[0])
 					->where($_this->mall_product_use_table.".mall_product_id", $data[1])
 					->where($_this->mall_product_rel_table.".date_spec", "=", $data[2])
 					->where($_this->mall_product_use_table.".status", "=", "1")
+					->where($_this->record_table.".status", "=", "1")
 					->first();
 		
 		$result = !empty($data) ? $data->id : 0 ;
@@ -309,6 +313,7 @@ class Shop extends Model
 					->where($_this->mall_product_use_table.".store_id", "=", $store_id)
 					->where($_this->mall_product_table.".action_key", "=", $action_key)
 					->where($_this->mall_product_use_table.".status", "=", "1")
+					->where($_this->record_table.".status", "=", "1")
 					->get();
 
 		return $data;
@@ -424,6 +429,30 @@ class Shop extends Model
 					->select("paid_at")
 					->where("store_id", "=", $data["store_id"])
 					->where("status", "=", "1")
+					->get();
+
+		return $result;
+
+    }
+
+    public static function record_and_use( $store_id )
+    {
+
+		$_this = new self();
+
+		$result = DB::table($_this->record_table)
+					->leftJoin($_this->mall_product_use_table, $_this->mall_product_use_table.'.mall_record_id', '=', $_this->record_table.'.id')
+					->leftJoin($_this->mall_product_table, $_this->mall_product_table.'.id', '=', $_this->mall_product_use_table.'.mall_product_id')
+					->select(
+							$_this->record_table.".status as pay_status",
+							$_this->mall_product_table.".product_name",
+							$_this->mall_product_use_table.".status as use_status",
+							$_this->mall_product_use_table.".use_time",
+							$_this->mall_product_use_table.".mall_shop_id",
+							$_this->mall_product_use_table.".mall_product_id"
+						)
+					->whereIn($_this->mall_product_use_table.".store_id", $store_id)
+					->where($_this->record_table.".status", "=", "1")
 					->get();
 
 		return $result;

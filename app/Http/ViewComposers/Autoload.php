@@ -14,6 +14,7 @@ use App\logic\Basetool;
 use App\logic\Msg_logic;
 use App\logic\Store_logic;
 use App\logic\Shop_logic;
+use App\logic\Edm_logic;
 
 class Autoload extends Basetool
 {
@@ -232,6 +233,27 @@ class Autoload extends Basetool
 
     }
 
+    public function displayInviteBtn(View $view)
+    {
+
+        $displayInviteBtn = true;
+
+        $store_id = Session::get('Store');
+
+        $already_invite_friends = Admin_user_logic::check_display_invite_btn();
+
+        $mail_is_pending = Edm_logic::has_pending_mail( 6 );
+
+        $displayInviteBtn = $already_invite_friends === true ? false : $displayInviteBtn ;
+
+        $displayInviteBtn = $mail_is_pending === true ? false : $displayInviteBtn ;
+
+        $data = compact('displayInviteBtn');
+
+        $view->with($data);
+
+    }
+
     protected function menu_icon()
     {
 
@@ -249,8 +271,9 @@ class Autoload extends Basetool
                         "庫存管理"          =>    'fa-bar-chart',
                         "訂單管理"          =>    'fa-clipboard',
                         "資料上傳"          =>    'fa-upload',
-                        "商品分類管理"      =>    'fa-pie-chart',
+                        "商品分類管理"       =>    'fa-pie-chart',
                         "電子報管理"         =>    'fa-envelope',
+                        "Ecoupon管理"       =>    'fa-money',
                     );
 
         return $result;

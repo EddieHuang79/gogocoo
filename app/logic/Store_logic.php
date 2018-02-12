@@ -338,7 +338,7 @@ class Store_logic extends Basetool
 
 		$result = false;
 
-		if ( !empty($data) && is_array($data) && !empty($user_id) && is_int($user_id) ) 
+		if ( !empty($data) && is_string($data) && !empty($user_id) && is_int($user_id) ) 
 		{
 
 			$result = Shop_logic::add_use_record( (int)$user_id, $data, $type = 2 );
@@ -463,6 +463,94 @@ class Store_logic extends Basetool
 	}
 
 
+   	// 以代碼取得店鋪id
 
+	public static function get_store_parent_type( $store_type_id, $store_type_data )
+	{
+	    
+		$result = 0;
+
+		if ( !empty($store_type_id) && is_int($store_type_id) && !empty($store_type_data) && is_array($store_type_data) ) 
+		{
+
+			foreach ($store_type_data as $parents_id => $child) 
+			{
+
+				if ( (int)$parents_id === $store_type_id ) 
+				{
+
+					$result = $parents_id;
+
+					break;
+					
+				}
+				else
+				{
+
+					foreach ($child["data"] as $child_type_id => $value) 
+					{
+
+						if ( (int)$child_type_id === $store_type_id ) 
+						{
+
+							$result = $parents_id;
+
+							break 2;
+							
+						}						
+
+					}
+				
+				}
+
+			}
+			
+		}
+
+		return $result;
+
+	}	
+
+
+	// 
+
+	public static function get_store_user_mapping_array()
+	{
+	    
+		$result = array();
+
+		$data = Store::get_all_store();
+
+		foreach ($data as $row) 
+		{
+			
+			$result[$row->id] = $row->user_id;
+
+		}
+
+		return $result;
+
+	}
+
+
+	// 取得店鋪列表
+
+	public static function get_store_info_logic( $user_id )
+	{
+
+		$_this = new self();
+
+		$result = array();
+
+		if ( !empty($user_id) && is_int($user_id) ) 
+		{
+			
+			$result = Store::get_store_info( $user_id );
+			
+		}
+
+		return $result;
+
+	}
 
 }

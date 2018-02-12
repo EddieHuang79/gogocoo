@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\logic\Order_logic;
 use App\logic\Option_logic;
 use App\logic\Product_logic;
+use App\logic\Upload_logic;
 use URL;
 
 class OrderController extends Controller
@@ -21,7 +22,9 @@ class OrderController extends Controller
 
         $order_extra_column = Order_logic::get_order_extra_column();
 
-        $select_option = Option_logic::get_select_option( $order_extra_column );
+        $not_show_on_page = Order_logic::get_not_show_on_page();
+
+        $select_option = Option_logic::get_select_option( $order_extra_column, $not_show_on_page );
 
         $order_data = Order_logic::get_order_data( $_GET );
 
@@ -64,7 +67,6 @@ class OrderController extends Controller
         return view('webbase/content', $data);
 
     }
-
 
     /**
      * Store a newly created resource in storage.
@@ -163,6 +165,38 @@ class OrderController extends Controller
 
         return redirect("/order");
         
+    }
+
+    public function output()
+    {
+
+        $not_show_on_page = Order_logic::get_not_show_on_page();
+
+        $order_extra_column = Order_logic::get_order_extra_column();
+
+        $select_option = Option_logic::get_select_option( $order_extra_column, $not_show_on_page );
+
+        $order_data = Order_logic::get_order_data( $_GET );
+
+        $order_list = Order_logic::get_order_list( $order_data, $select_option );
+
+        $assign_page = "order/order_output";
+
+        $data = compact('assign_page', 'order_data', 'order_list', 'order_extra_column');
+
+        return view('webbase/content', $data);
+        
+    }
+
+    public function order_output_process()
+    {
+
+        $order_id = isset($_POST["order_id"]) && !empty($_POST["order_id"]) ? array_filter($_POST["order_id"], "intval") : array() ;
+
+        $data = Upload_logic::order_output( $order_id );
+        
+        dd($data);
+
     }
 
 }

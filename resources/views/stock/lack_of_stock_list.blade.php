@@ -8,7 +8,7 @@
 	        <div class="col-xs-12">
 				<div class="box">
 					<div class="box-header">
-						<h3 class="box-title">{{ $txt["over_expire_stock_list"] }}</h3>
+						<h3 class="box-title">{{ $txt["lack_stock_list"] }}</h3>
 					</div>
 					<div class="box-body">
 						<table class="table table-bordered table-striped">
@@ -23,16 +23,22 @@
 								</tr>							
 							</thead>
 							<tbody>
-								@foreach($stock_list as $row)
-								<tr>
-									<th>{{ $row['product_name'] }}</th>
-									@if($has_spec)
-									<th>{{ $row['spec_data'] }}</th>
-									@endif
-									<th>{{ $row['safe_amount'] }}</th>
-									<th>{{ $row['stock'] }}</th>
-								</tr>
-								@endforeach													
+								@if( !empty($stock_list) )
+									@foreach($stock_list as $row)
+									<tr>
+										<th>{{ $row['product_name'] }}</th>
+										@if($has_spec)
+										<th>{{ $row['spec_data'] }}</th>
+										@endif
+										<th>{{ $row['safe_amount'] }}</th>
+										<th>{{ $row['stock'] }}</th>
+									</tr>
+									@endforeach
+								@else
+									<tr>
+										<th colspan="4">{{ $txt['find_nothing'] }}</th>
+									</tr>
+								@endif												
 							</tbody>
 						</table>
 					</div>

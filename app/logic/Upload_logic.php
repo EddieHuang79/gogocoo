@@ -391,15 +391,6 @@ class Upload_logic extends Basetool
 
 			$output_data[] = $column_header;
 
-			// foreach ($data as $row) 
-			// {
-
-			// 	$column_desc[] = $txt[$row['name']."_upload_desc"];
-
-			// }
-
-			// $output_data[] = $column_desc;
-
 			$output_data[] = Order_logic::order_upload_sample_output( $data );
 
 			$final_column = $_this->ASC_Decimal_value( count($column_header) );
@@ -415,6 +406,7 @@ class Upload_logic extends Basetool
 		}
 
 	}
+
 
 	// 訂單上傳流程
 
@@ -555,11 +547,203 @@ class Upload_logic extends Basetool
 
 	}
 
+
+	// 訂單轉出
+
+	public static function order_output( $order_id )
+	{
+
+		if ( !empty($order_id) && is_array($order_id) ) 
+		{
+
+			$_this = new self();
+
+			$txt = $_this->txt;
+
+			$result = array();
+
+			$output_data = array();
+
+			$column_header = array();
+
+			$file_name = date("YmdHis")."order_format";
+
+			$title = $txt["order_export_format"];
+
+			$column_header = array(
+								"訂單號碼",
+								$txt["ori_order_date"],
+								$txt["ori_order_status"],
+								$txt["pay_type"],
+								$txt["pay_status"],
+								$txt["currency"],
+								$txt["sub_total"],
+								$txt["post_fee"],
+								$txt["attr_fee"],
+								$txt["discount_fee"],
+								$txt["order_total"],
+								$txt["order_remark"],
+								$txt["send_type"],
+								$txt["send_status"],
+								$txt["receiver"],
+								$txt["receiver_phone"],
+								"地址 1",
+								"地址 2",
+								$txt["receiver_city"],
+								"地區/州/省份",
+								"地區／國家",
+								"郵政編號 (如適用)",
+								$txt["admin_remark"],
+								$txt["send_remark"],
+								$txt["receiver_store_name"],
+								"統一編號",
+								$txt["receipt_address"],
+								$txt["product_code"],
+								"商品名稱",
+								$txt["option"],
+								$txt["number"]
+							);
+
+			$output_data[] = $column_header;
+
+			$tmp = Order_logic::order_output( $order_id );
+
+			foreach ($tmp as $row) 
+			{
+
+				$output_data[] = $row;
+
+			}
+
+			// 待處理
+
+			$final_column = $_this->ASC_Decimal_value( count($column_header) );
+
+			$final_row = count($output_data);
+
+			$result = $_this->export_excel( $output_data, $title, $final_column, $final_row, $file_name );
+
+			$result->download('xlsx');
+
+			exit();
+
+		}
+
+	}
+
+
+	// 通用格式訂單上傳流程
+
+	public static function assign_order_upload_process( $path )
+	{
+
+		$_this = new self();
+
+		$data = Excel::load($path)->toArray();
+
+		$Login_user = Session::get("Login_user");
+
+		$error_data = array();
+
+		$product_name_array = array();
+
+		$i = 2 ;
+
+		try 
+		{
+
+			if (empty($data)) 
+			{
+
+				$error_msg = "資料無法解析，上傳失敗！";
+
+			   throw new \Exception($error_msg);
+
+			}
+
+			$extra_column = Order_logic::get_order_extra_column();
+
+
+			// 檢查商品是否存在，有則回傳product_id，沒有則建立之後回傳建立編號
+
+			foreach ($data as $row) 
+			{
+
+				$row = $_this->column_name_to_english( $row );
+
+				$product_name_array[] = array(
+											"ori_product_name" 	=> $row["ori_product_name"],
+											"product_code" 		=> $row["product_code"],
+										);
+
+			}
+
+			// Mapping id
+
+			$product_id_mapping = Product_logic::get_product_id_or_create_product( $product_name_array );
+
+			foreach ($data as $row) 
+			{
+
+				$row = $_this->column_name_to_english( $row );
+
+				// 檢查商品是否存在，有則回傳product_id，沒有則建立之後回傳建立編號
+
+				$row["product_id"] = isset($product_id_mapping[$row["ori_product_name"]]) ? $product_id_mapping[$row["ori_product_name"]] : 0 ;
+
+				$main_data = Order_logic::insert_format( $row );
+
+				if ( !empty($main_data['product_id']) ) 
+				{
+
+					$order_id = Order_logic::add_order( $main_data );
+
+					$extra_data = Order_logic::insert_extra_format( $row, $extra_column, $order_id );
+
+					Order_logic::add_extra_order( $extra_data );
+
+				}
+				else
+				{
+					
+					// 錯誤處理
+
+					$error_data[] = $i;
+
+				}
+
+				$i++;
+
+			}
+
+
+			if (!empty($error_data)) 
+			{
+
+				$error_row = implode(",", $error_data);
+
+				$error_msg = "第{$error_row}列資料無法解析，上傳失敗！其餘列數成功！";
+
+			  	throw new \Exception($error_msg);
+
+			}
+
+			$subject = $content = "訂單上傳成功！";
+
+			Msg_logic::add_notice_msg( $subject, $content, $Login_user["user_id"] );
+
+		} 
+		catch (\Exception $e) 
+		{
+
+    		$subject = "訂單上傳失敗";
+
+    		$content = "訂單上傳失敗！失敗原因: ". $e->getMessage();
+
+    		Msg_logic::add_notice_msg( $subject, $content, $Login_user["user_id"] );
+
+		}
+
+	}
+
 }
-
-
-
-
-
-
-

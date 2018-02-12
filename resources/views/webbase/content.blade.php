@@ -16,4 +16,7 @@
 		</div>
 		@include('webbase.footer')
 	</div>
+
+	@include('admin_user.invite_friends')
+
 @include('webbase.webend')

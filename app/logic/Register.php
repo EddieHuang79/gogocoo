@@ -34,7 +34,8 @@ class register extends Basetool
                            "verify_code"        => isset($data["verify"]) && !empty($data["verify"]) ? intval($data["verify"]) : 0,
                            "token"              => isset($data["_token"]) && !empty($data["_token"]) ? $_this->strFilter($data["_token"]) : "",
                            "social_register"    => isset($data["social_register"]) && !empty($data["social_register"]) ? intval($data["social_register"]) : 0,
-                           "active"             => 1
+                           "active"             => 1,
+                           "invite_code"        => isset($data["invite_code"]) && !empty($data["invite_code"]) ? $_this->strFilter($data["invite_code"]) : ""
                         );
 
          }

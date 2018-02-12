@@ -59,6 +59,7 @@ class Login extends Basetool
                {
 
                   $error_msg[] = $txt["accont_error"];
+
                   throw new \Exception(json_encode($error_msg));
                }
 
@@ -97,8 +98,6 @@ class Login extends Basetool
                
                }
 
-
-
                $data["real_name"] = $user_data->real_name;
 
                Session::forget('ErrorMsg');
@@ -107,12 +106,15 @@ class Login extends Basetool
 
                Session::put( 'Login_user', $Session_data );
 
-               // 取得store_id first
                $store_info = Store_logic::get_store_info();
 
                $store_info = $store_info[0];
 
                Session::put( 'Store', $store_info->id );
+
+               // 發送折價券
+
+               Ecoupon_logic::send_ecoupon( $send_type = 1, (int)$user_id );
 
             }
             catch(\Exception $e)

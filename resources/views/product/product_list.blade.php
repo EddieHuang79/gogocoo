@@ -29,30 +29,36 @@
 							</tr>							
 						</thead>
 						<tbody>
-							@foreach($product_list as $row)
-							<tr>
-								<th>{{ $row['product_name'] }}</th>
+							@if( !empty($product_list) )
+								@foreach($product_list as $row)
+								<tr>
+									<th>{{ $row['product_name'] }}</th>
 
-								@foreach($product_extra_column as $data)
-								<th>
-									
-									@if( $data['name']=='pic' && !empty($row[$data['name']]) )
-									<img src="/{{ $row[$data['name']] }}" alt="{{ $data['name'] }}" width="200">
-									@else
-										@if( isset($row[$data['name']."_txt"]) )
-										{{ $row[$data['name']."_txt"] }}
+									@foreach($product_extra_column as $data)
+									<th>
+										
+										@if( $data['name']=='pic' && !empty($row[$data['name']]) )
+										<img src="/{{ $row[$data['name']] }}" alt="{{ $data['name'] }}" width="200">
 										@else
-										{{ $row[$data['name']] }}
-										@endif					
-									@endif
+											@if( isset($row[$data['name']."_txt"]) )
+											{{ $row[$data['name']."_txt"] }}
+											@else
+											{{ $row[$data['name']] }}
+											@endif					
+										@endif
 
-								</th>
+									</th>
+									@endforeach
+
+									<th>{{ $row['safe_amount'] }}</th>
+									<td><input type="button" class="btn btn-primary" value="{{ $txt['edit'] }}" onClick="location.href='/product/{{ $row['product_id'] }}/edit?';"/></td>
+								</tr>
 								@endforeach
-
-								<th>{{ $row['safe_amount'] }}</th>
-								<td><input type="button" class="btn btn-primary" value="{{ $txt['edit'] }}" onClick="location.href='/product/{{ $row['product_id'] }}/edit?';"/></td>
-							</tr>
-							@endforeach													
+							@else
+								<tr>
+									<th colspan="7">{{ $txt['find_nothing'] }}</th>
+								</tr>
+							@endif												
 						</tbody>
 					</table>
 				</div>

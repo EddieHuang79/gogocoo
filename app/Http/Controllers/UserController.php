@@ -14,6 +14,7 @@ use App\logic\Redis_tool;
 use Illuminate\Support\Facades\Session;
 use App\logic\Register;
 use Illuminate\Support\Facades\Storage;
+use App\logic\Edm_logic;
 
 class UserController extends Basetool
 {
@@ -143,7 +144,6 @@ class UserController extends Basetool
         $_POST["parents_id"] = isset($Login_user["user_id"]) ? $Login_user["user_id"] : 0 ;
         
         $_POST["social_register"] = 0;
-
 
         try
         {
@@ -402,6 +402,23 @@ class UserController extends Basetool
         echo json_encode($result);
 
         exit();
+
+    }
+
+
+    // 發送邀請信
+
+    public function send_invite_mail()
+    {
+
+        $email = isset( $_POST["email"] ) ? trim($_POST["email"]) : "" ;
+        $friend_name = isset( $_POST["friend_name"] ) ? trim($_POST["friend_name"]) : "" ;
+
+        // 發送邀請信
+
+        Edm_logic::send_invite_mail( $email, $friend_name );
+
+        return back();
 
     }
 

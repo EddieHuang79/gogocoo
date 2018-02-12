@@ -62,7 +62,48 @@ class Order extends Migration
             $table->increments('extra_id')->unique();
             $table->integer('order_id')->unsigned();
             $table->integer('logistics_type')->default(1);
-            $table->text('remark')->default('');
+            $table->string('ori_order_number')->default('');        // 訂單編號
+            $table->date('ori_order_date')->default(date("Y-m-d"));            // 訂單日期
+            $table->string('ori_order_status')->default(1);       // 訂單狀態
+            $table->string('ori_custom_name')->default('');         // 顧客姓名
+            $table->string('ori_custom_email')->default('');        // email
+            $table->string('ori_custom_phone')->default('');        // 顧客電話
+            $table->string('ori_custom_sex')->default(1);         // 性別
+            $table->date('ori_custom_birthday')->default(date("Y-m-d"));       // 生日
+            $table->text('remark')->default('');                    // 備註
+            $table->string('send_type')->default(1);              // 送貨方式
+            $table->string('send_status')->default(1);            // 送貨狀態
+            $table->string('pay_type')->default(1);               // 付款方式
+            $table->string('pay_status')->default(1);             // 付款狀態
+            $table->integer('sub_total')->default(0);              // 小計
+            $table->integer('post_fee')->default(0);               // 運費
+            $table->integer('attr_fee')->default(0);               // 附加費
+            $table->integer('discount_fee')->default(0);               // 優惠
+            $table->integer('total')->default(0);                  // 合計
+            $table->string('trade_code')->default('');              // 交易編號
+            $table->date('pay_date')->default(date("Y-m-d"));                  // 付款日期
+            $table->string('currency')->default('');                // 幣別
+            $table->string('admin_remark')->default('');            // 管理員備註
+            $table->string('receiver')->default('');                // 收件人
+            $table->string('receiver_phone')->default('');          // 收件人電話
+            $table->string('receiver_address1')->default('');       // 收件人地址1
+            $table->string('receiver_address2')->default('');       // 收件人地址2
+            $table->string('receiver_city')->default('');           // 收件人城市
+            $table->string('receiver_section')->default('');        // 收件人區域
+            $table->string('receiver_country')->default('');        // 收件人國家
+            $table->string('post_code')->default('');               // 收件人郵遞區號
+            $table->string('send_remark')->default('');             // 送貨備註
+            $table->string('receiver_store_name')->default('');     // 收件門市
+            $table->string('receiver_store_code')->default('');     // 收件店號
+            $table->string('send_code')->default('');               // 送貨編號
+            $table->string('receipt_number')->default('');          // 發票號碼
+            $table->string('receipt_title')->default('');           // 發票抬頭
+            $table->string('company_code')->default('');            // 公司統編
+            $table->string('receipt_address')->default('');         // 發票地址
+            $table->string('product_code')->default('');            // 產品編號
+            $table->string('ori_product_name')->default('');        // 產品名稱
+            $table->string('option')->default('');                  // 選項
+            $table->integer('is_additional_product')->default(0);   // 是否為加購品
             $table->engine = 'InnoDB';
         });
 
@@ -130,7 +171,20 @@ class Order extends Migration
             )
         );
 
-         // role_service
+        $sub_admin_service_id[] = DB::table($this->service_table)->insertGetId(
+            array(
+                'name'          => '訂單匯出',
+                'link'          => '/order_output',
+                'parents_id'    => $order_id,
+                'status'        => 1,
+                'public'        => 4,
+                'sort'          => 51,
+                'created_at'    => date("Y-m-d H:i:s"),
+                'updated_at'    => date("Y-m-d H:i:s")
+            )
+        );
+
+        // role_service
         $service_data = DB::table('service')->select('id')->where('name', 'like', '%訂單%')->get();
         
         foreach ($service_data as $row) 

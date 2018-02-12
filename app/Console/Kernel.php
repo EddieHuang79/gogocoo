@@ -9,7 +9,10 @@ use App\Mail\Edm;
 use App\Mail\NoticeDeadline;
 use App\Mail\RegisterMail;
 use App\Mail\FirstBuyGift;
+use App\Mail\InviteCode;
 use Mail;
+use App\logic\Ecoupon_logic;
+use App\logic\Store_logic;
 
 class Kernel extends ConsoleKernel
 {
@@ -104,11 +107,19 @@ class Kernel extends ConsoleKernel
 
                                                 break;
 
+                                            case 6:
+
+                                                $user = json_decode($row->data);
+
+                                                Mail::to( array( $user->friend_mail ) )->send(new InviteCode( $user ));
+
+                                                break;
+
                                         }
 
                                     }
                         
-                                })->cron("*/10 * * * *");
+                                })->cron("* * * * *");
 
                 }
 
@@ -136,7 +147,53 @@ class Kernel extends ConsoleKernel
                             }   
 
                         })
-                        ->cron("0 1 * * *");   
+                        ->cron("0 1 * * *");  
+
+
+            // 折價券到期提醒
+
+            $schedule->call(function () {
+
+                            $user_msg = array();
+
+                            $store_user_mapping_array = Store_logic::get_store_user_mapping_array();
+
+                            $data = Ecoupon_logic::get_expiring_ecoupon();
+
+                            if ( !empty($data) && is_array($data) ) 
+                            {
+
+                                foreach ($data as $row) 
+                                {
+                                    
+                                    $user_id = isset($store_user_mapping_array[$row["store_id"]]) ? $store_user_mapping_array[$row["store_id"]] : 0 ;
+
+                                    if ( !in_array($user_id, $user_msg) ) 
+                                    {
+                                        
+                                        $user_msg[] = $user_id;
+                                        
+                                    }
+
+                                }
+
+                                foreach ($user_msg as $row) 
+                                {
+
+                                    // 寫入訊息
+
+                                    $subject = "折價券即將到期";
+
+                                    $content = "請前往[GO商城] > [財產清單]中查看！";
+
+                                    Msg_logic::add_normal_msg( $subject, $content, $row );
+
+                                }
+
+                            }   
+
+                        })
+                        ->cron("0 2 * * *");  
 
         }         
 

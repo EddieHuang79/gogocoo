@@ -24,6 +24,8 @@ class StoreController extends Basetool
     public function index(lain $lain)
     {
 
+        Shop_logic::get_extend_deadline_option();
+
         // get now page
 
         // Service_logic::get_service_id_by_url_and_save( $request->path() );

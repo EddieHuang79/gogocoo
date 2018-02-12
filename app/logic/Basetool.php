@@ -7,6 +7,27 @@ use Illuminate\Support\Facades\Session;
 
 abstract class Basetool
 {
+
+    protected $dirty_word_list = array(
+                                    "賤貨",
+                                    "婊子",
+                                    "米蟲",
+                                    "下流",
+                                    "白痴",
+                                    "智障",
+                                    "人渣",
+                                    "死番仔",
+                                    "神經病",
+                                    "王八蛋",
+                                    "幹你娘",
+                                    "更年期到了",
+                                    "賤人就是矯情",
+                                    "不要臉髒東西",
+                                    "你去吃屎啦",
+                                    "頭殼裝屎",
+                                    "特殊性關係"
+                                );
+
     public function strFilter( $str = '' )
     {
 
@@ -100,7 +121,24 @@ abstract class Basetool
     public function ASC_Decimal_value( $count )
     {
 
-        return chr( 64 + $count );
+        $result = "" ;
+
+        if ( $count > 0 && is_int($count) ) 
+        {
+            
+            $a = (int) floor( $count / 26 ) ;
+
+            $b = $count % 26 ;
+
+            $first_word = $a > 0 ? chr( 64 + $a ) : "" ;
+
+            $second_word = chr( 64 + $b );
+
+            $result = $first_word . $second_word;
+            
+        }
+
+        return $result;
 
     }
 
@@ -314,5 +352,55 @@ abstract class Basetool
       return $result;
 
     }
+
+
+    // 髒話判斷
+
+    public function is_dirty_word( $name )
+    {
+
+        $result = false;
+
+        $dirty_word_list = $this->dirty_word_list;
+
+        if ( !empty($name) && is_string($name) && in_array($name, $dirty_word_list) ) 
+        {
+
+            $result = true;
+            
+        }
+
+        return $result;
+
+    }
+
+
+    // 亂數
+
+    public function rand( $length = 0 )
+    {
+
+        $result = "";
+
+        $randSeed = array("A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","0","1","2","3","4","5","6","7","8","9");
+
+        if ( !empty($length) && is_int($length) ) 
+        {
+
+            for ($i=0; $i < $length; $i++) 
+            { 
+
+                $randIndex = mt_rand(0, count($randSeed) - 1);
+
+                $result .= $randSeed[$randIndex];
+
+            }
+            
+        }
+
+        return $result;
+
+    }
+
 
 }

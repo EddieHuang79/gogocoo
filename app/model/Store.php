@@ -112,4 +112,16 @@ class Store extends Model
 		return $result;
 
 	}
+
+	public static function get_all_store()
+	{
+
+		$_this = new self;
+
+		$result = DB::table($_this->table)->get();
+
+		return $result;
+
+	}
+
 }

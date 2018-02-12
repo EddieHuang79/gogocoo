@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Storage;
 use File;
 use App\logic\Promo_logic;
 use Illuminate\Support\Facades\Session;
+use App\logic\Admin_user_logic;
 
 class Edm_logic extends Basetool
 {
@@ -493,6 +494,136 @@ class Edm_logic extends Basetool
 
 		return $result;
 
-	}	
+	}
+
+
+	// 發送邀請信
+
+	public static function send_invite_mail( $email, $friend_name )
+	{
+
+		$_this = new self();
+
+		if ( !empty($email) ) 
+		{
+
+			$store_id = Session::get('Store');
+
+			$Login_user = Session::get( 'Login_user' );
+
+			try 
+			{
+
+				// 信件排程中
+
+				$has_pending_mail = $_this->has_pending_mail( 6 );
+
+				if ( $has_pending_mail === true ) 
+				{
+
+					$ErrorMsg = array(
+					            "subject" => "請勿短時間內連續寄信喔！",
+					            "content" => "信件發送準備中，請稍後！",
+					         );
+
+					throw new \Exception( json_encode($ErrorMsg) );
+				  
+				}
+
+
+				// 已經邀請過朋友
+
+				$already_invite_friends = Admin_user_logic::check_invite_qualifications( 1, $store_id );
+
+				if ( $already_invite_friends === true ) 
+				{
+
+					$ErrorMsg = array(
+					            "subject" => "您已領過邀請禮摟！",
+					            "content" => "邀請禮無法重複領取喔，謝謝您大力推廣本服務！",
+					         );
+
+					throw new \Exception( json_encode($ErrorMsg) );
+				  
+				}
+
+				// 髒話過濾
+
+				$is_dirty_word = $_this->is_dirty_word( $friend_name );
+
+				$friend_name = $is_dirty_word === true ? "朋友" : $friend_name;
+
+				$user = array(
+							"account" 		=> 	$Login_user["account"],
+							"real_name" 	=>	$Login_user["real_name"],
+							"friend_mail" 	=>	$email,
+							"friend_name" 	=>	$friend_name,
+							"invite_code" 	=>	Admin_user_logic::invite_code_encode( $store_id )
+		 				);
+
+				$data = array(
+					"subject"       => "註冊邀請信",
+					"data"       	=> json_encode($user),
+					"type"     		=> 6,
+					"send_time"     => date("Y-m-d H:i:s"),
+					"status"        => 2,
+					"created_at"    => date("Y-m-d H:i:s"),
+					"updated_at"    => date("Y-m-d H:i:s")
+				);
+
+				$_this->add_edm( $data );
+				
+			} 
+			catch (\Exception $e) 
+			{
+
+			   // 寫入錯誤訊息
+
+			   $error_msg = json_decode($e->getMessage() ,true);
+
+			   Msg_logic::add_normal_msg( $error_msg["subject"], $error_msg["content"], $user_id );
+
+			}
+
+		}
+
+	}
+
+
+	// 確認是否信件在等待發送
+
+	public static function has_pending_mail( $type )
+	{
+
+		$result = false;
+
+		if ( !empty($type) && is_int($type) ) 
+		{
+
+			$Login_user = Session::get( 'Login_user' );
+
+			$data = Edm::has_pending_mail( $type );
+
+			foreach ($data as $row) 
+			{
+
+				$tmp = isset($row->data) && !empty($row->data) ? json_decode($row->data, true) : array() ;
+
+				if ( isset($tmp["account"]) && $Login_user["account"] === $tmp["account"] ) 
+				{
+
+					$result = true;
+
+					break;
+					
+				}
+
+			}
+			
+		}
+
+		return $result;
+
+	}
 
 }

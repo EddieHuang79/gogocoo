@@ -28,6 +28,7 @@ class ComposerServiceProvider extends ServiceProvider
         View::composer('webbase.nav', 'App\Http\ViewComposers\Autoload@GetPhoto');
         View::composer('webbase.menu', 'App\Http\ViewComposers\Autoload@GetPhoto');
         View::composer('webbase.content', 'App\Http\ViewComposers\Autoload@is_over_deadline');
+        View::composer('webbase.content', 'App\Http\ViewComposers\Autoload@displayInviteBtn');
     }
 
     /**

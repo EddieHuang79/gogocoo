@@ -6,6 +6,7 @@ use App\model\Admin_user;
 use Illuminate\Support\Facades\Session;
 use App\logic\Shop_logic;
 use App\logic\Web_cht;
+use App\logic\Msg_logic;
 
 class Admin_user_logic extends Basetool
 {
@@ -463,7 +464,7 @@ class Admin_user_logic extends Basetool
 
             $data = Admin_user::is_sub_admin( $data["user_id"] );
 
-            $result = is_object($data) ? $data->parents_id : 0 ; 
+            $result = is_object($data) ? (int)$data->parents_id : 0 ; 
 
          } 
 
@@ -732,5 +733,248 @@ class Admin_user_logic extends Basetool
 
    }
 
+
+   // 邀請碼編碼
+
+   public static function invite_code_encode( $store_id )
+   {
+
+      $_this = new self();
+
+      $result = "";
+
+      if ( !empty($store_id) && is_int($store_id) ) 
+      {
+
+         $prefix = "";
+
+         $suffix = "";
+
+         for ($i=0; $i < 3; $i++) 
+         { 
+
+            $prefix_rand = mt_rand( 1 , 25 );
+         
+            $prefix .= $_this->ASC_Decimal_value( $prefix_rand );
+
+            $suffix_rand = mt_rand( 1 , 25 );
+
+            $suffix .= $_this->ASC_Decimal_value( $suffix_rand );
+
+         }
+
+         $result = "InviteCode_" . $store_id ;
+
+         $result = $prefix . base64_encode( $result ) . $suffix ;
+         
+      }
+
+      return $result;
+
+   }
+
+
+   // 邀請碼解碼 回傳store_id
+
+   public static function invite_code_decode( $code )
+   {
+
+      $result = "";
+
+      if ( !empty($code) && is_string($code) ) 
+      {
+
+         $code = substr($code, 3, strlen($code) - 6 ) ;
+
+         $decode = base64_decode( $code ) ;
+
+         $tmp = explode("_", $decode);
+
+         $result = isset($tmp[1]) ? intval($tmp[1]) : 0;
+
+      }      
+
+      return $result;
+
+   }
+
+
+   // 寫入邀請記錄 邀請store id, 被邀請store id
+
+   public static function invite_record( $invite_store_id, $invited_store_id )
+   {
+
+      $result = false;
+
+      if ( !empty($invite_store_id) && is_int($invite_store_id) && !empty($invited_store_id) && is_int($invited_store_id) ) 
+      {
+
+         $data = array(
+                     "invite_store_id"    => $invite_store_id,
+                     "invited_store_id"   => $invited_store_id,
+                     "created_at"         => date("Y-m-d H:i:s"),
+                     "updated_at"         => date("Y-m-d H:i:s")
+                  );
+
+         Admin_user::add_invite_record( $data );
+
+         $result = true;
+         
+      }
+
+      return $result;
+
+   }
+
+
+   // 寫入邀請記錄 邀請store id, 被邀請store id
+
+   public static function send_invite_code_process( $invite_code, $user_id, $store_id )
+   {
+
+      $_this = new self();
+
+      $result = false;
+
+      if ( !empty($invite_code) && is_string($invite_code) && !empty($user_id) && is_int($user_id) && !empty($store_id) && is_int($store_id) ) 
+      {
+
+         try 
+         {
+            
+               // 解碼，尋找發送來源
+
+               $invite_store_id = $_this->invite_code_decode( $invite_code );
+
+               if ( empty($invite_store_id) || !is_int($invite_store_id) ) 
+               {
+
+                     $ErrorMsg = array(
+                                    "subject" => "邀請碼無法識別！",
+                                    "content" => "邀請碼無法識別，請確認是否有誤！",
+                                 );
+
+                     throw new \Exception( json_encode($ErrorMsg) );
+                  
+               }
+
+               // 檢查被邀請碼是否被使用過
+
+               $invite_code_not_effective = $_this->check_invite_qualifications( $type = 1, $invite_store_id );
+
+               if ( $invite_code_not_effective === true ) 
+               {
+
+                     $ErrorMsg = array(
+                                    "subject" => "邀請碼已被使用過！",
+                                    "content" => "邀請碼已失效！",
+                                 );
+
+                     throw new \Exception( json_encode($ErrorMsg) );
+                  
+               }
+
+               // 檢查註冊人是否已領過
+
+               $already_get_gift = $_this->check_invite_qualifications( $type = 2, $store_id );
+
+               if ( $already_get_gift === true ) 
+               {
+
+                     $ErrorMsg = array(
+                                    "subject" => "您已領取過禮物！",
+                                    "content" => "禮物已領取過，無法重複領取！",
+                                 );
+
+                     throw new \Exception( json_encode($ErrorMsg) );
+                  
+               }
+
+               // 邀請禮 id 2
+
+               Shop_logic::add_free_gift( $invite_store_id, 2 );
+
+               // 被邀請禮 id 3
+
+               Shop_logic::add_free_gift( $store_id, 3 );
+
+               // 領取記錄 邀請store id, 被邀請store id
+
+               $_this->invite_record( $invite_store_id, $store_id );
+
+               // 寫入訊息
+
+               $subject = "邀請碼優惠已送出！";
+
+               $content = "邀請碼優惠已發送至您的帳號，請前往GO商城 > 購買紀錄檢視！";
+
+               Msg_logic::add_normal_msg( $subject, $content, $user_id );
+
+
+         } 
+         catch (\Exception $e) 
+         {
+          
+               // 寫入錯誤訊息
+
+               $error_msg = json_decode($e->getMessage() ,true);
+
+               Msg_logic::add_normal_msg( $error_msg["subject"], $error_msg["content"], $user_id );
+
+         }
+          
+      }      
+
+      return $result;
+
+   }
+
+   public static function check_invite_qualifications( $type, $store_id )
+   {
+
+      $result = false;
+
+      if ( !empty($type) && is_int($type) && !empty($store_id) && is_int($store_id) ) 
+      {
+
+         $column = $type === 1 ? "invite_store_id" : "invited_store_id" ;
+
+         $data = Admin_user::check_invite_qualifications( $column, $store_id );
+         
+         $result = $data->isNotEmpty() === true ? true : false ; 
+
+      }
+
+      return $result;
+
+   }
+
+   public static function check_display_invite_btn()
+   {
+
+      $_this = new self();
+
+      $result = false;
+
+      $user_id = $_this->user_id;
+
+      $store_info = Store_logic::get_store_info_logic( $user_id );
+
+      $store_id = array();
+
+      foreach ($store_info as $row) 
+      {
+
+         $store_id[] = $row->id;
+
+      }
+
+      $data = Admin_user::check_display_invite_btn( $store_id );
+
+      $result = $data->isNotEmpty() === true ? true : false ;
+
+      return $result;
+
+   }
 
 }

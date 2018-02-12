@@ -109,7 +109,7 @@ class Option_logic extends Basetool
 
 	// 取得選單
 
-	public static function get_select_option( $data )
+	public static function get_select_option( $data, $not_show_on_page = array() )
 	{
 
 		$_this = new self();
@@ -122,22 +122,27 @@ class Option_logic extends Basetool
 			foreach ($data as $key => $value) 
 			{
 
-				$option_key = "_".$value['name'];
-
-				$option_data = $_this->get_option( array( $option_key ) );
-
-				if ($option_data->count() > 0) 
+				if ( !in_array($value['name'], $not_show_on_page) ) 
 				{
-					
-					foreach ($option_data as &$row) 
+
+					$option_key = "_".$value['name'];
+
+					$option_data = $_this->get_option( array( $option_key ) );
+
+					if ($option_data->count() > 0) 
 					{
 						
-						$row->value = json_decode($row->value, true);
+						foreach ($option_data as &$row) 
+						{
+							
+							$row->value = json_decode($row->value, true);
+
+						}
+
+						$result[$value['name']] = $option_data[0]->value;
 
 					}
-
-					$result[$value['name']] = $option_data[0]->value;
-
+					
 				}
 
 			}

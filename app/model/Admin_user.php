@@ -16,6 +16,8 @@ class Admin_user
 
    protected $store = 'store';
 
+   protected $invite_record = 'invite_record';
+
 
    public static function get_user_list( $option = array(), $page_size = 15 )
    {
@@ -307,6 +309,39 @@ class Admin_user
 
       return $result; 
 
+   }
+
+   public static function add_invite_record( $data )
+   {
+
+         $_this = new self;
+      
+         $result = DB::table($_this->invite_record)->insert( $data );
+
+         return $result; 
+         
+   }
+
+   public static function check_invite_qualifications( $column, $store_id )
+   {
+
+         $_this = new self;
+      
+         $result = DB::table($_this->invite_record)->where( $column, '=', $store_id)->get();
+
+         return $result; 
+         
+   }
+
+   public static function check_display_invite_btn( $store_id )
+   {
+
+         $_this = new self;
+      
+         $result = DB::table($_this->invite_record)->whereIn( "invite_store_id", $store_id)->get();
+
+         return $result; 
+         
    }
 
 }

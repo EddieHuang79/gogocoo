@@ -53,6 +53,8 @@ Route::resource('user', 'UserController');
 
 Route::post('extend_user_process', ['as'=>'admin.extend_user_process','uses'=>'UserController@extend_user_process']);
 
+Route::post('invite_friend', ['as'=>'admin.invite_friend','uses'=>'UserController@send_invite_mail']);
+
 // photo
 
 Route::get('photo', ['as'=>'user.photo_index','uses'=>'UserController@photo_index']);
@@ -101,6 +103,8 @@ Route::get('buy', ['as'=>'shop.buy','uses'=>'ShopController@index']);
 
 Route::get('buy_record', ['as'=>'shop.service_buy_record','uses'=>'ShopController@shop_record']);
 
+Route::get('property_list', ['as'=>'shop.property_list','uses'=>'ShopController@property_list']);
+
 Route::post('shop_buy_process', ['as'=>'shop.service_buy_process','uses'=>'ShopController@shop_buy_process']);
 
 Route::post('get_mall_product', ['as'=>'shop.get_mall_product','uses'=>'ShopController@get_mall_product']);
@@ -138,6 +142,10 @@ Route::get('lack_of_stock_list', ['as'=>'stock.lack_of_stock_list','uses'=>'Stoc
 Route::resource('order', 'OrderController');
 
 Route::post('order_verify', ['as'=>'order.order_verify','uses'=>'OrderController@verify']);
+
+Route::get('order_output', ['as'=>'order.order_output','uses'=>'OrderController@output']);
+
+Route::post('order_output_process', ['as'=>'order.order_output_process','uses'=>'OrderController@order_output_process']);
 
 // upload
 
@@ -202,3 +210,9 @@ Route::get('edm_example', ['as'=>'edm.edm_example','uses'=>'EDMController@edm_ex
 // mall promo price
 
 Route::resource('promo', 'PromoPriceController');
+
+// Ecoupon
+
+Route::resource('ecoupon', 'EcouponController');
+
+Route::post('getEcouponDiscount', ['as'=>'ecoupon.getEcouponDiscount','uses'=>'EcouponController@getEcouponDiscount']);

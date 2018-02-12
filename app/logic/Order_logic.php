@@ -7,6 +7,7 @@ use App\logic\Option_logic;
 use App\logic\Stock_logic;
 use App\logic\Msg_logic;
 use Illuminate\Support\Facades\Session;
+use Maatwebsite\Excel\Facades\Excel;
 
 class Order_logic extends Basetool
 {
@@ -27,6 +28,56 @@ class Order_logic extends Basetool
 									2 => "否"
 								);
 
+	protected $not_show_on_page = array(
+									'pay_status', 
+									'pay_time', 
+									'refund_time', 
+									'cancel_time',
+									'ori_order_number',      // 訂單編號
+									'ori_order_date',        // 訂單日期
+									'ori_order_status',      // 訂單狀態
+									'ori_custom_name',       // 顧客姓名
+									'ori_custom_email',      // email
+									'ori_custom_phone',      // 顧客電話
+									'ori_custom_sex',        // 性別
+									'ori_custom_birthday',   // 生日
+									'remark',                // 備註
+									'send_type',             // 送貨方式
+									'send_status',           // 送貨狀態
+									'pay_type',              // 付款方式
+									'pay_status',            // 付款狀態
+									'sub_total',             // 小計
+									'post_fee',              // 運費
+									'attr_fee',              // 附加費
+									'discount_fee',          // 優惠
+									'total',                 // 合計
+									'trade_code',            // 交易編號
+									'pay_date',               // 付款日期
+									'currency',               // 幣別
+									'admin_remark',           // 管理員備註
+									'receiver',               // 收件人
+									'receiver_phone',         // 收件人電話
+									'receiver_address1',      // 收件人地址1
+									'receiver_address2',      // 收件人地址2
+									'receiver_city',          // 收件人城市
+									'receiver_section',       // 收件人區域
+									'receiver_country',       // 收件人國家
+									'post_code',              // 收件人郵遞區號
+									'send_remark',            // 送貨備註
+									'receiver_store_name',    // 收件門市
+									'receiver_store_code',    // 收件店號
+									'send_code',              // 送貨編號
+									'receipt_number',         // 發票號碼
+									'receipt_title',          // 發票抬頭
+									'company_code',           // 公司統編
+									'receipt_address',        // 發票地址
+									'product_code',           // 產品編號
+									'product_name',           // 產品名稱
+									'option',                 // 選項
+									'is_additional_product',  // 是否為加購品
+									'is_preorder',            // 是否為預購
+									'preorder_hint'           // 預購提示
+							);
 
 	public function __construct()
 	{
@@ -42,11 +93,13 @@ class Order_logic extends Basetool
 	public static function get_order_extra_column()
 	{
 
+		$_this = new self();
+
 		$result = array();
 
 		$data = Order::get_order_extra_column();
 
-		$not_show_on_page = array('pay_status', 'pay_time', 'refund_time', 'cancel_time');
+		$not_show_on_page = $_this->not_show_on_page;
 
 		unset($data[0], $data[1]);
 
@@ -346,7 +399,7 @@ class Order_logic extends Basetool
 
 				$result[$key1]['order_number_txt'] = $_this->order_number_encode($row);
 
-				$result[$key1]['logistics_type_txt'] = $logistics_type_txt[$row->logistics_type];
+				$result[$key1]['logistics_type_txt'] = isset($logistics_type_txt[$row->logistics_type]) ? $logistics_type_txt[$row->logistics_type] : $logistics_type_txt[2] ;
 
 				foreach ($option_data as $key2 => $data) 
 				{
@@ -700,7 +753,7 @@ class Order_logic extends Basetool
 	        foreach ($FIFO_result as $order_id => $data) 
 	        {
 
-	        	if ( $data['result'] === true ) 
+	        	if ( isset($data['result']) && $data['result'] === true ) 
 	        	{
 
 	    			// 更改狀態
@@ -737,7 +790,7 @@ class Order_logic extends Basetool
 
 			$content = !empty($error_data) ? "庫存不足，無法入帳！訂單編號: ". implode(",", $error_data) : $subject ;
 
-	        // Msg_logic::add_notice_msg( $subject, $content, $Login_user["user_id"] );
+	        Msg_logic::add_notice_msg( $subject, $content, $Login_user["user_id"] );
 
 		}
 
@@ -844,6 +897,184 @@ class Order_logic extends Basetool
 		{
 
 			$result = Order::get_hotSell_top5( $week_date, $shop_id, $status );
+
+		}
+
+		return $result;
+
+	}
+
+
+	// 訂單匯出
+
+	public static function order_output( $id )
+	{
+
+		$_this = new self();
+
+		$result = array();
+
+		if ( !empty($id) && is_array($id) ) 
+		{
+		
+			$data = Order::get_order_data_for_output( $id );
+
+			foreach ($data as $row) 
+			{
+
+				$result[] = $_this->order_output_format( $row );
+			
+			}
+
+		}
+
+		return $result;
+
+	}
+
+
+	// Shopline 匯入格式
+
+	public static function shopline_upload_format( $data )
+	{
+
+		$_this = new self();
+
+		$result = array();
+
+		if ( !empty($data) && is_array($data) ) 
+		{
+
+			// $shop_id = Session::get( 'Store' );
+
+			// $spec_id = isset($data["spec_id"]) ? intval($data["spec_id"]) : 0 ;
+
+			// $product_id = isset($data["product_id"]) ? intval($data["product_id"]) : 0 ;
+
+	  //       if ( !empty($product_id) ) 
+	  //       {
+
+			// 	$order_number = $_this->get_order_number();
+
+			// 	$number = isset($data["number"]) ? intval($data["number"]) : 0 ;
+
+				$result = array(
+				            "order_number"      	=> "",
+				            "order_date"      		=> "",
+				            "order_status"      	=> "",
+				            "custom"      			=> "",
+				            "email"      			=> "",
+				            "phone_number"      	=> "",
+				            "sex"      				=> "",
+				            "birthday"      		=> "",
+				            "remark"      			=> "",
+				            "send_type"      		=> "",
+				            "send_status"      		=> "",
+				            "pay_type"      		=> "",
+				            "pay_status"      		=> "",
+				            "sub_total"      		=> "",
+				            "post_fee"      		=> "",
+				            "attr_fee"      		=> "",
+				            "discount"      		=> "",
+				            "total"      			=> "",
+				            "trade_code"      		=> "",
+				            "pay_date"      		=> "",
+				            "currency"      		=> "",
+				            "admin_remark"      	=> "",
+				            "receiver"      		=> "",
+				            "receiver_phone"      	=> "",
+				            "receiver_address1"     => "",
+				            "receiver_address2"     => "",
+				            "receiver_city"     	=> "",
+				            "receiver_section"     	=> "",
+				            "receiver_country"     	=> "",
+				            "post_code"     		=> "",
+				            "send_remark"     		=> "",
+				            "receiver_store_name"   => "",
+				            "receiver_store_code"   => "",
+				            "send_code"   			=> "",
+				            "receipt_number"   		=> "",
+				            "receipt_title"   		=> "",
+				            "company_code"   		=> "",
+				            "receipt_address"   	=> "",
+				            "product_code"		   	=> "",
+				            "option"		   		=> "",
+				            "number"		   		=> "",
+				            "attr_product"		   	=> "",
+				            "is_preorder"		   	=> "",
+				            "preorder_hint"		   	=> "",
+				            "created_at"    		=> date("Y-m-d H:i:s"),
+				            "updated_at"    		=> date("Y-m-d H:i:s")
+				         );
+
+	        // }
+
+        }
+
+		return $result;
+
+	}
+
+
+	// 取得不顯示在畫面的欄位
+
+	public static function get_not_show_on_page()
+	{
+
+		$_this = new self();
+
+		return $_this->not_show_on_page;
+
+	}
+
+
+	// 訂單匯出格式
+
+	protected function order_output_format( $data )
+	{
+
+		$_this = new self();
+
+		$result = array();
+
+		$status_txt = $_this->status_txt;
+
+		if ( !empty($data) ) 
+		{
+
+			$result = array(
+						"order_number_txt" 			=> !empty($data->ori_order_number) ? $data->ori_order_number : $_this->order_number_encode( $data ),
+						"order_date" 				=> $data->ori_order_date !== '0000-00-00' ? $data->ori_order_date : date("Y-m-d", strtotime($data->created_at)),
+						"order_status" 				=> !empty($data->ori_order_status) ? $data->ori_order_status : $status_txt[$data->status] ,
+						"pay_type" 					=> !empty($data->pay_type) ? $data->pay_type : "",
+						"pay_status" 				=> !empty($data->pay_status) ? $data->pay_status : "",
+						"currency" 					=> $data->currency,
+						"sub_total" 				=> $data->sub_total,
+						"post_fee" 					=> $data->post_fee,
+						"attr_fee" 					=> $data->attr_fee,
+						"discount" 					=> $data->discount_fee,
+						"total" 					=> $data->total,
+						"remark" 					=> $data->remark,
+						"send_type" 				=> !empty($data->send_type) ? $data->send_type : "",
+						"send_status" 				=> !empty($data->send_status) ? $data->send_status : "",
+						"receiver" 					=> $data->receiver,
+						"receiver_phone" 			=> $data->receiver_phone,
+						"receiver_address1" 		=> $data->receiver_address1,
+						"receiver_address2" 		=> $data->receiver_address2,
+						"receiver_city" 			=> $data->receiver_city,
+						"receiver_section" 			=> $data->receiver_section,
+						"receiver_country" 			=> $data->receiver_country,
+						"receiver_postcode" 		=> $data->post_code,
+						"admin_remark" 				=> $data->admin_remark,
+						"send_remark" 				=> $data->send_remark,
+						"receiver_store_name" 		=> $data->receiver_store_name,
+						"receipt_number" 			=> $data->receipt_number,
+						"receipt_address" 			=> $data->receipt_address,
+						"product_code" 				=> $data->product_code,
+						"product_name" 				=> !empty($data->ori_product_name) ? $data->ori_product_name : $data->product_name,
+						"option" 					=> $data->option,
+						"number" 					=> $data->number,
+					);
 
 		}
 

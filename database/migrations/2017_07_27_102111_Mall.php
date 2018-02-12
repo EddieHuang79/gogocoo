@@ -47,6 +47,48 @@ class Mall extends Migration
             $table->engine = 'InnoDB';
         });   
 
+        DB::table($this->mall_shop_table)->insert(
+            array(
+                'product_name'  => '首購禮',
+                'description'   => '首購禮',
+                'pic'           => '',
+                'public'        => 1,
+                'cost'          => 0,
+                'start_date'    => '',
+                'end_date'      => '',
+                'created_at'    => date("Y-m-d H:i:s"),
+                'updated_at'    => date("Y-m-d H:i:s"),
+            )
+        );
+
+        DB::table($this->mall_shop_table)->insert(
+            array(
+                'product_name'  => '邀請禮',
+                'description'   => '邀請禮',
+                'pic'           => '',
+                'public'        => 1,
+                'cost'          => 0,
+                'start_date'    => '',
+                'end_date'      => '',
+                'created_at'    => date("Y-m-d H:i:s"),
+                'updated_at'    => date("Y-m-d H:i:s"),
+            )
+        );
+
+        DB::table($this->mall_shop_table)->insert(
+            array(
+                'product_name'  => '被邀請禮',
+                'description'   => '被邀請禮',
+                'pic'           => '',
+                'public'        => 1,
+                'cost'          => 0,
+                'start_date'    => '',
+                'end_date'      => '',
+                'created_at'    => date("Y-m-d H:i:s"),
+                'updated_at'    => date("Y-m-d H:i:s"),
+            )
+        );
+
         // 商品規格
 
         // #   date_spec - unit: month
@@ -65,6 +107,7 @@ class Mall extends Migration
         Schema::table($this->mall_shop_promo_date_table, function($table) {
            $table->foreign('mall_shop_id')->references('id')->on($this->mall_shop_table);
         });
+
 
         // 購買紀錄
 
@@ -172,6 +215,33 @@ class Mall extends Migration
            $table->foreign('mall_shop_id')->references('id')->on($this->mall_shop_table);
            $table->foreign('mall_product_id')->references('id')->on($this->mall_product_table);
         });
+
+        DB::table($this->mall_product_rel_table)->insert(
+            array(
+                'mall_shop_id'      => 1,
+                'mall_product_id'   => 2,
+                'date_spec'         => 10,
+                'number'            => 1,
+            )
+        );
+
+        DB::table($this->mall_product_rel_table)->insert(
+            array(
+                'mall_shop_id'      => 2,
+                'mall_product_id'   => 2,
+                'date_spec'         => 7,
+                'number'            => 1,
+            )
+        );
+
+        DB::table($this->mall_product_rel_table)->insert(
+            array(
+                'mall_shop_id'      => 3,
+                'mall_product_id'   => 2,
+                'date_spec'         => 3,
+                'number'            => 1,
+            )
+        );
 
 
         // 商城商品使用紀錄

@@ -137,4 +137,15 @@ class Edm
 
 	}
 
+	public static function has_pending_mail( $type )
+	{
+
+		$_this = new self;
+
+		$result = DB::table($_this->table)->where("type", "=", $type)->where("status", "=", "2")->get();
+
+		return $result;
+
+	}
+
 }

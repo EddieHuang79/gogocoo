@@ -11,9 +11,37 @@ use App\logic\Promo_logic;
 use Ecpay;
 use App\Mail\FirstBuyGift;
 use Mail;
+use App\logic\Record_logic;
+use App\logic\Ecoupon_logic;
 
 class Shop_logic extends Basetool
 {
+
+    protected $property_type = array();
+        
+    protected $property_status = array();
+
+    public function __construct()
+    {
+
+      // 文字
+
+      $txt = Web_cht::get_txt();
+
+      $this->property_type = array(
+                1   =>  $txt["property_service"],
+                2   =>  $txt["property_ecoupon"]
+              );
+
+      $this->property_status = array(
+                1   =>  $txt["property_status1"],
+                2   =>  $txt["property_status2"],
+                3   =>  $txt["property_status3"],
+                4   =>  $txt["property_status4"],
+                5   =>  $txt["property_status5"]
+              );
+
+    } 
 
     // 商城商品列表
 
@@ -88,6 +116,10 @@ class Shop_logic extends Basetool
 
       }
 
+      // 取得Ecoupon 使用記錄
+
+      $ecoupon_record = Ecoupon_logic::get_ecoupon_use_record( $store_id );
+
       // 關聯服務
 
       $mall_rel = Mall_logic::get_mall_service_rel( $mall_shop_id );
@@ -114,7 +146,8 @@ class Shop_logic extends Basetool
                             "number"                    => $row->number,
                             "paid_at"                   => $row->paid_at,
                             "cost"                      => $row->cost,
-                            "total"                     => $row->cost * $row->number,
+                            "discount"                  => isset($ecoupon_record[$row->record_id]) ? $ecoupon_record[$row->record_id] : 0,
+                            "total"                     => $row->total,
                             "status"                    => $row->status,
                             "status_txt"                => $row->status < 1 ? $txt["not_active"] : $txt["enable"] ,
                             "include_service"           => $include_service,
@@ -208,10 +241,10 @@ class Shop_logic extends Basetool
                         "mall_shop_id"          => $data['mall_shop_id'],
                         "MerchantTradeNo"       => $MerchantTradeNo,
                         "store_id"              => $store_id,
-                        "cost"                  => $data["cost"],
+                        "cost"                  => $data['cost'],
                         "number"                => $data['buy_number'],
-                        "total"                 => (int)$data['buy_number'] * (int)$data["cost"],
-                        "status"                => 0, // 預設未付
+                        "total"                 => $data['total'],
+                        "status"                => $data['status'], // 預設未付
                         "paid_at"               => date("Y-m-d H:i:s"),
                         "created_at"            => date("Y-m-d H:i:s"),
                         "updated_at"            => date("Y-m-d H:i:s")
@@ -275,53 +308,150 @@ class Shop_logic extends Basetool
 
       $txt = Web_cht::get_txt();
 
-      $result = array();
+      $result = "/buy_record";
 
       Session::forget('record_id');
 
       if ( !empty($data) && is_array($data) ) 
       {
 
-        $data = array(
-                      "mall_product_number"   => isset($data["mall_product_number"]) ? intval($data["mall_product_number"]) : 0,
-                      "mall_shop_id"          => isset($data["mall_shop_id"]) ? intval($data["mall_shop_id"]) : 0,
-                      "Price"                 => isset($data["total"]) ? intval($data["total"]) : 0
-                  );
+          $data = array(
+                        "mall_product_number"   => isset($data["mall_product_number"]) ? intval($data["mall_product_number"]) : 0,
+                        "mall_shop_id"          => isset($data["mall_shop_id"]) ? intval($data["mall_shop_id"]) : 0,
+                        "Ecoupon_code"          => isset($data["Ecoupon"]) ? trim($data["Ecoupon"]) : "",
+                        "total"                 => isset($data["total"]) ? intval($data["total"]) : 0
+                    );
 
-        $mall_product = $_this->get_mall_product( $data["mall_shop_id"] );
+          try 
+          {
 
-        $mall_product["buy_number"] = $data["mall_product_number"];
 
-        // 主資料格式
+              if ( empty($data["mall_shop_id"]) || empty($data["mall_product_number"]) ) 
+              {
 
-        $insert_record = $_this->order_format( $mall_product );
+                  throw new \Exception( "購買商品資訊錯誤" );
 
-        // INSERT 主資料
+              }
 
-        $record_id = Shop::shop_buy_insert( $insert_record );
+              $mall_product = $_this->get_mall_product( $data["mall_shop_id"] );
 
-        $insert_record["record_id"] = (int)$record_id;
+              if ( empty($mall_product) ) 
+              {
 
-        Session::put("record_id", (int)$record_id);
+                  throw new \Exception( "偵測不到對應商品" );
 
-        $use_data = $_this->use_data_format( $insert_record, $mall_product );
+              }
 
-        $use_record_id = Shop::add_use_record( $use_data );
+              $mall_product["buy_number"] = $data["mall_product_number"];
 
-        $record_data = $_this->get_single_record_data( $record_id );
 
-        // 呼叫金流付款
+              // 利用mall_shop_id + mall_product_number計算小計
 
-        $option = array(
-                    "id"                  =>  $record_id,
-                    "MerchantTradeNo"     =>  $_this->order_number_encode( $record_data ),
-                    "mall_product_name"   =>  $mall_product["mall_product_name"],
-                    "mall_product_desc"   =>  $mall_product["mall_product_description"],
-                    "Price"               =>  $data["Price"],
-                    "Quantity"            =>  $data["mall_product_number"],
-                  );
+              $sub_total = $_this->get_sub_total( $mall_product );
 
-        $_this->Call_Payment( $option );
+              // 折價券驗證
+
+              $test_ecoupon = Ecoupon_logic::test_ecoupon_code( $data["Ecoupon_code"] );
+
+              // 取得折扣負項
+
+              $count_discount_price = Ecoupon_logic::get_ecoupon_discount_price( $test_ecoupon["data"]["type"], $test_ecoupon["data"]["ecoupon_content"], $sub_total );
+
+              $total = $sub_total + $count_discount_price["discount_price"] ;
+
+              if ( $total !== $data["total"] ) 
+              {
+
+                  throw new \Exception( "總價計算參數與傳入參數不同" );
+
+              }
+
+              // 設定必要值
+
+              $mall_product["cost"] = $mall_product["promo"] > 0 ? $mall_product["promo"] : $mall_product["cost"] ;
+
+              $mall_product["status"] = $total <= 0 ? 1 : 0 ;
+
+              $mall_product["total"] = $total;
+
+              // 主資料格式
+
+              $insert_record = $_this->order_format( $mall_product );
+
+              // INSERT 主資料
+
+              $record_id = Shop::shop_buy_insert( $insert_record );
+
+              $insert_record["record_id"] = (int)$record_id;
+
+              Session::put("record_id", (int)$record_id);
+
+              $use_data = $_this->use_data_format( $insert_record, $mall_product );
+
+              $use_record_id = Shop::add_use_record( $use_data );
+
+              $record_data = $_this->get_single_record_data( $record_id );
+
+              // 註銷已使用的折價券
+
+              Ecoupon_logic::inactive_ecoupon_use_status( $data["Ecoupon_code"] );
+
+              // 寫入使用記錄
+
+              $use_data_array = array(
+                                  "record_id"         => $record_id,
+                                  "ecoupon_use_id"    => $test_ecoupon["data"]["ecoupon_use_id"],
+                                  "store_id"          => $test_ecoupon["data"]["store_id"],            
+                                  "discount"          => $count_discount_price["discount_price"]            
+                                );
+
+              $use_data = Ecoupon_logic::insert_record_format( $use_data_array );
+
+              Ecoupon_logic::add_ecoupon_use_record( $use_data );
+
+              // 付款金額大於0，呼叫金流付款
+
+              if ( $mall_product["status"] === 0 ) 
+              {
+
+                  $option = array(
+                              "id"                  =>  $record_id,
+                              "MerchantTradeNo"     =>  $_this->order_number_encode( $record_data ),
+                              "mall_product_name"   =>  $mall_product["mall_product_name"],
+                              "mall_product_desc"   =>  $mall_product["mall_product_description"],
+                              "Price"               =>  $data["total"],
+                              "Quantity"            =>  $data["mall_product_number"],
+                              "discount_price"      =>  $count_discount_price,
+                            );
+
+                  $_this->Call_Payment( $option );
+                
+              }
+              else
+              {
+
+                  // 免費的狀況，暫時不判斷首購，直接導去記錄頁
+
+                  return "/buy_record";
+
+              }
+
+
+          } 
+          catch (\Exception $e) 
+          {
+
+              $data = array(
+                        "msg"   => $e->getMessage(),
+                        "data"  => $data
+                      );
+            
+              Record_logic::write_log( "ShopError", json_encode($data) );
+
+              return "/buy_record";
+
+          }
+
 
       }
 
@@ -358,7 +488,7 @@ class Shop_logic extends Basetool
 
         $result = array();
 
-        if ( !empty($item_id) && is_int($item_id) && !empty($data) && is_array($data) && !empty($type) && is_int($type) ) 
+        if ( !empty($item_id) && is_int($item_id) && !empty($data) && is_string($data) && !empty($type) && is_int($type) ) 
         {
 
           $data = explode("-", $data);
@@ -1254,35 +1384,51 @@ class Shop_logic extends Basetool
 
     // 寫入贈送商品
 
-    public static function add_first_buy_gift( $store_id )
+    public static function add_free_gift( $store_id, $mall_shop_id )
     {
+
+        $_this = new self();
 
         $result = false;
 
-        if ( !empty($store_id) && is_int($store_id) ) 
+        if ( !empty($store_id) && is_int($store_id) && !empty($mall_shop_id) && is_int($mall_shop_id) ) 
         {
+
+            $data = array(
+                          "mall_product_number"   => 1,
+                          "mall_shop_id"          => $mall_shop_id,
+                          "Price"                 => 0
+                      );
+
+            $mall_product = $_this->get_mall_product( $data["mall_shop_id"] );
+
+            $mall_product["buy_number"] = $data["mall_product_number"];
+
+            // 贈送商品設定為已付款
+
+            $mall_product["status"] = 1;
 
             // 主資料格式
 
-            $insert_record =  array(
+            $insert_record = $_this->order_format( $mall_product );
 
-                                // 暫定1號為首購禮
+            // 覆寫store_id
 
-                                "mall_shop_id"          => 1, 
-                                "MerchantTradeNo"       => "FirstBuyGift",
-                                "store_id"              => $store_id,
-                                "cost"                  => 0,
-                                "number"                => 1,
-                                "total"                 => 0,
-                                "status"                => 1, // 預設已付
-                                "paid_at"               => date("Y-m-d H:i:s"),
-                                "created_at"            => date("Y-m-d H:i:s"),
-                                "updated_at"            => date("Y-m-d H:i:s")
-                            );
+            $insert_record["store_id"] = $store_id;
 
-            // INSERT 主資料
+            // INSERT 主資料 TO Record
 
             $record_id = Shop::shop_buy_insert( $insert_record );
+
+            $insert_record["record_id"] = (int)$record_id;
+
+            $use_data = $_this->use_data_format( $insert_record, $mall_product );
+
+            // 複寫store_id
+
+            $use_data[0]["store_id"] = $store_id;
+
+            $use_record_id = Shop::add_use_record( $use_data );
 
             $result = true;
 
@@ -1337,7 +1483,9 @@ class Shop_logic extends Basetool
 
                 $user = Admin_user_logic::get_user_by_store_id( (int)$data["store_id"] );
 
-                $_this->add_first_buy_gift( (int)$data["store_id"] );
+                // 首購id : 1
+
+                $_this->add_free_gift( (int)$data["store_id"], 1 );
 
                 $_this->send_first_buy_mail( $user );
 
@@ -1356,6 +1504,264 @@ class Shop_logic extends Basetool
         }
 
         return $result;
+
+    }
+
+
+    // 列表呈現用的資料
+
+    public static function get_html_data( $data )
+    {
+
+      $result = array();
+
+      if ( !empty($data) && $data->isNotEmpty() ) 
+      {
+
+          foreach ($data as $row) 
+          {
+
+              $result[] = array(
+                            "id"            => $row->id,
+                            "product_name"  => $row->product_name,
+                            "pic"           => $row->pic
+                          );
+
+          }
+        
+      }
+
+      return $result;
+
+    }
+
+
+    // 取得列表邏輯陣列
+
+    public static function get_shop_record_list_template_array()
+    {
+
+      $_this = new self();
+
+      $txt = Web_cht::get_txt();
+
+          $htmlData = array(
+                          "title" => array(
+                                  $txt['mall_order_number'],
+                                  $txt['product_name'],
+                                  $txt['include_service'],
+                                  $txt['number'],
+                                  $txt['price'],
+                                  $txt['ecoupon_discount'],
+                                  $txt['total'],
+                                  $txt['paid_at'],
+                                  $txt['status']
+                                ),
+                          "data" => array()
+                      );
+
+      return $htmlData;
+
+    }
+
+
+    // 組合列表資料
+
+    public static function shop_record_list_data_bind( $htmlData, $OriData )
+    {
+
+      $_this = new self();
+
+      $result = $htmlData;
+
+      $txt = Web_cht::get_txt();
+
+      if ( !empty($OriData) && is_array($OriData) ) 
+      {
+
+        foreach ($OriData as $row) 
+        {
+
+          $include_service = array();
+
+          foreach ($row["include_service"] as $row1) 
+          {
+
+              $include_service[] = $row1["product_name"] . "/" . $row1["number"] . $txt['service_unit'] . "/" . $row1["date_spec"] . $txt['day_unit'] ;
+          
+          }
+    
+          $data = array(
+                "data" => array(
+                        "mall_order_number"     => $row["MerchantTradeNo"],
+                        "product_name"          => $row["mall_product_name"],
+                        "include_service"       => $include_service,
+                        "number"                => $row["number"],
+                        "price"                 => $row["cost"],
+                        "ecoupon_discount"      => $row["discount"],
+                        "total"                 => $row["total"] >= 0 ? $row["total"] : 0 . "(" . $row["total"] . ")" ,
+                        "paid_at"               => $row["paid_at"],
+                        "status"                => $row["status_txt"],
+                      ),
+                "Editlink" => ""
+              );
+            
+          $result["data"][] = $data;
+        
+        }
+
+
+      }
+
+      return $result;
+
+    }
+
+
+    // 取得財產列表邏輯陣列
+
+    public static function get_property_list_template_array()
+    {
+
+      $_this = new self();
+
+      $txt = Web_cht::get_txt();
+
+          $htmlData = array(
+                          "title" => array(
+                                  $txt['property_name'],
+                                  $txt['property_type'],
+                                  $txt['property_content'],
+                                  $txt['property_status'],
+                                  $txt['property_use_time'],
+                                  $txt['remark']
+                                ),
+                          "data" => array()
+                      );
+
+      return $htmlData;
+
+    }
+
+
+    // 取得財產列表資料
+
+    public static function get_property_list()
+    {
+
+      $_this = new self();
+
+      $txt = Web_cht::get_txt();
+
+      $result = array();
+
+      $store_id = Session::get('Store');
+
+      // 取得商品規格
+
+      $product_rel = $_this->get_mall_product_rel_array();
+
+      if ( !empty($store_id) ) 
+      {
+
+        $tmp = array();
+
+        // 取得所有已付款服務
+
+        $inactive_service = $_this->record_and_use( array($store_id) );
+
+        foreach ($inactive_service as $row) 
+        {
+
+            $property_status = (int)$row["pay_status"] === 0 ? 1 : "" ;
+            $property_status = (int)$row["pay_status"] === 1 && (int)$row["use_status"] === 1 ? 2 : $property_status ;
+            $property_status = (int)$row["use_status"] === 2 ? 3 : $property_status ;
+
+            $date_spec = isset($product_rel[ $row["mall_shop_id"] . "-" . $row["mall_product_id"] ]["date_spec"]) ? $product_rel[ $row["mall_shop_id"] . "-" . $row["mall_product_id"] ]["date_spec"] : 0 ;
+
+            $property_content = $row["product_name"] . "/" . $date_spec . $txt['day_unit'] ;
+
+
+            $tmp[] = array(
+                        "property_name"       =>  $row["product_name"],
+                        "property_type"       =>  1,
+                        "property_content"    =>  $property_content,
+                        "property_status"     =>  $property_status,
+                        "property_use_time"   =>  $row["use_time"],
+                        "remark"              =>  ""
+                    );
+
+        }
+
+        // 取得所有折價券
+
+        $data = Ecoupon_logic::get_user_active_ecoupon_data( $store_id );
+
+        foreach ($data as $row) 
+        {
+
+          $tmp[] = array(
+                      "property_name"       =>  $row["name"],
+                      "property_type"       =>  2,
+                      "property_content"    =>  Ecoupon_logic::ecoupon_content_to_string( $row ),
+                      "property_status"     =>  $row["status"] === 1 ? 4 : 5 ,
+                      "property_use_time"   =>  $row["status"] === 1 ? "0000-00-00 00:00:00" : $row["created_at"],
+                      "remark"              =>  $row["status"] === 1 && strtotime($row["deadline"]) < strtotime("+7 days") ? "即將到期，到期日:" . $row["deadline"] : ""
+                  );
+
+        }       
+
+        $result = $tmp;
+
+      }
+
+
+      return $result;
+
+    }
+
+
+    // 財產列表資料
+
+    public static function shop_property_list_data_bind( $htmlData, $OriData )
+    {
+
+      $_this = new self();
+
+      $result = $htmlData;
+
+      $txt = Web_cht::get_txt();
+
+      if ( !empty($OriData) && is_array($OriData) ) 
+      {
+
+        $property_type = $_this->property_type;
+
+        $property_status = $_this->property_status;
+
+        foreach ($OriData as $row) 
+        {
+    
+          $data = array(
+                "data" => array(
+                        "property_name"                   => $row["property_name"],
+                        "property_type"                   => isset($property_type[$row["property_type"]]) ? $property_type[$row["property_type"]] : "" ,
+                        "property_content"                => $row["property_content"],
+                        "property_status"                 => isset($property_status[$row["property_status"]]) ? $property_status[$row["property_status"]] : "" ,
+                        "property_use_time"               => $row["property_use_time"],
+                        "remark"                          => $row["remark"]
+                      ),
+                "Editlink" => ""
+              );
+            
+          $result["data"][] = $data;
+        
+        }
+
+
+      }
+
+      return $result;
 
     }
 
@@ -1401,5 +1807,92 @@ class Shop_logic extends Basetool
 
     }
 
+
+    protected function get_sub_total( $data )
+    {
+
+        $result = 0;
+
+        if ( !empty($data) && is_array($data) ) 
+        {
+
+            $data["cost"] = isset($data["cost"]) && !empty($data["cost"]) ? $data["cost"] : 0 ;
+
+            $price = isset($data["promo"]) && !empty($data["promo"]) ? $data["promo"] : $data["cost"] ;
+
+            $result = $data["buy_number"] * $price ;
+          
+        }
+
+        return $result;
+
+    }
+
+
+    // 從關聯表建立日期規格陣列
+
+    protected function get_mall_product_rel_array()
+    {
+
+        $_this = new self();
+
+        $result = array();
+
+        $data = Shop::get_mall_product_rel_data();
+
+        if ( $data->count() > 0 ) 
+        {
+
+          foreach ($data as $row) 
+          {
+
+              $key = $_this->made_key( array($row->mall_shop_id, $row->mall_product_id) );
+
+              $result[$key] = array(
+                                "date_spec" => $row->date_spec,
+                                "number"    => $row->number
+                              );
+
+          }
+
+        }
+
+        return $result;
+
+    }
+
+
+    // 取得服務購買紀錄與使用
+
+    protected function record_and_use( $store_id )
+    {
+
+        $_this = new self();
+
+        $result = array();
+
+        if ( !empty($store_id) && is_array($store_id) ) 
+        {
+
+            $data = Shop::record_and_use( $store_id );
+
+            foreach ($data as $index => $row) 
+            {
+
+                foreach ($row as $index2 => $value) 
+                {
+
+                    $result[$index][$index2] = $value;
+
+                }
+
+            }
+            
+        }
+
+
+        return $result;
+
+    }
 
 }

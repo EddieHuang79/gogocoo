@@ -35,6 +35,9 @@
             </div>              
             <div class="form-group has-feedback">
                 <input type="text" id="inputStoreCode" name="StoreCode" class="form-control" placeholder="{{ $txt['store_code_input'] }}" @if(!empty($OriData)) value="{{ $OriData['StoreCode'] }}" @endif maxlength="3">
+            </div> 
+            <div class="form-group has-feedback">
+                <input type="text" id="inputInviteCode" name="invite_code" class="form-control" placeholder="{{ $txt['invite_code_input'] }}" @if(!empty($OriData)) value="{{ $OriData['invite_code'] }}" @endif @if(isset($_GET["g"])) value="{{ $_GET['g'] }}" @endif >
             </div>              
         	@include('webbase.verify_code')
             <div class="row">

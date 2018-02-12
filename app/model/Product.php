@@ -219,4 +219,17 @@ class Product
 
 	}
 
+	public static function get_product_id_by_product_name( $data )
+	{
+
+		$_this = new self();
+
+		$result = DB::table($_this->table)
+				->whereIn("product_name", $data)
+				->get();
+				
+		return $result;
+
+	}
+
 }

@@ -1,5 +1,5 @@
-<div class="form-group has-feedback">
-	<select name="parents_store_type" class="form-control" required>
+<div class="form-group has-feedback storeType">
+	<select name="parents_store_type" class="form-control">
 		<option value="">{{ $txt['plz_choose_store_type'] }}</option>
 	    @foreach($store_type as $parent_id => $parent_row)
 	    	<option value="{{ $parent_id }}"> {{ $parent_row["name"] }} </option>
@@ -7,8 +7,8 @@
 	</select>
 </div>
 
-<div class="form-group has-feedback">
-	<select name="store_type_id" class="form-control" required>
+<div class="form-group has-feedback storeType">
+	<select name="store_type_id" class="form-control">
 		<option value="">{{ $txt['plz_choose_child_store_type'] }}</option>
 	    @foreach($store_type as $parent_id => $parent_row)
 	        @foreach($parent_row["data"] as $child_id => $child_row)

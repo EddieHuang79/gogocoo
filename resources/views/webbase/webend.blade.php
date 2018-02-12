@@ -52,11 +52,21 @@
 
 	<script type="text/javascript" src="{{ URL::asset('js/drilldown.js') }}"></script>
 	
-	<script type="text/javascript" src="{{ URL::asset('js/datetimepicker.js') }}"></script>
+	<!-- <script type="text/javascript" src="{{ URL::asset('js/datetimepicker.js') }}"></script> -->
 
+	<script type="text/javascript" src="{{ URL::asset('js/jquery-ui-timepicker-addon.min.js') }}"></script>
+	<script type="text/javascript" src="{{ URL::asset('js/jquery-ui-timepicker-addon-i18n.min.js') }}"></script>
+	<script type="text/javascript" src="{{ URL::asset('js/jquery-ui-sliderAccess.js') }}"></script>
 	<script type="text/javascript" src="{{ URL::asset('js/common.js') }}"></script>
 	
 	<script type="text/javascript" src="{{ URL::asset('js/report.js') }}"></script>
+
+	<!-- <script type="text/javascript" src="{{ URL::asset('js/ecoupon.js') }}"></script> -->
+
+	<!-- <script type="text/javascript" src="{{ URL::asset('front/js/vue.min.js') }}"></script> -->
+	<script src="https://unpkg.com/vue"></script>
+	<script type="text/javascript" src="{{ URL::asset('js/vue.template.js') }}"></script>
+	<script type="text/javascript" src="{{ URL::asset('js/vue.main.js') }}"></script>
 
 	</body>
 </html>

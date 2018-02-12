@@ -102,7 +102,7 @@
                 @foreach($store_info as $row)
                 <li storeId="{{ $row->id }}" @if( $now_store == $row->id ) class="selected" @endif > {{ $row->store_name }} </li>
                 @endforeach
-                <form action="change_store" method="POST" class="change_store">
+                <form action="/change_store" method="POST" class="change_store">
                   <input type="hidden" name="_token" value="{{ csrf_token() }}">
                   <input type="hidden" name="store_id" class="switch_store">
                 </form>
@@ -110,9 +110,11 @@
           </li>
           <!-- Menu Footer-->
           <li class="user-footer">
+            @if( $displayInviteBtn === true )
             <div class="pull-left">
-              <a href="#" class="btn btn-default btn-flat">Profile</a>
+              <a href="#" class="btn btn-default btn-flat" onClick="$('.inviteCode').fadeIn('fast');">{{ $txt['send_invite_code'] }}</a>
             </div>
+            @endif
             <div class="pull-right">
               <a href="/logout" class="btn btn-default btn-flat">{{ $txt['logout'] }}</a>
             </div>

@@ -253,5 +253,18 @@ class Order
 
 	}
 
+	public static function get_order_data_for_output( $order_id )
+	{
+
+		$_this = new self();
+
+		$result = DB::table($_this->table)
+					->leftJoin($_this->extra_table, $_this->table.'.id', '=', $_this->extra_table.'.order_id')
+					->whereIn("id", $order_id)
+					->get();
+
+		return $result;
+
+	}
 
 }

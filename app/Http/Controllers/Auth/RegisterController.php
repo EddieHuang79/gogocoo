@@ -110,10 +110,14 @@ class RegisterController extends Controller
             Msg_logic::add_normal_msg( $subject, $content, $register_data["user_id"] );
 
 
+            // 判斷邀請碼
+
+            Admin_user_logic::send_invite_code_process( $register_data["invite_code"], $register_data["user_id"], $store_id );
+
+
             // 寄送註冊信
 
             Register::send_register_email();
-            
 
             return redirect("/register_finish");
 

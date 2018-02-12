@@ -18,6 +18,7 @@ class InitialBaseSite extends Migration
     protected $user_role_table = "user_role_relation";
     protected $role_service_table = "role_service_relation";
     protected $service_user_table = "service_user_relation";
+    protected $invite_record = "invite_record";
 
     /**
      * Run the migrations.
@@ -136,6 +137,19 @@ class InitialBaseSite extends Migration
            $table->foreign('user_id')->references('id')->on('user');
         });
 
+        // invite_record
+
+        Schema::create($this->invite_record, function (Blueprint $table) {
+            $table->increments('id');
+            $table->integer('invite_store_id')->unsigned();
+            $table->integer('invited_store_id')->unsigned();
+            $table->timestamps();
+        });
+
+        Schema::table($this->invite_record, function($table) {
+           $table->foreign('invite_store_id')->references('id')->on( $this->store_table );
+           $table->foreign('invited_store_id')->references('id')->on( $this->store_table );
+        });
 
         // 寫入基本資料
 
@@ -1117,6 +1131,18 @@ class InitialBaseSite extends Migration
                                     'updated_at'    => date("Y-m-d H:i:s")
                                 )
                             );
+        $sub_admin_service_id[] = DB::table($this->service_table)->insertGetId(
+                                array(
+                                    'name'          => '財產清單',
+                                    'link'          => '/property_list',
+                                    'parents_id'    => $buy_service_id,
+                                    'status'        => 1,
+                                    'public'        => 4,
+                                    'sort'          => 60,
+                                    'created_at'    => date("Y-m-d H:i:s"),
+                                    'updated_at'    => date("Y-m-d H:i:s")
+                                )
+                            );
         $store_service_id = DB::table($this->service_table)->insertGetId(
                                 array(
                                     'name'          => '店鋪管理',
@@ -1222,6 +1248,7 @@ class InitialBaseSite extends Migration
         foreach ($match_key as $row)
             Redis::del( $row );
 
+        Schema::dropIfExists($this->invite_record);
         Schema::dropIfExists($this->user_role_table);
         Schema::dropIfExists($this->role_service_table);
         Schema::dropIfExists($this->service_user_table);

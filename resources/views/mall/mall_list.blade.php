@@ -26,32 +26,38 @@
 							</tr>							
 						</thead>
 						<tbody>
-							@foreach($mall as $row)
-							<tr>
-								<td>{{ $row->id }}</td>
-								<td>{{ $row->product_name }}</td>
-								<td>
-									@if(!empty($row->pic))
-										<img src="{{ URL::asset($row->pic) }}" alt="" width="100">
-									@endif
-								</td>
-								<td> {{ $txt["cost_unit"] }} {{ $row->cost }} </td>
-								<td>
-									@if( !empty($row->include_service) )
-										@foreach($row->include_service as $service)
-										<div>{{ $service["product_name"] }} / {{ $service["number"] }}{{ $txt['service_unit'] }} / {{ $service["date_spec"] }}{{ $txt['day_unit'] }}</div>
-										@endforeach	
-									@endif					
-								</td>
-								<td>{{ $row->public_txt }}</td>
-								<td>{{ $row->start_date_desc }}</td>
-								<td>{{ $row->end_date_desc }}</td>
-								<td>
-									<input type="button" class="btn btn-primary" value="{{ $txt['edit'] }}" onClick="location.href='/mall/{{ $row->id }}/edit?';"/>
-									<input type="button" class="btn btn-primary" value="{{ $txt['promo_price_setting'] }}" onClick="location.href='/promo?mall_shop_id={{ $row->id }}';"/>
-								</td>
-							</tr>
-							@endforeach													
+							@if( !empty($mall) )
+								@foreach($mall as $row)
+								<tr>
+									<td>{{ $row->id }}</td>
+									<td>{{ $row->product_name }}</td>
+									<td>
+										@if(!empty($row->pic))
+											<img src="{{ URL::asset($row->pic) }}" alt="" width="100">
+										@endif
+									</td>
+									<td> {{ $txt["cost_unit"] }} {{ $row->cost }} </td>
+									<td>
+										@if( !empty($row->include_service) )
+											@foreach($row->include_service as $service)
+											<div>{{ $service["product_name"] }} / {{ $service["number"] }}{{ $txt['service_unit'] }} / {{ $service["date_spec"] }}{{ $txt['day_unit'] }}</div>
+											@endforeach	
+										@endif					
+									</td>
+									<td>{{ $row->public_txt }}</td>
+									<td>{{ $row->start_date_desc }}</td>
+									<td>{{ $row->end_date_desc }}</td>
+									<td>
+										<input type="button" class="btn btn-primary" value="{{ $txt['edit'] }}" onClick="location.href='/mall/{{ $row->id }}/edit?';"/>
+										<input type="button" class="btn btn-primary" value="{{ $txt['promo_price_setting'] }}" onClick="location.href='/promo?mall_shop_id={{ $row->id }}';"/>
+									</td>
+								</tr>
+								@endforeach
+							@else
+								<tr>
+									<th colspan="9">{{ $txt['find_nothing'] }}</th>
+								</tr>
+							@endif												
 						</tbody>
 					</table>
 				</div>

@@ -229,7 +229,8 @@ class UploadController extends Controller
 
             $upload_files = $request->file('user_order_upload')->store('user_order_upload');
 
-            Upload_logic::order_upload_process( $upload_files );
+            // Upload_logic::order_upload_process( $upload_files );
+            Upload_logic::assign_order_upload_process( $upload_files );
             
         }   
 

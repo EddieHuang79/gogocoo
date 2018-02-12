@@ -26,7 +26,9 @@
 
 									@if( !empty( $order_extra_column ) )
 										@foreach($order_extra_column as $row)
+											@if( $row['show_on_page'] === true )
 											<th>{{ $txt[$row['name']] }}</th>
+											@endif
 										@endforeach
 									@endif
 
@@ -36,39 +38,47 @@
 								</tr>							
 							</thead>
 							<tbody>
-								@foreach($order_list as $row)
-								<tr>
-									<th>
-										@if( $row['status'] == 1 )
-										<input type="checkbox" class="order_checkbox" value="{{ $row['id'] }}" name="order_id[]">
-										@endif
-									</th>
-									<th>{{ $row['order_number_txt'] }}</th>
-									<th>{{ $row['product_name'] }}</th>
-									<th>{{ $row['out_warehouse_date'] }}</th>
-									<th>{{ $row['out_warehouse_category_txt'] }}</th>
+								@if( !empty($order_list) )
+									@foreach($order_list as $row)
+									<tr>
+										<th>
+											@if( $row['status'] == 1 )
+											<input type="checkbox" class="order_checkbox" value="{{ $row['id'] }}" name="order_id[]">
+											@endif
+										</th>
+										<th>{{ $row['order_number_txt'] }}</th>
+										<th>{{ $row['product_name'] }}</th>
+										<th>{{ $row['out_warehouse_date'] }}</th>
+										<th>{{ $row['out_warehouse_category_txt'] }}</th>
 
-									@if( !empty( $order_extra_column ) )
-										@foreach($order_extra_column as $row2)
-											<th>
-												@if( isset($row[$row2['name']."_txt"]) )
-												{{ $row[$row2['name']."_txt"] }}
-												@else
-												{{ $row[$row2['name']] }}
+										@if( !empty( $order_extra_column ) )
+											@foreach($order_extra_column as $row2)
+												@if( $row2['show_on_page'] === true )
+												<th>
+													@if( isset($row[$row2['name']."_txt"]) )
+													{{ $row[$row2['name']."_txt"] }}
+													@else
+													{{ $row[$row2['name']] }}
+													@endif
+												</th>
 												@endif
-											</th>
-										@endforeach
-									@endif
-									
-									<th>{{ $row['number'] }}</th>
-									<th>{{ $row['status_txt'] }}</th>
-									<td>
-										@if( $row['status'] == 1 )
-										<input type="button" class="btn btn-primary" value="{{ $txt['edit'] }}" onClick="location.href='/order/{{ $row['id'] }}/edit?';"/>
+											@endforeach
 										@endif
-									</td>
-								</tr>
-								@endforeach													
+										
+										<th>{{ $row['number'] }}</th>
+										<th>{{ $row['status_txt'] }}</th>
+										<td>
+											@if( $row['status'] == 1 )
+											<input type="button" class="btn btn-primary" value="{{ $txt['edit'] }}" onClick="location.href='/order/{{ $row['id'] }}/edit?';"/>
+											@endif
+										</td>
+									</tr>
+									@endforeach
+								@else
+									<tr>
+										<th colspan="8">{{ $txt['find_nothing'] }}</th>
+									</tr>
+								@endif											
 							</tbody>
 						</table>
 					</div>
