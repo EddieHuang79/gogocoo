@@ -230,5 +230,47 @@ class MsgLogic extends TestCase
 
 	}
 
+	public function testMsgListDataBind()
+	{
+
+		$test1 = Msg_logic::msg_list_data_bind( "" );
+
+		$this->assertTrue( is_array($test1) );
+
+		$test1 = Msg_logic::msg_list_data_bind( 0 );
+
+		$this->assertTrue( is_array($test1) );
+
+		$test1 = Msg_logic::msg_list_data_bind( array() );
+
+		$this->assertTrue( is_array($test1) );
+
+	}
+
+	public function testGetMsgInputTemplateArray()
+	{
+
+		$test1 = Msg_logic::get_msg_input_template_array();
+
+		$this->assertTrue( is_array($test1) );
+
+	}
+
+	public function testMsgInputDataBind()
+	{
+
+		$test1 = Msg_logic::msg_input_data_bind( "", "" );
+
+		$this->assertEquals($test1, "");
+
+		$test1 = Msg_logic::msg_input_data_bind( 0, 0 );
+
+		$this->assertEquals($test1, 0);
+
+		$test1 = Msg_logic::msg_input_data_bind( array(), array() );
+
+		$this->assertEquals($test1, array());
+
+	}
 
 }

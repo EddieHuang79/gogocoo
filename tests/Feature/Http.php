@@ -785,6 +785,44 @@ class Http extends TestCase
 
     }
 
+    public function testPromo()
+    {
 
+    	// 前置詞
+
+    	$url = $this->url;
+
+    	$this->withoutMiddleware();
+
+
+    	// 測試項目
+
+    	$item = "/promo";
+
+	    // 列表
+
+	    $response = $this->withSession( $this->session_data )->call('GET', $url.$item);
+
+	    $this->assertEquals(302, $response->status());
+
+	    // 新增
+
+	    $response = $this->withSession( $this->session_data )->call('GET', $url.$item.'/create');
+
+	    $this->assertEquals(302, $response->status());
+
+	    // 修改
+
+	    $response = $this->withSession( $this->session_data )->call('GET', $url.$item.'/1/edit');
+
+	    $this->assertEquals(200, $response->status());
+
+	    // 空值轉頁
+
+	    $response = $this->withSession( $this->session_data )->call('POST', $url.$item);
+
+	    $this->assertEquals(302, $response->status());
+
+    }
 
 }

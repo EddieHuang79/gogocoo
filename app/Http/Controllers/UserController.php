@@ -29,40 +29,24 @@ class UserController extends Basetool
 
         $_this = new self();
 
-        $service_id = isset($_GET['service_id']) ? intval($_GET['service_id']) : 0 ;
-
-        // get now page
-
-        Service_logic::get_service_id_by_url_and_save( $request->path() );
 
         // search bar setting
 
-        $search_tool = array(2,3,4,5);
+        $search_tool = array(2,3,5);
 
         $search_query = $_this->get_search_query( $search_tool, $_GET );
 
-        if ( $service_id > 0 ) 
-        {
-        
-            Redis_tool::set_search_tool( $search_tool, $service_id );
-        
-        }
 
-        $Login_user = Session::get('Login_user');
+        $user = Admin_user_logic::get_user_list( $data = $_GET );
 
-        $data = $_GET;
+        $htmlData = Admin_user_logic::user_list_data_bind( $user );
 
-        $data["parents_id"] = isset($Login_user["user_id"]) ? $Login_user["user_id"] : 0 ;
+        $htmlJsonData = json_encode($htmlData);
 
-        $user = Admin_user_logic::get_user_list( $data );
-
-        $user_role = Admin_user_logic::get_user_role();
-
-        $user = Admin_user_logic::get_user_role_auth( $user, $user_role );
 
         $assign_page = "admin_user/admin_list";
 
-        $data = compact('user', 'assign_page', 'service_id');
+        $data = compact('user', 'search_tool', 'assign_page', 'service_id', 'htmlJsonData');
 
         return view('webbase/content', $data);
 
@@ -78,47 +62,30 @@ class UserController extends Basetool
 
         $_this = new self();
 
-        $txt = Web_cht::get_txt();
 
-        $Login_user = Session::get('Login_user');
+        $OriData = Session::get( 'OriData' );
+
+        Session::forget( 'OriData' );
+
 
         // 計算子帳數量
 
         $account_status = Admin_user_logic::cnt_child_account();
 
-        $user = Admin_user_logic::get_user();
+        $htmlData = Admin_user_logic::get_admin_input_template_array();
 
-        $role_list = Role_logic::get_active_role();
+        $htmlData = Admin_user_logic::admin_input_data_bind( $htmlData, $OriData );
 
-        $role_list = Role_logic::filter_admin_role($role_list);
+        $htmlData["action"] = "/user";
 
-        $buy_spec_data = array();
+        $htmlData["method"] = "post"; 
+  
+        $htmlJsonData = json_encode($htmlData);
 
-        if ( !empty($account_status["buy_spec_data"]) ) 
-        {
-
-            foreach ($account_status["buy_spec_data"] as $index => $spec_data) 
-            {
-
-                $buy_spec_data[$index] = $spec_data.$txt["buy_date_spec_desc"].date("Y-m-d", strtotime("+".$spec_data." days"));
-
-            }
-
-        }
-
-        $deadline = !empty($account_status['free']) ? date("Y-m-d", strtotime("+30 days")) : $buy_spec_data ;
 
         $assign_page = "admin_user/admin_input";
 
-        $ErrorMsg = Session::get('ErrorMsg');
-
-        $OriData = Session::get( 'OriData' );
-
-        Session::forget('ErrorMsg');
-
-        Session::forget('OriData');
-
-        $data = compact('user', 'role_list', 'assign_page', 'ErrorMsg', 'account_status', 'deadline', 'OriData');
+        $data = compact('role_list', 'assign_page', 'account_status', 'htmlJsonData');
 
         return view('webbase/content', $data);
 
@@ -226,23 +193,30 @@ class UserController extends Basetool
 
         $user = Admin_user_logic::get_user( (int)$id );
 
-        $user_role = $id > 0 ? Admin_user_logic::get_user_role_by_id( (int)$id ) : "" ;
+        // $user_role = $id > 0 ? Admin_user_logic::get_user_role_by_id( (int)$id ) : "" ;
 
-        $user_role = $_this->get_object_or_array_key( $user_role );
+        // $user_role = $_this->get_object_or_array_key( $user_role );
 
-        $role_list = Role_logic::get_active_role();
-
-        $role_list = Role_logic::filter_admin_role($role_list);
-
-        $ErrorMsg = Session::get('ErrorMsg');
-
-        Session::forget('ErrorMsg');
+        // $role_list = Role_logic::get_active_role();
 
         // $role_list = Role_logic::filter_admin_role($role_list);
- 
+
+        $htmlData = Admin_user_logic::get_admin_input_template_array();
+
+        $user = get_object_vars($user);
+  
+        $htmlData = Admin_user_logic::admin_input_data_bind( $htmlData, $user );
+
+        $htmlData["action"] = "/user/" . (int)$id;
+
+        $htmlData["method"] = "patch";
+
+        $htmlJsonData = json_encode($htmlData);
+
+
         $assign_page = "admin_user/admin_input";
 
-        $data = compact('user', 'role_list', 'user_role', 'assign_page', 'account_status', 'ErrorMsg');
+        $data = compact('assign_page', 'account_status', 'htmlJsonData');
 
         return view('webbase/content', $data);
 

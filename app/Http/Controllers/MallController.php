@@ -21,9 +21,13 @@ class MallController extends Controller
 
         $mall = Mall_logic::get_mall_list( $_GET );
 
+        $htmlData = Mall_logic::mall_list_data_bind( $mall );
+
+        $htmlJsonData = json_encode($htmlData);
+
         $assign_page = "mall/mall_list";
 
-        $data = compact('assign_page', 'mall');
+        $data = compact('assign_page', 'mall', 'htmlJsonData');
 
         return view('webbase/content', $data);
 

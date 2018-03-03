@@ -16,9 +16,18 @@ class UploadController extends Controller
     public function product_upload()
     {
 
+        $htmlData = Upload_logic::get_product_upload_input_template_array();
+
+        $htmlData["action"] = "/product_upload_process";
+
+        $htmlData["method"] = "post"; 
+  
+        $htmlJsonData = json_encode($htmlData);
+
+
         $assign_page = "upload/product_upload";
 
-        $data = compact('assign_page');
+        $data = compact('assign_page', 'htmlJsonData');
 
         return view('webbase/content', $data);
 
@@ -38,9 +47,18 @@ class UploadController extends Controller
     public function purchase_upload()
     {
  
+        $htmlData = Upload_logic::get_purchase_upload_input_template_array();
+
+        $htmlData["action"] = "/purchase_upload_process";
+
+        $htmlData["method"] = "post"; 
+  
+        $htmlJsonData = json_encode($htmlData);
+
+
         $assign_page = "upload/purchase_upload";
 
-        $data = compact('assign_page');
+        $data = compact('assign_page', 'htmlJsonData');
 
         return view('webbase/content', $data);
 
@@ -49,21 +67,18 @@ class UploadController extends Controller
     public function order_upload()
     {
 
-        // get now page
+        $htmlData = Upload_logic::get_order_upload_input_template_array();
 
-        // Service_logic::get_service_id_by_url_and_save( $request->path() );
+        $htmlData["action"] = "/order_upload_process";
 
-        // search bar setting
+        $htmlData["method"] = "post"; 
+  
+        $htmlJsonData = json_encode($htmlData);
 
-        // $search_tool = array(5,6);
-
-        // Redis_tool::set_search_tool( $search_tool );
-
-        // $store = store_logic::get_store_info( $_GET );
  
         $assign_page = "upload/order_upload";
 
-        $data = compact('assign_page');
+        $data = compact('assign_page', 'htmlJsonData');
 
         return view('webbase/content', $data);
 

@@ -19,6 +19,13 @@ if ( $(".basicList").length > 0 )
 		el: '.basicList',
 		components: {
 			basicList: basicList
+		},
+		methods: {
+
+			SearchToolDisplay: function() {
+				$(".search_tool").toggle('slow');
+			}
+			
 		}
 	});
 

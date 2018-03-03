@@ -537,4 +537,258 @@ class Purchase_logic extends Basetool
 
 	}
 
+
+	// 組合列表資料
+
+	public static function purchase_list_data_bind( $OriData )
+	{
+
+		$_this = new self();
+
+		$txt = Web_cht::get_txt();
+
+		$result = array(
+                        "title" => array(
+                        				array(
+											"clickAll" 	=> true,
+											"target" 	=> "puchase_checkbox"
+										),
+                        				$txt['product_name'],
+                        				$txt['in_warehouse_number'],
+                        				$txt['in_warehouse_date'],
+                        				$txt['in_warehouse_category']
+                        			),
+                        "data" => array()
+                    );
+
+		$purchase_extra_column_array = array();
+
+		$purchase_extra_column = $_this->get_purchase_extra_column(); 
+
+		foreach ($purchase_extra_column as $row) 
+		{
+
+			$purchase_extra_column_array[] = $row["name"];
+
+		}
+
+
+
+		foreach ($purchase_extra_column as $row) 
+		{
+
+			if ( isset($txt[$row['name']]) ) 
+			{
+				
+				$result["title"][] = $txt[$row['name']];
+				
+			}
+
+		}
+
+
+		$result["title"][] = $txt['number'];
+
+		$result["title"][] = $txt['status'];
+
+		$result["title"][] = $txt['action'];
+
+		if ( !empty($OriData) && is_array($OriData) ) 
+		{
+
+			foreach ($OriData as $row) 
+			{
+	
+				if ( is_array($row) ) 
+				{
+
+					$data = array(
+								"data" => array(
+						                        "id"          				=> array(
+						                        										"id" 		=> $row["id"],
+						                        										"checkbox" 	=> true,
+						                        										"key" 		=> "purchase_id[]",
+						                        										"class" 	=> "puchase_checkbox",
+						                        								),									
+												"product_name" 					=> $row["product_name"],
+												"in_warehouse_number" 			=> $row["in_warehouse_number_txt"],
+												"in_warehouse_date" 			=> $row["in_warehouse_date"],
+												"in_warehouse_category" 		=> $row["in_warehouse_category_txt"]
+											),
+								"Editlink" => $row['status'] == 1 ? "/purchase/" . $row["id"] . "/edit?" : ""
+							);
+
+					foreach ($purchase_extra_column_array as $key) 
+					{
+						
+						$data["data"][$key] = isset( $row[$key."_txt"] ) ? $row[$key."_txt"] : $row[$key] ;
+
+					}
+
+					$data["data"]["number"] = $row["number"];
+
+					$data["data"]["status_txt"] = $row["status_txt"];
+					
+				}
+
+				$result["data"][] = $data;
+			
+			}
+
+		}
+
+		return $result;
+
+	}
+
+
+	// 取得輸入邏輯陣列
+
+	public static function get_purchase_input_template_array()
+	{
+
+		$_this = new self();
+
+		$txt = Web_cht::get_txt();
+
+        $in_warehouse_category_data = Option_logic::get_in_warehouse_category();
+
+        $in_warehouse_category_data = get_object_vars($in_warehouse_category_data) ;
+
+        $purchase_extra_column = Purchase_logic::get_purchase_extra_column();
+
+        $select_option = Option_logic::get_select_option( $purchase_extra_column );
+
+		$htmlData = array(
+					"product_id" => array(
+						"type"          => 11, 
+						"title"         => "",
+						"key"           => "product_id",
+						"value"         => "" ,
+						"display"       => true,
+						"desc"          => "",
+						"attrClass"     => "hide",
+						"hasPlugin"     => "",
+						"placeholder"   => ""
+					),
+					"keep_for_days" => array(
+						"type"          => 11, 
+						"title"         => "",
+						"key"           => "keep_for_days",
+						"value"         => "" ,
+						"display"       => true,
+						"desc"          => "",
+						"attrClass"     => "hide",
+						"hasPlugin"     => "",
+						"placeholder"   => ""
+					),
+					"product_name" => array(
+						"type"          => 10, 
+						"title"         => $txt["product_name"],
+						"key"           => "product_name",
+						"value"         => "" ,
+						"display"       => true,
+						"desc"          => "",
+						"attrClass"     => "",
+						"hasPlugin"     => "",
+						"placeholder"   => $txt['product_name_key_input']
+					),
+					"in_warehouse_number" => array(
+						"type"          => 12, 
+						"title"         => $txt["in_warehouse_number"],
+						"key"           => "in_warehouse_number",
+						"value"         => "",
+						"display"       => false,
+						"desc"          => "",
+						"attrClass"     => "",
+						"hasPlugin"     => ""
+					),
+					"number" => array(
+						"type"          => 1, 
+						"title"         => $txt["number"],
+						"key"           => "number",
+						"value"         => "",
+						"display"       => true,
+						"desc"          => "",
+						"EventFunc"     => "",
+						"attrClass"     => "",
+						"hasPlugin"     => "",
+						"placeholder"   => $txt['number_input']
+					),
+					"in_warehouse_date" => array(
+						"type"          => 1, 
+						"title"         => $txt["in_warehouse_date"],
+						"key"           => "in_warehouse_date",
+						"value"         => "",
+						"display"       => true,
+						"desc"          => "",
+						"EventFunc"     => "",
+						"attrClass"     => "",
+						"hasPlugin"     => "DatePicker",
+						"placeholder"   => $txt['in_warehouse_date_input']
+					),
+					"in_warehouse_category" => array(
+						"type"          => 2, 
+						"title"         => $txt["in_warehouse_category"],
+						"key"           => "in_warehouse_category",
+						"value"         => "",
+						"data"         	=> $in_warehouse_category_data,
+						"display"       => true,
+						"desc"          => "",
+						"attrClass"     => "",
+						"hasPlugin"     => ""
+					),
+					"warehouse_id" => array(
+						"type"          => 2, 
+						"title"         => $txt["warehouse_id"],
+						"key"           => "warehouse_id",
+						"value"         => "",
+						"data"         	=> $select_option["warehouse_id"],
+						"display"       => true,
+						"desc"          => "",
+						"attrClass"     => "",
+						"hasPlugin"     => ""
+					)
+		         );
+
+		return $htmlData;
+
+	}
+
+
+	// 組合資料
+
+	public static function purchase_input_data_bind( $htmlData, $OriData )
+	{
+
+		$_this = new self();
+
+		$result = $htmlData;
+
+		if ( !empty($OriData) && is_array($OriData) ) 
+		{
+
+			foreach ($htmlData as &$row) 
+			{
+
+				if ( is_array($row) ) 
+				{
+
+				   $row["value"] = isset($OriData[$row["key"]]) ? $OriData[$row["key"]] : "" ;
+				   
+				}
+
+			}
+
+			$htmlData["in_warehouse_number"]["display"] = true ;
+
+			$htmlData["in_warehouse_category"]["value"] = !empty($OriData["category"]) ? $OriData["category"] : "" ;
+
+		}
+
+		return $htmlData;
+
+	}
+
+
 }

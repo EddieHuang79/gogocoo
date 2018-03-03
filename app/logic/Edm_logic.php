@@ -626,4 +626,315 @@ class Edm_logic extends Basetool
 
 	}
 
+
+	// 組合列表資料
+
+	public static function edm_list_data_bind( $OriData )
+	{
+
+		$_this = new self();
+
+		$txt = Web_cht::get_txt();
+
+		$result = array(
+		             "title" => array(
+								$txt['id'],
+								$txt['subject'],
+								$txt['status'],
+								$txt['has_list'],
+								$txt['edm_send_time'],
+								$txt['update_time'],
+								$txt['action']
+		                      ),
+		             "data" => array()
+		         );
+
+		if ( !empty($OriData) && $OriData->isNotEmpty() ) 
+		{
+
+			$status_txt = $_this->status;
+
+			foreach ($OriData as $row) 
+			{
+
+				if ( is_object($row) ) 
+				{
+
+				   $data = array(
+				            "data" => array(
+				                        "id"          				=> $row->id,
+				                        "subject"          			=> $row->subject,
+				                        "status"          			=> $row->status_txt,
+				                        "has_list"          		=> $row->has_list_txt,
+				                        "edm_send_time"          	=> $row->send_time,
+				                        "update_time"          		=> $row->updated_at,
+				                     ),
+				            "Editlink" => $row->status === 1 ? "/edm/" . $row->id . "/edit?" : "",
+				            "Clonelink" => "/edm_clone?edm_id=" . $row->id
+				         );
+				   
+				}
+
+				$result["data"][] = $data;
+
+			}
+
+
+		}
+
+		return $result;
+
+	}
+
+
+
+	// 組合列表資料
+
+	public static function edm_verify_list_data_bind( $OriData )
+	{
+
+		$_this = new self();
+
+		$txt = Web_cht::get_txt();
+
+		$result = array(
+		             "title" => array(
+									array(
+										"clickAll" 	=> true,
+										"target" 	=> "edm_checkbox"
+									),
+									$txt['status'],
+									$txt['has_list'],
+									$txt['edm_send_time'],
+									$txt['update_time'],
+									$txt['action']
+		                      ),
+		             "data" => array()
+		         );
+
+		if ( !empty($OriData) && $OriData->isNotEmpty() ) 
+		{
+
+			$status_txt = $_this->status;
+
+			foreach ($OriData as $row) 
+			{
+
+				if ( is_object($row) ) 
+				{
+
+				   $data = array(
+				            "data" => array(
+				                        "id"          				=> array(
+				                        										"id" 		=> $row->id,
+				                        										"checkbox" 	=> true,
+				                        										"key" 		=> "edm_id[]",
+				                        										"class" 	=> "edm_checkbox",
+				                        								),
+				                        "subject"          			=> $row->subject,
+				                        "status"          			=> $row->status_txt,
+				                        "has_list"          		=> $row->has_list_txt,
+				                        "edm_send_time"          	=> $row->send_time,
+				                        "update_time"          		=> $row->updated_at,
+				                     )
+				         );
+				   
+				}
+
+				$result["data"][] = $data;
+
+			}
+
+
+		}
+
+		return $result;
+
+	}
+
+
+	// 組合列表資料
+
+	public static function edm_cancel_list_data_bind( $OriData )
+	{
+
+		$_this = new self();
+
+		$txt = Web_cht::get_txt();
+
+		$result = array(
+		             "title" => array(
+									array(
+										"clickAll" 	=> true,
+										"target" 	=> "edm_checkbox"
+									),
+									$txt['status'],
+									$txt['has_list'],
+									$txt['edm_send_time'],
+									$txt['update_time'],
+									$txt['action']
+		                      ),
+		             "data" => array()
+		         );
+
+		if ( !empty($OriData) && $OriData->isNotEmpty() ) 
+		{
+
+			$status_txt = $_this->status;
+
+			foreach ($OriData as $row) 
+			{
+
+				if ( is_object($row) ) 
+				{
+
+				   $data = array(
+				            "data" => array(
+				                        "id"          				=> array(
+				                        										"id" 		=> $row->id,
+				                        										"checkbox" 	=> true,
+				                        										"key" 		=> "edm_id[]",
+				                        										"class" 	=> "edm_checkbox",
+				                        								),
+				                        "subject"          			=> $row->subject,
+				                        "status"          			=> $row->status_txt,
+				                        "has_list"          		=> $row->has_list_txt,
+				                        "edm_send_time"          	=> $row->send_time,
+				                        "update_time"          		=> $row->updated_at,
+				                     )
+				         );
+				   
+				}
+
+				$result["data"][] = $data;
+
+			}
+
+
+		}
+
+		return $result;
+
+	}
+
+
+	// 取得輸入邏輯陣列
+
+	public static function get_edm_input_template_array()
+	{
+
+		$_this = new self();
+
+		$txt = Web_cht::get_txt();
+
+		$edm_content_type = array(
+								4 	=>	$txt["edm_type4"],
+								5 	=>	$txt["edm_type5"]
+							);
+
+        $htmlData = array(
+                        "edm_subject" => array(
+                            "type"          => 1, 
+                            "title"         => $txt["edm_subject"],
+                            "key"           => "subject",
+                            "value"         => "" ,
+                            "display"       => true,
+                            "attrClass"     => "",
+                            "hasPlugin"     => ""
+                        ),
+                        "edm_content_type" => array(
+                            "type"          => 2, 
+                            "title"         => $txt["edm_content_type"],
+                            "key"           => "type",
+                            "value"         => "",
+                            "data"          => $edm_content_type,
+                            "display"       => true,
+                            "attrClass"     => "",
+                            "hasPlugin"     => ""
+                        ),
+                        "mall_shop_id" => array(
+                            "type"          => 4,
+                            "title"         => $txt["mall_shop_id_desc"],
+                            "key"           => "mall_shop_id",
+                            "value"         => "",
+							"child"         => array(
+                                                    array(
+                                                            "key"           => "mall_shop_id[]",
+                                                            "childTitle"    => $txt["mall_shop_id"]
+                                                    )
+                                                ),                       
+                            "display"       => true,
+                            "attrClass"     => "",
+                            "hasPlugin"     => "",
+                            "data"     		=> array(
+                            						array(
+                            							"mall_shop_id" => ""
+                            						)
+                            					)
+                        ),              
+                        "upload_mail_list" => array(
+                            "type"          => 8, 
+                            "title"         => $txt["upload_mail_list"],
+                            "key"           => "edm_list",
+                            "value"         => "",
+                            "display"       => true,
+                            "hasPlugin"     => "",
+                            "Samplelink"    => "/edm_example"
+                        ),
+                        "edm_send_time" => array(
+                            "type"          => 1, 
+                            "title"         => $txt["edm_send_time"],
+                            "key"           => "send_time",
+                            "value"         => "" ,
+                            "display"       => true,
+                            "attrClass"     => "",
+                            "hasPlugin"     => "DateTimePicker"
+                        )
+                    );
+
+		return $htmlData;
+
+	}
+
+
+	// 組合資料
+
+	public static function edm_input_data_bind( $htmlData, $OriData )
+	{
+
+		$_this = new self();
+
+		$result = $htmlData;
+
+		if ( !empty($OriData) && is_array($OriData) ) 
+		{
+
+			foreach ($htmlData as &$row) 
+			{
+			
+				if ( is_array($row) ) 
+				{
+
+					$row["value"] = isset($OriData[$row["key"]]) ? $OriData[$row["key"]] : "" ;
+					
+				}
+
+			}
+
+			$edm_rel = $_this->get_edm_rel( (int)$OriData["id"] );
+
+			foreach ($edm_rel as $index => $value) 
+			{
+				
+				$htmlData["mall_shop_id"]["data"][$index]["商城產品編號"] = $value->mall_shop_id;
+
+			}
+
+		}
+
+		return $htmlData;
+
+	}
+
+
 }

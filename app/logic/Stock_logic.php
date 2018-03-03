@@ -69,7 +69,7 @@ class Stock_logic extends Basetool
 
 	}
 
-	public static function get_stock_batch_list( $data, $has_spec )
+	public static function get_stock_batch_list( $data )
 	{
 
 		$_this = new self();
@@ -78,7 +78,7 @@ class Stock_logic extends Basetool
 
 		$data["shop_id"] = $_this->store_id;
 
-		$data = Stock::get_stock_batch_list( $data, $has_spec );
+		$data = Stock::get_stock_batch_list( $data );
 
 		foreach ($data as $row) 
 		{
@@ -95,51 +95,6 @@ class Stock_logic extends Basetool
 									// "spec_data" 			=> $spec_data,
 								);
 
-				if ( $has_spec ) 
-				{
-
-					$spec = json_decode($row->spec_data, true);
-
-					$product_spec = Product_logic::trans_product_spec_name( array( array( "value" => $spec ) ) );
-
-					$product_spec = array_shift($product_spec);
-
-					$spec_data = "";
-
-					foreach ($product_spec['value'] as $key => $value) 
-					{
-
-						switch ($key) 
-						{
-
-							case 'color':
-
-								$spec_data .= "顏色: " ;
-
-								break;
-
-							case 'size':
-
-								$spec_data .= "尺寸: " ;
-
-								break;
-
-							case 'font_type':
-
-								$spec_data .= "字型: " ;
-
-								break;
-					
-						}
-
-						$spec_data .= $value . "; "; 
-					
-					}
-
-					$stock_data['spec_data'] = $spec_data ;
-
-				}
-
 				$stock_list[] = $stock_data;
 
 			}
@@ -155,7 +110,7 @@ class Stock_logic extends Basetool
 
 	}
 
-	public static function get_stock_total_list( $data, $has_spec )
+	public static function get_stock_total_list( $data )
 	{
 
 		$_this = new self();
@@ -164,7 +119,7 @@ class Stock_logic extends Basetool
 
 		$data["shop_id"] = $_this->store_id;
 
-		$data = Stock::get_stock_total_list( $data, $has_spec );
+		$data = Stock::get_stock_total_list( $data );
 
 		foreach ($data as $row) 
 		{
@@ -177,51 +132,6 @@ class Stock_logic extends Basetool
 									"product_name" 			=> $row->product_name,
 								);
 
-				if ( $has_spec ) 
-				{
-
-					$spec = json_decode($row->spec_data, true);
-
-					$product_spec = Product_logic::trans_product_spec_name( array( array( "value" => $spec ) ) );
-
-					$product_spec = array_shift($product_spec);
-
-					$spec_data = "";
-
-					foreach ($product_spec['value'] as $key => $value) 
-					{
-
-						switch ($key) 
-						{
-
-							case 'color':
-
-								$spec_data .= "顏色: " ;
-
-								break;
-
-							case 'size':
-
-								$spec_data .= "尺寸: " ;
-
-								break;
-
-							case 'font_type':
-
-								$spec_data .= "字型: " ;
-
-								break;
-					
-						}
-
-						$spec_data .= $value . "; "; 
-					
-					}
-
-					$stock_data['spec_data'] = $spec_data ;
-
-				}
-
 				$stock_list[] = $stock_data;
 
 			}
@@ -237,7 +147,7 @@ class Stock_logic extends Basetool
 
 	}
 
-	public static function get_immediate_stock_list( $data, $has_spec )
+	public static function get_immediate_stock_list( $data )
 	{
 
 		$_this = new self();
@@ -246,7 +156,7 @@ class Stock_logic extends Basetool
 
 		$data["shop_id"] = $_this->store_id;
 
-		$data = Stock::get_immediate_stock_list( $data, $has_spec );
+		$data = Stock::get_immediate_stock_list( $data );
 
 		foreach ($data as $row) 
 		{
@@ -262,51 +172,6 @@ class Stock_logic extends Basetool
 									"deadline" 				=> $row->deadline,
 								);
 
-				if ( $has_spec ) 
-				{
-
-					$spec = json_decode($row->spec_data, true);
-
-					$product_spec = Product_logic::trans_product_spec_name( array( array( "value" => $spec ) ) );
-
-					$product_spec = array_shift($product_spec);
-
-					$spec_data = "";
-
-					foreach ($product_spec['value'] as $key => $value) 
-					{
-
-						switch ($key) 
-						{
-
-							case 'color':
-
-								$spec_data .= "顏色: " ;
-
-								break;
-
-							case 'size':
-
-								$spec_data .= "尺寸: " ;
-
-								break;
-
-							case 'font_type':
-
-								$spec_data .= "字型: " ;
-
-								break;
-					
-						}
-
-						$spec_data .= $value . "; "; 
-					
-					}
-
-					$stock_data['spec_data'] = $spec_data ;
-
-				}
-
 				$stock_list[] = $stock_data;
 
 			}
@@ -322,7 +187,7 @@ class Stock_logic extends Basetool
 
 	}
 
-	public static function get_lack_of_stock_list( $data, $has_spec )
+	public static function get_lack_of_stock_list( $data )
 	{
 
 		$_this = new self();
@@ -331,7 +196,7 @@ class Stock_logic extends Basetool
 
 		$data["shop_id"] = $_this->store_id;
 
-		$data = Stock::get_lack_of_stock_list( $data, $has_spec );
+		$data = Stock::get_lack_of_stock_list( $data );
 
 		foreach ($data as $row) 
 		{
@@ -344,51 +209,6 @@ class Stock_logic extends Basetool
 									"product_name" 			=> $row->product_name,
 									"safe_amount" 			=> $row->safe_amount,
 								);
-
-				if ( $has_spec ) 
-				{
-
-					$spec = json_decode($row->spec_data, true);
-
-					$product_spec = Product_logic::trans_product_spec_name( array( array( "value" => $spec ) ) );
-
-					$product_spec = array_shift($product_spec);
-
-					$spec_data = "";
-
-					foreach ($product_spec['value'] as $key => $value) 
-					{
-
-						switch ($key) 
-						{
-
-							case 'color':
-
-								$spec_data .= "顏色: " ;
-
-								break;
-
-							case 'size':
-
-								$spec_data .= "尺寸: " ;
-
-								break;
-
-							case 'font_type':
-
-								$spec_data .= "字型: " ;
-
-								break;
-					
-						}
-
-						$spec_data .= $value . "; "; 
-					
-					}
-
-					$stock_data['spec_data'] = $spec_data ;
-
-				}
 
 				$stock_list[] = $stock_data;
 
@@ -564,6 +384,207 @@ class Stock_logic extends Basetool
 							);
 
 			}
+
+		}
+
+		return $result;
+
+	}
+
+	// 組合列表資料
+
+	public static function stock_total_list_data_bind( $OriData )
+	{
+
+		$_this = new self();
+
+		$txt = Web_cht::get_txt();
+
+		$result = array(
+                        "title" => array(
+                        				$txt['product_name'],
+                        				$txt['stock']
+                        			),
+                        "data" => array()
+                    );
+
+		if ( !empty($OriData) && is_array($OriData) ) 
+		{
+
+			foreach ($OriData as $row) 
+			{
+	
+				if ( is_object($row) ) 
+				{
+
+					$data = array(
+								"data" => array(
+												"product_name" 		=> $row["product_name"],
+												"stock" 			=> $row["stock"]
+											)
+							);
+					
+				}
+
+				$result["data"][] = $data;
+			
+			}
+
+
+		}
+
+		return $result;
+
+	}
+
+
+	// 組合列表資料
+
+	public static function stock_batch_list_data_bind( $OriData )
+	{
+
+		$_this = new self();
+
+		$txt = Web_cht::get_txt();
+
+		$result = array(
+                        "title" => array(
+                        				$txt['product_name'],
+                        				$txt['in_warehouse_number'],
+                        				$txt['in_warehouse_date'],
+                        				$txt['deadline'],
+                        				$txt['stock']
+                        			),
+                        "data" => array()
+                    );
+
+		if ( !empty($OriData) && is_array($OriData) ) 
+		{
+
+			foreach ($OriData as $row) 
+			{
+	
+				if ( is_object($row) ) 
+				{
+
+					$data = array(
+								"data" => array(
+												"product_name" 				=> $row["product_name"],
+												"in_warehouse_number" 		=> $row["in_warehouse_number"],
+												"in_warehouse_date" 		=> $row["in_warehouse_date"],
+												"deadline" 					=> $row["deadline"],
+												"stock" 					=> $row["stock"]
+											)
+							);
+					
+				}
+
+				$result["data"][] = $data;
+			
+			}
+
+
+		}
+
+		return $result;
+
+	}
+
+
+	// 組合列表資料
+
+	public static function stock_lack_list_data_bind( $OriData )
+	{
+
+		$_this = new self();
+
+		$txt = Web_cht::get_txt();
+
+		$result = array(
+                        "title" => array(
+                        				$txt['product_name'],
+                        				$txt['safe_amount'],
+                        				$txt['stock']
+                        			),
+                        "data" => array()
+                    );
+
+		if ( !empty($OriData) && is_array($OriData) ) 
+		{
+
+			foreach ($OriData as $row) 
+			{
+	
+				if ( is_object($row) ) 
+				{
+
+					$data = array(
+								"data" => array(
+												"product_name" 				=> $row["product_name"],
+												"safe_amount" 				=> $row["safe_amount"],
+												"stock" 					=> $row["stock"]
+											)
+							);
+					
+				}
+
+				$result["data"][] = $data;
+			
+			}
+
+
+		}
+
+		return $result;
+
+	}
+
+
+	// 組合列表資料
+
+	public static function stock_immediate_list_data_bind( $OriData )
+	{
+
+		$_this = new self();
+
+		$txt = Web_cht::get_txt();
+
+		$result = array(
+                        "title" => array(
+                        				$txt['product_name'],
+                        				$txt['in_warehouse_number'],
+                        				$txt['in_warehouse_date'],
+                        				$txt['deadline'],
+                        				$txt['stock']
+                        			),
+                        "data" => array()
+                    );
+
+		if ( !empty($OriData) && is_array($OriData) ) 
+		{
+
+			foreach ($OriData as $row) 
+			{
+	
+				if ( is_object($row) ) 
+				{
+
+					$data = array(
+								"data" => array(
+												"product_name" 				=> $row["product_name"],
+												"in_warehouse_number" 		=> $row["in_warehouse_number"],
+												"in_warehouse_date" 		=> $row["in_warehouse_date"],
+												"deadline" 					=> $row["deadline"],
+												"stock" 					=> $row["stock"]
+											)
+							);
+					
+				}
+
+				$result["data"][] = $data;
+			
+			}
+
 
 		}
 

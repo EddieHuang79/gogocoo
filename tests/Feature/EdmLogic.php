@@ -58,29 +58,6 @@ class EdmLogic extends TestCase
 
 	}
 
-	public function testContentHandle()
-	{
-
-		$test1 = Edm_logic::content_handle( "" );
-
-		$this->assertTrue( empty($test1) );
-		// $this->assertTrue( is_array($test1) );
-		// $this->assertEquals($test1, array());
-
-		$test1 = Edm_logic::content_handle( 0 );
-
-		$this->assertTrue( empty($test1) );
-		// $this->assertTrue( is_array($test1) );
-		// $this->assertEquals($test1, array());
-
-		$test1 = Edm_logic::content_handle( array() );
-
-		$this->assertTrue( empty($test1) );
-		$this->assertTrue( is_array($test1) );
-		$this->assertEquals($test1, array());
-
-	}
-
 	public function testAddEdm()
 	{
 
@@ -169,6 +146,83 @@ class EdmLogic extends TestCase
 		$test1 = Edm_logic::change_status( array(), array() );
 
 		$this->assertFalse( $test1 );
+
+	}
+
+	public function testEdmListDataBind()
+	{
+
+		$test1 = Edm_logic::edm_list_data_bind( "" );
+
+		$this->assertTrue( is_array($test1) );
+
+		$test1 = Edm_logic::edm_list_data_bind( 0 );
+
+		$this->assertTrue( is_array($test1) );
+
+		$test1 = Edm_logic::edm_list_data_bind( array() );
+
+		$this->assertTrue( is_array($test1) );
+
+	}
+
+	public function testEdmVerifyListDataBind()
+	{
+
+		$test1 = Edm_logic::edm_verify_list_data_bind( "" );
+
+		$this->assertTrue( is_array($test1) );
+
+		$test1 = Edm_logic::edm_verify_list_data_bind( 0 );
+
+		$this->assertTrue( is_array($test1) );
+
+		$test1 = Edm_logic::edm_verify_list_data_bind( array() );
+
+		$this->assertTrue( is_array($test1) );
+
+	}
+
+	public function testEdmCancelListDataBind()
+	{
+
+		$test1 = Edm_logic::edm_cancel_list_data_bind( "" );
+
+		$this->assertTrue( is_array($test1) );
+
+		$test1 = Edm_logic::edm_cancel_list_data_bind( 0 );
+
+		$this->assertTrue( is_array($test1) );
+
+		$test1 = Edm_logic::edm_cancel_list_data_bind( array() );
+
+		$this->assertTrue( is_array($test1) );
+
+	}
+
+	public function testGetAdminInputTemplateArray()
+	{
+
+		$test1 = Edm_logic::get_edm_input_template_array();
+
+		$this->assertTrue( is_array($test1) );
+
+	}
+
+	public function testAdminInputDataBind()
+	{
+
+		$test1 = Edm_logic::edm_input_data_bind( "", "" );
+
+		$this->assertEquals($test1, "");
+
+		$test1 = Edm_logic::edm_input_data_bind( 0, 0 );
+
+		$this->assertEquals($test1, 0);
+
+		$test1 = Edm_logic::edm_input_data_bind( array(), array() );
+
+		$this->assertEquals($test1, array());
 
 	}
 

@@ -200,4 +200,47 @@ class StoreLogic extends TestCase
 
 	}
 
+	public function testStoreListDataBind()
+	{
+
+		$test1 = Store_logic::store_list_data_bind( "" );
+
+		$this->assertTrue( is_array($test1) );
+
+		$test1 = Store_logic::store_list_data_bind( 0 );
+
+		$this->assertTrue( is_array($test1) );
+
+		$test1 = Store_logic::store_list_data_bind( array() );
+
+		$this->assertTrue( is_array($test1) );
+
+	}
+
+	// public function testGetStoreInputTemplateArray()
+	// {
+
+	// 	$test1 = Store_logic::get_store_input_template_array();
+
+	// 	$this->assertTrue( is_array($test1) );
+
+	// }
+
+	// public function testStoreInputDataBind()
+	// {
+
+	// 	$test1 = Store_logic::store_input_data_bind( "", "" );
+
+	// 	$this->assertEquals($test1, "");
+
+	// 	$test1 = Store_logic::store_input_data_bind( 0, 0 );
+
+	// 	$this->assertEquals($test1, 0);
+
+	// 	$test1 = Store_logic::store_input_data_bind( array(), array() );
+
+	// 	$this->assertEquals($test1, array());
+
+	// }
+
 }

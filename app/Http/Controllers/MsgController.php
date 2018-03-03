@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\logic\Msg_logic;
 use App\logic\Service_logic;
-
+use Illuminate\Support\Facades\Session;
 
 class MsgController extends Controller
 {
@@ -30,9 +30,13 @@ class MsgController extends Controller
 
         $msg = Msg_logic::get_msg_list( $_GET );
  
+        $htmlData = Msg_logic::msg_list_data_bind( $msg );
+
+        $htmlJsonData = json_encode($htmlData);
+
         $assign_page = "msg/msg_list";
 
-        $data = compact('assign_page', 'msg');
+        $data = compact('assign_page', 'msg', 'htmlJsonData');
 
         return view('webbase/content', $data);
 
@@ -46,13 +50,23 @@ class MsgController extends Controller
     public function create()
     {
 
-        $msg = "";
- 
+        $OriData = Session::get( 'OriData' );
+
+        Session::forget( 'OriData' );
+
+        $htmlData = Msg_logic::get_msg_input_template_array();
+
+        $htmlData = Msg_logic::msg_input_data_bind( $htmlData, $OriData );
+
+        $htmlData["action"] = "/msg";
+
+        $htmlData["method"] = "post"; 
+  
+        $htmlJsonData = json_encode($htmlData);
+
         $assign_page = "msg/msg_input";
 
-        $msg_option = Msg_logic::get_msg_option(); 
-
-        $data = compact('assign_page', 'msg_option', 'msg');
+        $data = compact('assign_page', 'htmlJsonData');
 
         return view('webbase/content', $data);
 
@@ -102,11 +116,21 @@ class MsgController extends Controller
 
         $msg = Msg_logic::get_single_msg( (int)$id ); 
 
+        $htmlData = Msg_logic::get_msg_input_template_array();
+
+        $msg = get_object_vars($msg);
+  
+        $htmlData = Msg_logic::msg_input_data_bind( $htmlData, $msg );
+
+        $htmlData["action"] = "/msg/" . (int)$id;
+
+        $htmlData["method"] = "patch";
+
+        $htmlJsonData = json_encode($htmlData);
+
         $assign_page = "msg/msg_input";
 
-        $msg_option = Msg_logic::get_msg_option(); 
-
-        $data = compact('assign_page', 'msg_option', 'msg');
+        $data = compact('assign_page', 'htmlJsonData');
 
         return view('webbase/content', $data);
 

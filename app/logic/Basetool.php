@@ -4,6 +4,7 @@ namespace App\logic;
 
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Session;
+use App\logic\Redis_tool;
 
 abstract class Basetool
 {
@@ -340,16 +341,20 @@ abstract class Basetool
     public function get_search_query( $search_tool, $data )
     {
 
-      $result = array();
+        $service_id = Session::get("service_id");
 
-      if ( !empty($search_tool) && !empty($data) && is_array($search_tool) && is_array($data) ) 
-      {
+        $result = array();
 
-         $result = $this->filter_search_query( $search_tool, $data );
+        if ( !empty($search_tool) && !empty($data) && is_array($search_tool) && is_array($data) ) 
+        {
 
-      }
+            $result = $this->filter_search_query( $search_tool, $data );
 
-      return $result;
+            Redis_tool::set_search_tool( $search_tool, (int)$service_id );
+
+        }
+
+        return $result;
 
     }
 

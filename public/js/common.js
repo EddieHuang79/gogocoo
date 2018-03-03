@@ -4,6 +4,8 @@ var Show_current_position = function(){
 		{
 			$("[page='page"+service_id+"']").parents(".treeview-menu").addClass("active");
 			$("[page='page"+service_id+"']").parents(".treeview-menu").toggle();
+			$("[page='page"+service_id+"']").parents(".treeview").find(".fa-angle-left").addClass("fa-angle-down");
+			$("[page='page"+service_id+"']").parents(".treeview").find(".fa-angle-left").removeClass("fa-angle-left");
 		};
 
 	},
@@ -59,12 +61,6 @@ var Show_current_position = function(){
 		});
 	
 	},
-	RoleListBtn = function() {
-		var label_txt = $(this).parents(".auth-div").find("ul.auth:visible").length > 0 ? "+" : "-" ;
-		$(this).parents(".auth-div").find("ul.auth").toggle();
-		$(this).text(label_txt);
-	
-	},
 	ClosePopup = function() {
 		$(".lightbox").hide();
 		var placeholder = $("[name='store_type']").attr("placeholder_bk");
@@ -84,7 +80,6 @@ var Show_current_position = function(){
 	}
 	store_type_find_child = function() {
 		var optid = $(this).val();
-		console.log(optid);
 		$("[name='store_type_id']").val("");
 		$("[name='store_type_id']>option").hide();
 		$("[name='store_type_id']>option[parentsid='"+optid+"']").show();
@@ -109,98 +104,6 @@ var Show_current_position = function(){
 		};
 
 	},
-	// show_shop_div = function(){
-
-	// 	var mall_product_id = $(this).attr("MallProductId"),
-	// 		mall_product_lightbox_width = ( $(".mall_product_lightbox").width() / 2 ) * -1;
-		
-	// 	$(".mall_product_lightbox").css( "margin-left", mall_product_lightbox_width );
-
-	// 	$(".mall_child_product").find("div").remove();
-
-	// 	$.ajax({
-	// 		url: "/get_mall_product",
-	// 		data: "mall_product_id="+mall_product_id,
-	// 		type: 'POST',
-	// 		success: function( response ) {
-	// 			var data = JSON.parse(response),
-	// 				total = parseInt(data.promo) > 0 ? parseInt(data.promo) * 1 : parseInt(data.cost) * 1 ;
-
-	// 			$(".mall_product_name").text(data.mall_product_name);
-	// 			$(".mall_product_description").text(data.mall_product_description);
-	// 			// $(".mall_product_pic").find("img").attr("src",data.mall_product_pic);
-	// 			$(".mall_product_cost").text( "NT." + total );
-	// 			$("[name='total']").val( total );
-	// 			$(".mall_product_spec").find(".cost").text(data.cost);
-	// 			if ( data.promo > 0 ) 
-	// 			{
-	// 				$(".mall_product_spec").find(".cost").addClass("line-through");
-	// 				$(".mall_product_spec").find(".promo_price").show();
-	// 				$(".mall_product_spec").find(".promo_price").find(".promo_price").text(data.promo);
-	// 			};
-	// 			// $('.mall_product_spec').find("select").find("option[classkey='append']").remove();
-	// 			$('[name="mall_product_number"]').val("1");
-	// 			$.map(data.include_service, function(row, index) {
-	// 				var dom = "<div> "+row['product_name']+" X "+row["number"]+" 可用"+row["date_spec"]+" 天 </div>";
-	// 				$(".mall_child_product").append(dom);
-	// 			});
-	// 			$(".mall_shop_id").val(data.mall_shop_id);
-	// 			$(".mall_product_lightbox").fadeIn(200);
-	// 		}
-	// 	});		
-	
-	// },
-	// plus = function(){
-	// 	var target = $(this).attr("target"),
-	// 		ori_value = $(target).val(),
-	// 		new_value = parseInt(ori_value) + 1;
-
-	// 	$(target).val(new_value);
-
-	// 	shop_calc();
-			
-	// },
-	// minus = function(){
-	// 	var target = $(this).attr("target"),
-	// 		ori_value = $(target).val(),
-	// 		new_value = parseInt(ori_value) > 1 ? parseInt(ori_value) - 1 : parseInt(ori_value);
-
-	// 	$(target).val(new_value);
-
-	// 	shop_calc();
-			
-	// },
-	// shop_calc = function(){
-	// 	var cost = parseInt($("label.cost").text()),
-	// 		promo = parseInt($("label.promo_price").text()),
-	// 		price = promo > 0 ? promo : cost ;
-	// 		number = $("[name='mall_product_number']").val(),
-	// 		// spec_data = spec.split("/"),
-	// 		total = parseInt(number) * parseInt(price),
-	// 		price_txt = isNaN(total) ? "NT. 0" : "NT. "+total,
-	// 		total_price = isNaN(total) ? 0 : total ;
-	// 	$(".mall_product_cost").text(price_txt);
-	// 	$("#ShopForm").find("[name='total']").val(total);
-	
-	// },
-	// ShopSubmit = function(){
-	// 	var mall_shop_id = $(".mall_shop_id"),
-	// 		number = $("[name='mall_product_number']");
-
-	// 	$.ajax({
-	// 		url: "/shop_buy_process",
-	// 		data: "mall_shop_id="+mall_shop_id.val()+"&mall_product_number="+number.val(),
-	// 		type: 'POST',
-	// 		success: function( response ) {
-	// 			var data = JSON.parse(response);
-	// 			$(".shop_finish").find(".subject").text(data.subject);
-	// 			$(".shop_finish").find(".content").text(data.content);
-	// 			$(".mall_product_lightbox").hide();
-	// 			$(".shop_finish").fadeIn();
-	// 		}
-	// 	});	
-	
-	// },
 	dragHandler = function(e){
 		e.preventDefault();
 	
@@ -293,39 +196,6 @@ var Show_current_position = function(){
 		return canvas;
 	
 	},
-	AutoComplete = function(){
-		var type = $(this).attr("AutoCompleteType"),
-			url = $(this).attr("site");
-
-			switch(type)
-			{
-
-				case 'product_name':
-
-					url += "/product/get_product_list";
-				
-					break;
-
-			}
-
-			$( "[name='"+type+"']" ).autocomplete({
-		    	source: url,
-		    	close: function( event, ui ) {
-		    		// $( "[name='product_name']" ).attr("specId", "");
-		    		// get_product_spec();
-		    	},
-		    	select: function( event, ui ) {
-		    		var product_id = ui.item.index,
-		    			keep_for_days = ui.item.keep_for_days;
-		    		$("[name='product_id']").val(product_id);
-		    		$("[name='keep_for_days']").val(keep_for_days);
-		    	},
-		    	response: function( event, ui ){
-		    		// console.log(ui);
-		    	}
-		    });
-
-	},
 	clickAllFunction = function(){
 		var	target = $(this).attr("target"),
 			Dom = $("."+target),
@@ -399,9 +269,6 @@ var Show_current_position = function(){
 				return false;
 			
 			};
-
-			console.log(user_id);
-			console.log(date_spec);
 
 			$.ajax({
 				url: url,
@@ -518,7 +385,7 @@ var Show_current_position = function(){
 			$(this).parents(target).find("input[type='text'],select,input[type='number']").val('');
 		};	
 		
-	},
+	};
 
 
 Show_current_position();
@@ -528,30 +395,35 @@ count_lightbox_width();
 $(".addbtn").on("click", AddBtn);
 $(document).on("click", ".removeLabel", RemoveBtn);
 $("[alt='main']").on("click", ClickAll);
-$(".search_tool").find("[name='date']").datepicker({dateFormat: "yy-mm-dd"});
-// $(".ShowHide").on("click", Search_tool_display);
 $(".refresh_verify_code").on("click", Refresh_verify_code);
-$(".RoleListBtn").on("click", RoleListBtn);
 $(".close_btn").on("click", ClosePopup);
-$("#start_datetime").datetimepicker({format: "YYYY-MM-DD 00:00"});
-$("#end_datetime").datetimepicker({format: "YYYY-MM-DD 23:59"});
-$("#start_date").datepicker({dateFormat: "yy-mm-dd"});
-$("#end_date").datepicker({dateFormat: "yy-mm-dd"});
-$("[name='in_warehouse_date']").datepicker({dateFormat: "yy-mm-dd"});
-$("[name='out_warehouse_date']").datepicker({dateFormat: "yy-mm-dd"});
+
 $("[name='store_type']").on("click", call_store_type);
 $("[name='parents_store_type']").on("change", store_type_find_child);
-// $(".store_type>li.child").on("click", set_store_type);
 $(".branch_select>li").on("click", change_store);
-// $(".mall_product>img").on("click", show_shop_div);
-// $(".plus").on("click", plus);
-// $(".minus").on("click", minus);
-// $("[name='mall_product_spec']").on("change", shop_calc);
 $(".crop").on("click", upload_crop_image);
-$(".autocomplete").on("click", AutoComplete);
 $(".clickAll").on("click", clickAllFunction);
 $(".extend_account_deadline").on("click", extend_account_deadline);
 $("#category").on("change", product_category);
 $(".fa-search").on("click", Search_tool_display);
 $(".add_block").on("click", add_block);
 $(document).on("click", ".remove", remove_block);
+
+// $("li.treeview").on("click", function(e){
+
+// 	$("li.treeview").find("ul").hide();
+// 	$("li.treeview").find("i.fa-angle-down").addClass("fa-angle-left");
+// 	$("li.treeview").find("i.fa-angle-down").removeClass("fa-angle-down");
+
+// 	$(this).find("ul").toggle();
+// 	$(this).find("i.fa-angle-left").addClass("fa-angle-down");
+// 	$(this).find("i.fa-angle-left").removeClass("fa-angle-left");
+
+// });
+
+if ( $(".search_tool").find("[name='date']").length > 0 ) 
+{
+	
+	$(".search_tool").find("[name='date']").datepicker({dateFormat: "yy-mm-dd"});
+
+};

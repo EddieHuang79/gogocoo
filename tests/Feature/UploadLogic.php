@@ -96,4 +96,31 @@ class UploadTest extends TestCase
 
     }
 
+    public function testGetProductUploadInputTemplateArray()
+    {
+
+        $test1 = Upload_logic::get_product_upload_input_template_array();
+
+        $this->assertTrue( is_array($test1) );
+
+    }
+
+    public function testGetPurchaseUploadInputTemplateArray()
+    {
+
+        $test1 = Upload_logic::get_purchase_upload_input_template_array();
+
+        $this->assertTrue( is_array($test1) );
+
+    }
+
+    public function testGetOrderUploadInputTemplateArray()
+    {
+
+        $test1 = Upload_logic::get_order_upload_input_template_array();
+
+        $this->assertTrue( is_array($test1) );
+
+    }
+
 }

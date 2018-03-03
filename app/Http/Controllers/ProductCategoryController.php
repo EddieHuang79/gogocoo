@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 use App\logic\ProductCategory_logic;
+use Illuminate\Support\Facades\Session;
 
 class ProductCategoryController extends Controller
 {
@@ -19,9 +20,13 @@ class ProductCategoryController extends Controller
 
         $product_category_data = ProductCategory_logic::get_product_category_data();
 
+        $htmlData = ProductCategory_logic::product_category_list_data_bind( $product_category_data );
+
+        $htmlJsonData = json_encode($htmlData);
+
         $assign_page = "product_category/product_category_list";
 
-        $data = compact('assign_page', 'product_category_data');
+        $data = compact('assign_page', 'product_category_data', 'htmlJsonData');
 
         return view('webbase/content', $data);
 
@@ -36,12 +41,24 @@ class ProductCategoryController extends Controller
     {
 
         $ProductCategory = "";
-
-        $parents_category_list = ProductCategory_logic::get_parents_category_list();
  
+        $OriData = Session::get( 'OriData' );
+
+        Session::forget( 'OriData' );
+
+        $htmlData = ProductCategory_logic::get_product_category_input_template_array();
+
+        $htmlData = ProductCategory_logic::product_category_input_data_bind( $htmlData, $OriData );
+
+        $htmlData["action"] = "/product_category";
+
+        $htmlData["method"] = "post"; 
+
+        $htmlJsonData = json_encode($htmlData);
+
         $assign_page = "product_category/product_category_input";
 
-        $data = compact('assign_page', 'ProductCategory', 'parents_category_list');
+        $data = compact('assign_page', 'ProductCategory', 'htmlJsonData');
 
         return view('webbase/content', $data);
 
@@ -81,11 +98,21 @@ class ProductCategoryController extends Controller
 
         $ProductCategory = ProductCategory_logic::get_single_product_category( (int)$id );  
 
-        $parents_category_list = ProductCategory_logic::get_parents_category_list( (int)$id );
+        $htmlData = ProductCategory_logic::get_product_category_input_template_array();
+
+        $ProductCategory = get_object_vars($ProductCategory);
+  
+        $htmlData = ProductCategory_logic::product_category_input_data_bind( $htmlData, $ProductCategory );
+
+        $htmlData["action"] = "/product_category/" . (int)$id;
+
+        $htmlData["method"] = "patch";
+
+        $htmlJsonData = json_encode($htmlData);
 
         $assign_page = "product_category/product_category_input";
 
-        $data = compact('assign_page', 'ProductCategory', 'parents_category_list');
+        $data = compact('assign_page', 'ProductCategory', 'htmlJsonData');
 
         return view('webbase/content', $data);
 

@@ -93,6 +93,8 @@ Route::post('change_store', ['as'=>'store.change','uses'=>'StoreController@chang
 
 Route::post('extend_store_process', ['as'=>'admin.extend_store_process','uses'=>'StoreController@extend_store_process']);
 
+Route::post('get_child_store', ['as'=>'store.get_child_store','uses'=>'StoreController@get_child_store']);
+
 // mall
 
 Route::resource('mall', 'MallController');
@@ -189,7 +191,7 @@ Route::post('product_top5_stack', ['as'=>'report.product_top5_stack','uses'=>'Re
 
 Route::resource('product_category', 'ProductCategoryController');
 
-Route::post('product_category/get_child_list', ['as'=>'product_category.get_child_list','uses'=>'ProductCategoryController@get_child_list']);
+Route::post('get_child_list', ['as'=>'product_category.get_child_list','uses'=>'ProductCategoryController@get_child_list']);
 
 // EDM
 

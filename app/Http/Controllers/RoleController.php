@@ -7,9 +7,26 @@ use App\logic\Role_logic;
 use App\logic\Service_logic;
 use App\logic\Redis_tool;
 use App\logic\Basetool;
+use App\logic\Web_cht;
+use Illuminate\Support\Facades\Session;
 
 class RoleController extends Basetool
 {
+
+    public function __construct()
+    {
+
+        // 文字
+
+        $txt = Web_cht::get_txt();
+
+        $this->status = array(
+                            1   =>  $txt["enable"],
+                            2   =>  $txt["disable"]
+                        );
+
+    }   
+
     /**
      * Display a listing of the resource.
      *
@@ -20,30 +37,19 @@ class RoleController extends Basetool
 
         $_this = new self();
 
-        $service_id = isset($_GET['service_id']) ? intval($_GET['service_id']) : 0 ;
-
-        // get now page
-
-        Service_logic::get_service_id_by_url_and_save( $request->path() );
-
-        // search bar setting
-
         $search_tool = array(5,6);
 
         $search_query = $_this->get_search_query( $search_tool, $_GET );
 
-        if ( $service_id > 0 ) 
-        {
-        
-            Redis_tool::set_search_tool( $search_tool, $service_id );
-        
-        }
-
         $role = Role_logic::get_role_list( $_GET );
+
+        $htmlData = Role_logic::role_list_data_bind( $role );
+
+        $htmlJsonData = json_encode($htmlData);
  
         $assign_page = "role/role_list";
 
-        $data = compact('role', 'assign_page');
+        $data = compact('role', 'search_tool', 'assign_page', 'htmlJsonData');
 
         return view('webbase/content', $data);
 
@@ -57,15 +63,24 @@ class RoleController extends Basetool
     public function create()
     {
 
-        $role = "";
- 
+
+        $OriData = Session::get( 'OriData' );
+
+        Session::forget( 'OriData' );
+
+        $htmlData = Role_logic::get_role_input_template_array();
+
+        $htmlData = Role_logic::role_input_data_bind( $htmlData, $OriData );
+
+        $htmlData["action"] = "/role";
+
+        $htmlData["method"] = "post"; 
+  
+        $htmlJsonData = json_encode($htmlData);
+
         $assign_page = "role/role_input";
 
-        $menu_data = Service_logic::get_active_service();
-
-        $menu_list = Service_logic::menu_format( $menu_data );
-
-        $data = compact('role', 'assign_page', 'menu_list');
+        $data = compact('role', 'assign_page', 'htmlJsonData');
 
         return view('webbase/content', $data);
 
@@ -132,17 +147,31 @@ class RoleController extends Basetool
 
         $role = Role_logic::get_role( (int)$id );
 
+
+        $htmlData = Role_logic::get_role_input_template_array();
+
+        $role = get_object_vars($role);
+  
+        $htmlData = Role_logic::role_input_data_bind( $htmlData, $role );
+
+        $htmlData["action"] = "/role/" . (int)$id;
+
+        $htmlData["method"] = "patch";
+
+        $htmlJsonData = json_encode($htmlData);
+
+
         $assign_page = "role/role_input";
 
-        $menu_data = Service_logic::get_active_service();
+        // $menu_data = Service_logic::get_active_service();
 
-        $menu_list = Service_logic::menu_format( $menu_data );
+        // $menu_list = Service_logic::menu_format( $menu_data );
 
         $role_service_data = Role_logic::get_role_service( $id );
 
         $role_service = Service_logic::role_auth_format( $role_service_data );
 
-        $data = compact('role', 'assign_page', 'menu_list', 'role_service');
+        $data = compact('role', 'assign_page', 'role_service', 'htmlJsonData');
 
         return view('webbase/content', $data);
 

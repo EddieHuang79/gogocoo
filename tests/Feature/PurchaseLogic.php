@@ -236,4 +236,30 @@ class PurchaseLogic extends TestCase
 
 	}
 
+	public function testGetProductInputTemplateArray()
+	{
+
+		$test1 = Purchase_logic::get_purchase_input_template_array();
+
+		$this->assertTrue( is_array($test1) );
+
+	}
+
+	public function testProductInputDataBind()
+	{
+
+		$test1 = Purchase_logic::purchase_input_data_bind( "", "" );
+
+		$this->assertEquals($test1, "");
+
+		$test1 = Purchase_logic::purchase_input_data_bind( 0, 0 );
+
+		$this->assertEquals($test1, 0);
+
+		$test1 = Purchase_logic::purchase_input_data_bind( array(), array() );
+
+		$this->assertEquals($test1, array());
+
+	}
+
 }

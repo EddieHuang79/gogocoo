@@ -87,7 +87,7 @@ class Promo_logic extends Basetool
 
 		$result = false;
 
-		if ( !empty($data) && is_array($data) && !empty($data['mall_shop_id']) ) 
+		if ( !empty($data) && is_array($data) ) 
 		{
 
 			$result = Promo::add_promo_data( $data );
@@ -216,6 +216,166 @@ class Promo_logic extends Basetool
 			$data = Promo::get_active_promo_price( $mall_shop_id );
 
 			$result = !empty($data) ? $data->cost : 0 ;
+
+		}
+
+		return $result;
+
+	}
+
+
+	// 取得輸入邏輯陣列
+
+	public static function get_promo_input_template_array()
+	{
+
+		$_this = new self();
+
+		$txt = Web_cht::get_txt();
+
+		$htmlData = array(
+					"mall_shop_id" => array(
+						"type"          => 11, 
+						"title"         => "",
+						"key"           => "mall_shop_id",
+						"value"         => "" ,
+						"display"       => true,
+						"desc"          => "",
+						"attrClass"     => "hide",
+						"hasPlugin"     => "",
+						"placeholder"   => ""
+					),
+					"product_name" => array(
+						"type"          => 1, 
+						"title"         => $txt["promo_price"],
+						"key"           => "cost",
+						"value"         => "" ,
+						"display"       => true,
+						"desc"          => "",
+						"attrClass"     => "",
+						"hasPlugin"     => "",
+						"placeholder"   => $txt['promo_price_input']
+					),
+					"status" => array(
+						"type"          => 3,
+						"title"         => $txt["status"],
+						"key"           => "status",
+						"value"         => "",
+						"data"          => array(
+												1 => $txt["enable"],
+												2 => $txt["disable"]
+											),
+						"display"       => true,
+						"desc"          => "",
+						"attrClass"     => "",
+						"hasPlugin"     => ""
+					),
+					"start_date" => array(
+						"type"          => 1, 
+						"title"         => $txt["start_date"],
+						"key"           => "start_date",
+						"value"         => "",
+						"display"       => true,
+						"desc"          => "",
+						"EventFunc"     => "",
+						"attrClass"     => "",
+						"hasPlugin"     => "DateTimePicker"
+					),
+					"end_date" => array(
+						"type"          => 1, 
+						"title"         => $txt["end_date"],
+						"key"           => "end_date",
+						"value"         => "",
+						"data"          => "",
+						"display"       => true,
+						"desc"          => "",
+						"EventFunc"     => "",
+						"attrClass"     => "",
+						"hasPlugin"     => "DateTimePicker",
+						"placeholder"   => ""
+					)
+		         );
+
+		return $htmlData;
+
+	}
+
+
+	// 組合資料
+
+	public static function promo_input_data_bind( $htmlData, $OriData )
+	{
+
+		$_this = new self();
+
+		$result = $htmlData;
+
+		if ( !empty($OriData) && is_array($OriData) ) 
+		{
+
+			foreach ($htmlData as &$row) 
+			{
+
+				if ( is_array($row) ) 
+				{
+
+				   $row["value"] = isset($OriData[$row["key"]]) ? $OriData[$row["key"]] : "" ;
+				   
+				}
+
+			}
+
+		}
+
+		return $htmlData;
+
+	}
+
+
+	// 組合列表資料
+
+	public static function promo_list_data_bind( $OriData )
+	{
+
+		$_this = new self();
+
+		$txt = Web_cht::get_txt();
+
+		$result = array(
+		             "title" => array(
+		                         $txt['promo_price'],
+		                         $txt['status'],
+		                         $txt['start_date'],
+		                         $txt['end_date'],
+		                         $txt['action']
+		                      ),
+		             "data" => array()
+		         );
+
+		if ( !empty($OriData) && is_array($OriData) ) 
+		{
+
+			foreach ($OriData as $row) 
+			{
+
+				if ( is_array($row) ) 
+				{
+
+				   $data = array(
+				            "data" => array(
+				                        "promo_price"        => $txt["cost_unit"] . " " . $row['cost'],
+				                        "status"        	 => $row['status_txt'],
+				                        "start_date"         => $row['start_date'],
+				                        "end_date"         	 => $row['end_date']
+				                     ),
+				            "Editlink" => "/promo/" . $row["id"] . "/edit?"
+				         );
+				   
+				}
+
+				$result["data"][] = $data;
+
+			}
 
 		}
 

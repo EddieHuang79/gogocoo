@@ -103,21 +103,15 @@ class ShopLogic extends TestCase
 
 		$test1 = Shop_logic::shop_buy_insert( "" );
 
-		$this->assertTrue( empty($test1) );
-		$this->assertTrue( is_array($test1) );
-		$this->assertEquals($test1, array());
+		$this->assertEquals($test1, "/buy_record");
 
 		$test1 = Shop_logic::shop_buy_insert( 0 );
 
-		$this->assertTrue( empty($test1) );
-		$this->assertTrue( is_array($test1) );
-		$this->assertEquals($test1, array());
+		$this->assertEquals($test1, "/buy_record");
 
 		$test1 = Shop_logic::shop_buy_insert( array() );
 
-		$this->assertTrue( empty($test1) );
-		$this->assertTrue( is_array($test1) );
-		$this->assertEquals($test1, array());
+		$this->assertEquals($test1, "/buy_record");
 
 	}
 
@@ -502,23 +496,6 @@ class ShopLogic extends TestCase
 		$this->assertFalse( $test1 );
 
 		$test1 = Shop_logic::is_first_buy( array() );
-
-		$this->assertFalse( $test1 );
-
-	}
-
-	public function testAddFirstBuyGift()
-	{
-
-		$test1 = Shop_logic::add_first_buy_gift( "" );
-
-		$this->assertFalse( $test1 );
-
-		$test1 = Shop_logic::add_first_buy_gift( 0 );
-
-		$this->assertFalse( $test1 );
-
-		$test1 = Shop_logic::add_first_buy_gift( array() );
 
 		$this->assertFalse( $test1 );
 

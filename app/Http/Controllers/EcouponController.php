@@ -5,11 +5,7 @@ namespace App\Http\Controllers;
 use App\logic\Basetool;
 use App\logic\Ecoupon_logic;
 use Illuminate\Http\Request;
-use URL;
-use App\logic\Option_logic;
-use App\logic\Web_cht;
 use Illuminate\Support\Facades\Session;
-use App\logic\Store_logic;
 
 class EcouponController extends Basetool
 {
@@ -23,21 +19,15 @@ class EcouponController extends Basetool
     public function index(Request $request)
     {
 
-        $txt = Web_cht::get_txt();
-
-        $JsonTxt = json_encode($txt);
-
-        $htmlData = Ecoupon_logic::get_ecoupon_list_template_array();
-
         $ecoupon = Ecoupon_logic::get_ecoupon_list( $_GET );
 
-        $htmlData = Ecoupon_logic::ecoupon_list_data_bind( $htmlData, $ecoupon );
+        $htmlData = Ecoupon_logic::ecoupon_list_data_bind( $ecoupon );
 
         $htmlJsonData = json_encode($htmlData);
 
         $assign_page = "ecoupon/ecoupon_list";
 
-        $data = compact('assign_page', 'ecoupon', 'JsonTxt', 'htmlJsonData');
+        $data = compact('assign_page', 'ecoupon', 'htmlJsonData');
 
         return view('webbase/content', $data);
 
@@ -51,21 +41,14 @@ class EcouponController extends Basetool
     public function create()
     {
 
+        // Ecoupon_logic::send_ecoupon( $send_type = 1, $user_id = 1 );
+
+
         $ecoupon = "";
-
-        $site = URL::to('/');
-
-        $txt = Web_cht::get_txt();
-
-        $JsonTxt = json_encode($txt);
-
-        $ErrorMsg = Session::get('ErrorMsg');
 
         $OriData = Session::get( 'OriData' );
 
-        Session::forget('ErrorMsg');
-
-        Session::forget('OriData');
+        Session::forget( 'OriData' );
 
         $htmlData = Ecoupon_logic::get_ecoupon_input_template_array();
 
@@ -79,7 +62,7 @@ class EcouponController extends Basetool
 
         $assign_page = "ecoupon/ecoupon_input";
 
-        $data = compact('assign_page', 'ecoupon', 'site', 'ecoupon_type', 'ecoupon_match_type', 'ecoupon_send_type', 'store_type', 'ErrorMsg', 'OriData', 'htmlJsonData', 'JsonTxt');
+        $data = compact('assign_page', 'htmlJsonData', 'JsonTxt');
 
         return view('webbase/content', $data);
 
@@ -155,15 +138,9 @@ class EcouponController extends Basetool
     public function edit( $id )
     {
 
-    	$site = URL::to('/');
-
         $ecoupon = Ecoupon_logic::get_single_ecoupon( (int)$id );
 
-        $txt = Web_cht::get_txt();
-
-        $JsonTxt = json_encode($txt);
-
-        $htmlData = Ecoupon_logic::get_ecoupon_input_template_array( $ecoupon );
+        $htmlData = Ecoupon_logic::get_ecoupon_input_template_array();
   
         $htmlData = Ecoupon_logic::ecoupon_input_data_bind( $htmlData, $ecoupon );
 
@@ -173,13 +150,9 @@ class EcouponController extends Basetool
 
         $htmlJsonData = json_encode($htmlData);
 
-        $ErrorMsg = Session::get('ErrorMsg');
-
-        Session::forget('ErrorMsg');
-
         $assign_page = "ecoupon/ecoupon_input";
 
-        $data = compact('assign_page', 'ecoupon', 'site', 'htmlJsonData', 'JsonTxt', 'ErrorMsg');
+        $data = compact('assign_page', 'htmlJsonData');
 
         return view('webbase/content', $data);
 

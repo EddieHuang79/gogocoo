@@ -65,9 +65,11 @@ class Autoload extends Basetool
 	
         $txt = Web_cht::get_txt();
 
-    	$active_to_text = array(1 => $txt["enable"], 2 => $txt["disable"]);
+    	$active_to_text = array( 1 => $txt["enable"], 2 => $txt["disable"] );
 
-        $data = compact('txt', 'active_to_text');
+        $JsonTxt = json_encode($txt);
+
+        $data = compact('txt', 'active_to_text', 'JsonTxt');
 
     	$view->with($data);
 
@@ -249,6 +251,19 @@ class Autoload extends Basetool
         $displayInviteBtn = $mail_is_pending === true ? false : $displayInviteBtn ;
 
         $data = compact('displayInviteBtn');
+
+        $view->with($data);
+
+    }
+
+    public function ErrorMsg(View $view)
+    {
+
+        $ErrorMsg = Session::get( 'ErrorMsg' );
+
+        Session::forget( 'ErrorMsg' );
+
+        $data = compact('ErrorMsg', 'OriData');
 
         $view->with($data);
 

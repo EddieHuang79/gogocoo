@@ -181,4 +181,72 @@ class StockLogic extends TestCase
 
 	}
 
+	public function testStockTotalListDataBind()
+	{
+
+		$test1 = Stock_logic::stock_total_list_data_bind( "" );
+
+		$this->assertTrue( is_array($test1) );
+
+		$test1 = Stock_logic::stock_total_list_data_bind( 0 );
+
+		$this->assertTrue( is_array($test1) );
+
+		$test1 = Stock_logic::stock_total_list_data_bind( array() );
+
+		$this->assertTrue( is_array($test1) );
+
+	}
+
+	public function testStockBatchListDataBind()
+	{
+
+		$test1 = Stock_logic::stock_batch_list_data_bind( "" );
+
+		$this->assertTrue( is_array($test1) );
+
+		$test1 = Stock_logic::stock_batch_list_data_bind( 0 );
+
+		$this->assertTrue( is_array($test1) );
+
+		$test1 = Stock_logic::stock_batch_list_data_bind( array() );
+
+		$this->assertTrue( is_array($test1) );
+
+	}
+
+	public function testStockLackListDataBind()
+	{
+
+		$test1 = Stock_logic::stock_lack_list_data_bind( "" );
+
+		$this->assertTrue( is_array($test1) );
+
+		$test1 = Stock_logic::stock_lack_list_data_bind( 0 );
+
+		$this->assertTrue( is_array($test1) );
+
+		$test1 = Stock_logic::stock_lack_list_data_bind( array() );
+
+		$this->assertTrue( is_array($test1) );
+
+	}
+
+	public function testStockImmediateListDataBind()
+	{
+
+		$test1 = Stock_logic::stock_immediate_list_data_bind( "" );
+
+		$this->assertTrue( is_array($test1) );
+
+		$test1 = Stock_logic::stock_immediate_list_data_bind( 0 );
+
+		$this->assertTrue( is_array($test1) );
+
+		$test1 = Stock_logic::stock_immediate_list_data_bind( array() );
+
+		$this->assertTrue( is_array($test1) );
+
+	}
+
 }

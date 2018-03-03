@@ -790,7 +790,7 @@ class Order_logic extends Basetool
 
 			$content = !empty($error_data) ? "庫存不足，無法入帳！訂單編號: ". implode(",", $error_data) : $subject ;
 
-	        Msg_logic::add_notice_msg( $subject, $content, $Login_user["user_id"] );
+	        Msg_logic::add_notice_msg( $subject, $content, $Login_user["user_id"], $show_type = 2 );
 
 		}
 
@@ -1024,6 +1024,363 @@ class Order_logic extends Basetool
 		$_this = new self();
 
 		return $_this->not_show_on_page;
+
+	}
+
+
+	// 組合列表資料
+
+	public static function order_list_data_bind( $OriData )
+	{
+
+		$_this = new self();
+
+		$txt = Web_cht::get_txt();
+
+		$result = array(
+                        "title" => array(
+                        				array(
+											"clickAll" 	=> true,
+											"target" 	=> "order_checkbox"
+										),
+                        				$txt['order_number'],
+                        				$txt['product_name'],
+                        				$txt['out_warehouse_date'],
+                        				$txt['out_warehouse_category']
+                        			),
+                        "data" => array()
+                    );
+
+		$order_extra_column_array = array();
+
+		$order_extra_column = $_this->get_order_extra_column(); 
+
+		foreach ($order_extra_column as $row) 
+		{
+
+			if ( $row["show_on_page"] === true ) 
+			{
+				
+				$order_extra_column_array[] = $row["name"];
+				
+			}
+
+		}
+
+
+
+		foreach ($order_extra_column as $row) 
+		{
+
+			if ( isset($txt[$row['name']]) && $row["show_on_page"] === true ) 
+			{
+				
+				$result["title"][] = $txt[$row['name']];
+				
+			}
+
+		}
+
+
+		$result["title"][] = $txt['number'];
+
+		$result["title"][] = $txt['status'];
+
+		$result["title"][] = $txt['action'];
+
+		if ( !empty($OriData) && is_array($OriData) ) 
+		{
+
+			foreach ($OriData as $row) 
+			{
+	
+				if ( is_array($row) ) 
+				{
+
+					$data = array(
+								"data" => array(
+						                        "id"          				=> array(
+						                        										"id" 		=> $row["id"],
+						                        										"checkbox" 	=> true,
+						                        										"key" 		=> "order_id[]",
+						                        										"class" 	=> "order_checkbox",
+						                        								),									
+												"order_number" 					=> $row["order_number_txt"],
+												"product_name" 					=> $row["product_name"],
+												"out_warehouse_date" 			=> $row["out_warehouse_date"],
+												"out_warehouse_category" 		=> $row["out_warehouse_category_txt"]
+											),
+								"Editlink" => $row['status'] == 1 ? "/order/" . $row["id"] . "/edit?" : ""
+							);
+
+					foreach ($order_extra_column_array as $key) 
+					{
+						
+						$data["data"][$key] = isset( $row[$key."_txt"] ) ? $row[$key."_txt"] : $row[$key] ;
+
+					}
+
+					$data["data"]["number"] = $row["number"];
+
+					$data["data"]["status_txt"] = $row["status_txt"];
+					
+				}
+
+				$result["data"][] = $data;
+			
+			}
+
+		}
+
+		return $result;
+
+	}
+
+
+	// 組合列表資料
+
+	public static function order_verify_list_data_bind( $OriData )
+	{
+
+		$_this = new self();
+
+		$txt = Web_cht::get_txt();
+
+		$result = array(
+                        "title" => array(
+                        				array(
+											"clickAll" 	=> true,
+											"target" 	=> "order_checkbox"
+										),
+                        				$txt['order_number'],
+                        				$txt['product_name'],
+                        				$txt['out_warehouse_date'],
+                        				$txt['out_warehouse_category']
+                        			),
+                        "data" => array()
+                    );
+
+		$order_extra_column_array = array();
+
+		$order_extra_column = $_this->get_order_extra_column(); 
+
+		foreach ($order_extra_column as $row) 
+		{
+
+			if ( $row["show_on_page"] === true ) 
+			{
+				
+				$order_extra_column_array[] = $row["name"];
+				
+			}
+
+		}
+
+		foreach ($order_extra_column as $row) 
+		{
+
+			if ( isset($txt[$row['name']]) && $row["show_on_page"] === true ) 
+			{
+				
+				$result["title"][] = $txt[$row['name']];
+				
+			}
+
+		}
+
+		$result["title"][] = $txt['number'];
+
+		$result["title"][] = $txt['status'];
+
+		$result["title"][] = $txt['action'];
+
+		if ( !empty($OriData) && is_array($OriData) ) 
+		{
+
+			foreach ($OriData as $row) 
+			{
+	
+				if ( is_array($row) ) 
+				{
+
+					$data = array(
+								"data" => array(
+						                        "id"          				=> array(
+						                        										"id" 		=> $row["id"],
+						                        										"checkbox" 	=> true,
+						                        										"key" 		=> "order_id[]",
+						                        										"class" 	=> "order_checkbox",
+						                        								),									
+												"order_number" 					=> $row["order_number_txt"],
+												"product_name" 					=> $row["product_name"],
+												"out_warehouse_date" 			=> $row["out_warehouse_date"],
+												"out_warehouse_category" 		=> $row["out_warehouse_category_txt"]
+											),
+								"Editlink" => $row['status'] == 1 ? "/order/" . $row["id"] . "/edit?" : ""
+							);
+
+					foreach ($order_extra_column_array as $key) 
+					{
+						
+						$data["data"][$key] = isset( $row[$key."_txt"] ) ? $row[$key."_txt"] : $row[$key] ;
+
+					}
+
+					$data["data"]["number"] = $row["number"];
+
+					$data["data"]["status_txt"] = $row["status_txt"];
+					
+				}
+
+				$result["data"][] = $data;
+			
+			}
+
+		}
+
+		return $result;
+
+	}
+
+
+	// 取得輸入邏輯陣列
+
+	public static function get_order_input_template_array()
+	{
+
+		$_this = new self();
+
+		$txt = Web_cht::get_txt();
+
+        $out_warehouse_category_data = Option_logic::get_out_warehouse_category();
+
+        $out_warehouse_category_data = get_object_vars($out_warehouse_category_data) ;
+
+        $order_extra_column = Order_logic::get_order_extra_column();
+
+        $select_option = Option_logic::get_select_option( $order_extra_column );
+
+		$htmlData = array(
+					"product_id" => array(
+						"type"          => 11, 
+						"title"         => "",
+						"key"           => "product_id",
+						"value"         => "" ,
+						"display"       => true,
+						"desc"          => "",
+						"attrClass"     => "hide",
+						"hasPlugin"     => "",
+						"placeholder"   => ""
+					),
+					"product_name" => array(
+						"type"          => 10, 
+						"title"         => $txt["product_name"],
+						"key"           => "product_name",
+						"value"         => "" ,
+						"display"       => true,
+						"desc"          => "",
+						"attrClass"     => "",
+						"hasPlugin"     => "",
+						"placeholder"   => $txt['product_name_input']
+					),
+					"number" => array(
+						"type"          => 1, 
+						"title"         => $txt["number"],
+						"key"           => "number",
+						"value"         => "",
+						"display"       => true,
+						"desc"          => "",
+						"attrClass"     => "",
+						"hasPlugin"     => "",
+						"placeholder"   => $txt['number_input']
+					),
+					"out_warehouse_date" => array(
+						"type"          => 1, 
+						"title"         => $txt["out_warehouse_date"],
+						"key"           => "out_warehouse_date",
+						"value"         => "",
+						"display"       => true,
+						"desc"          => "",
+						"EventFunc"     => "",
+						"attrClass"     => "",
+						"hasPlugin"     => "DatePicker",
+						"placeholder"   => $txt["out_warehouse_date_input"]
+					),
+					"out_warehouse_category" => array(
+						"type"          => 2, 
+						"title"         => $txt["out_warehouse_category"],
+						"key"           => "out_warehouse_category",
+						"value"         => "",
+						"data"          => $out_warehouse_category_data,
+						"display"       => true,
+						"desc"          => "",
+						"EventFunc"     => "",
+						"attrClass"     => "",
+						"hasPlugin"     => "",
+						"placeholder"   => ""
+					),
+					"logistics_type" => array(
+						"type"          => 3, 
+						"title"         => $txt["logistics_type"],
+						"key"           => "logistics_type",
+						"value"         => "",
+						"data"         	=> array(
+												1 => $txt["yes"],
+												2 => $txt["no"]
+											),
+						"display"       => true,
+						"desc"          => "",
+						"attrClass"     => "",
+						"hasPlugin"     => "",
+						"placeholder"   => ""
+					),
+					"ori_product_name" => array(
+						"type"          => 1, 
+						"title"         => $txt["ori_product_name"],
+						"key"           => "ori_product_name",
+						"value"         => "",
+						"display"       => true,
+						"desc"          => "",
+						"attrClass"     => "",
+						"hasPlugin"     => "",
+						"placeholder"   => $txt["ori_product_name_input"]
+					)
+		         );
+
+		return $htmlData;
+
+	}
+
+
+	// 組合資料
+
+	public static function order_input_data_bind( $htmlData, $OriData )
+	{
+
+		$_this = new self();
+
+		$result = $htmlData;
+
+		if ( !empty($OriData) && is_array($OriData) ) 
+		{
+
+			foreach ($htmlData as &$row) 
+			{
+
+				if ( is_array($row) ) 
+				{
+
+				   $row["value"] = isset($OriData[$row["key"]]) ? $OriData[$row["key"]] : "" ;
+				   
+				}
+
+			}
+
+			$htmlData["out_warehouse_category"]["value"] = !empty($OriData["category"]) ? $OriData["category"] : "" ;
+
+		}
+
+		return $htmlData;
 
 	}
 

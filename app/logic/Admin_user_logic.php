@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Session;
 use App\logic\Shop_logic;
 use App\logic\Web_cht;
 use App\logic\Msg_logic;
+use App\logic\Role_logic;
 
 class Admin_user_logic extends Basetool
 {
@@ -14,6 +15,8 @@ class Admin_user_logic extends Basetool
    protected $user_id;
 
    protected $free_user_limit = 4;
+
+   protected $status_txt = array();
 
    public function __construct()
    {
@@ -23,6 +26,13 @@ class Admin_user_logic extends Basetool
       // user_id
 
       $this->user_id = $Login_user["user_id"];
+
+      $txt = Web_cht::get_txt();
+
+      $this->status_txt = array(
+                                 1  => $txt["enable"],
+                                 2  => $txt["disable"]
+                              );
 
    }
 
@@ -158,22 +168,26 @@ class Admin_user_logic extends Basetool
 
          $_this = new self();
 
+         $status_txt = $_this->status_txt;
+
+         $Login_user = Session::get('Login_user');
+
          $option = array(
                      "account"   => !empty($param["account"]) ? $_this->strFilter($param["account"]) : "",
                      "real_name" => !empty($param["real_name"]) ? $_this->strFilter($param["real_name"]) : "",
                      "user_id"   => !empty($param["role_id"]) ?  $_this->get_user_id_by_role(intval($param["role_id"])) : "",
-                     "parents_id"=> !empty($param["parents_id"]) ?  intval($param["parents_id"]) : "",
+                     "parents_id"=> !empty($Login_user["user_id"]) ? intval($Login_user["user_id"]) : "",
                      "status"    => !empty($param["status"]) ? intval($param["status"]) : ""
                   );
 
-         $data = Admin_user::get_user_list( $option );
+         $result = Admin_user::get_user_list( $option );
 
-         if ( $data->count() > 0 ) 
+         if ( $result->isNotEmpty() ) 
          {
 
             $user_id = array();
 
-            foreach ($data as $row) 
+            foreach ($result as $row) 
             {
             
                $user_id[] = $row->id;
@@ -184,14 +198,20 @@ class Admin_user_logic extends Basetool
 
             $cnt_deadline = Shop_logic::count_deadline( $user_id, "child_account" );
 
-            foreach ($data as &$row) 
+            foreach ($result as &$row) 
             {
 
                $row->deadline = Shop_logic::get_deadline( $row, $cnt_deadline );
 
+               $row->status_txt = isset($status_txt[$row->status]) ? $status_txt[$row->status] : "" ;
+
             }
 
-            $result = $data;
+            // 帶出使用者角色陣列
+
+            $user_role = $_this->get_user_role();
+
+            $result = $_this->get_user_role_auth( $result, $user_role );
 
          }
 
@@ -949,6 +969,9 @@ class Admin_user_logic extends Basetool
 
    }
 
+
+   // 確認邀請按鈕是否顯示
+
    public static function check_display_invite_btn()
    {
 
@@ -974,6 +997,270 @@ class Admin_user_logic extends Basetool
       $result = $data->isNotEmpty() === true ? true : false ;
 
       return $result;
+
+   }
+
+
+   // 組合列表資料
+
+   public static function user_list_data_bind( $OriData )
+   {
+
+      $_this = new self();
+
+      $txt = Web_cht::get_txt();
+
+      $result = array(
+                     "title" => array(
+                                 $txt['account'],
+                                 $txt['real_name'],
+                                 $txt['telephone'],
+                                 $txt['auth'],
+                                 $txt['status'],
+                                 $txt['deadline'],
+                                 $txt['action']
+                              ),
+                     "data" => array()
+                 );
+
+      if ( !empty($OriData) && $OriData->isNotEmpty() ) 
+      {
+
+         foreach ($OriData as $row) 
+         {
+   
+            if ( is_object($row) ) 
+            {
+
+               $data = array(
+                        "data" => array(
+                                    "account"               => $row->account,
+                                    "real_name"             => $row->real_name,
+                                    "telephone"             => $row->mobile,
+                                    "auth"                  => $row->auth ,
+                                    "status"                => $row->status_txt,
+                                    "deadline"              => $row->deadline,
+                                 ),
+                        "Editlink"  => "/user/" . $row->id . "/edit?",
+                        "ExtendBtn" => true
+                     );
+               
+            }
+
+            $result["data"][] = $data;
+         
+         }
+
+
+      }
+
+      return $result;
+
+   }
+
+
+   public static function get_buy_spec_data( $buy_spec_data )
+   {
+
+      $_this = new self();
+
+      $result = array();
+
+      $txt = Web_cht::get_txt();
+
+      if ( !empty($buy_spec_data) && is_array($buy_spec_data) ) 
+      {
+
+         foreach ($buy_spec_data as $index => $spec_data) 
+         {
+
+            $result[$index] = $spec_data.$txt["buy_date_spec_desc"].date("Y-m-d", strtotime("+".$spec_data." days"));
+
+         }
+
+      }
+
+      return $result;      
+
+   }
+
+
+   // 取得輸入邏輯陣列
+
+   public static function get_admin_input_template_array()
+   {
+
+      $_this = new self();
+
+      $txt = Web_cht::get_txt();
+
+      // 計算子帳數量
+
+      $account_status = $_this->cnt_child_account();
+
+      $buy_spec_data = $_this->get_buy_spec_data( $account_status["buy_spec_data"] );
+
+      $deadline = !empty($account_status['free']) ? date("Y-m-d", strtotime("+30 days")) : $buy_spec_data ;
+
+      $role_list = Role_logic::get_active_role();
+
+      $role_list = Role_logic::filter_admin_role($role_list);
+
+      $htmlData = array(
+                     "account" => array(
+                         "type"          => 1, 
+                         "title"         => $txt["account"],
+                         "key"           => "account",
+                         "value"         => "" ,
+                         "display"       => true,
+                         "desc"          => "",
+                         "attrClass"     => "",
+                         "hasPlugin"     => "",
+                         "placeholder"   => $txt["account_input"]
+                     ),
+                     "password" => array(
+                         "type"          => 7, 
+                         "title"         => $txt["password"],
+                         "key"           => "password",
+                         "value"         => "",
+                         "display"       => true,
+                         "desc"          => "",
+                         "attrClass"     => "",
+                         "hasPlugin"     => "",
+                         "placeholder"   => $txt["password_input"],
+                         "required"      => false
+                     ),
+                     "real_name" => array(
+                         "type"          => 1, 
+                         "title"         => $txt["real_name"],
+                         "key"           => "real_name",
+                         "value"         => "",
+                         "data"          => "",
+                         "display"       => true,
+                         "desc"          => "",
+                         "EventFunc"     => "",
+                         "attrClass"     => "",
+                         "hasPlugin"     => "",
+                         "placeholder"   => $txt["real_name_input"]
+                     ),
+                     "telephone" => array(
+                         "type"          => 1, 
+                         "title"         => $txt["telephone"],
+                         "key"           => "mobile",
+                         "value"         => "",
+                         "display"       => true,
+                         "desc"          => "",
+                         "attrClass"     => "",
+                         "hasPlugin"     => "",
+                         "placeholder"   => $txt["mobile_input"]
+                     ),
+                     "auth" => array(
+                         "type"          => 6, 
+                         "title"         => $txt["auth"],
+                         "key"           => "auth[]",
+                         "value"         => "",
+                         "data"          => $role_list,
+                         "display"       => true,
+                         "desc"          => "",
+                         "attrClass"     => "",
+                         "hasPlugin"     => ""
+                     ),
+                     "status" => array(
+                         "type"          => 3,
+                         "title"         => $txt["status"],
+                         "key"           => "active",
+                         "value"         => "",
+                         "data"          => array(
+                                             1 => $txt["enable"],
+                                             2 => $txt["disable"]
+                                          ),
+                         "display"       => true,
+                         "desc"          => "",
+                         "attrClass"     => "",
+                         "hasPlugin"     => ""
+                     ),
+                     "deadline" => array(
+                         "type"          => 2, 
+                         "title"         => $txt["deadline"],
+                         "key"           => "date_spec",
+                         "value"         => "",
+                         "data"          => $deadline,
+                         "display"       => is_array($deadline) ? true : false,
+                         "desc"          => "",
+                         "attrClass"     => "",
+                         "hasPlugin"     => ""
+                     ),
+                     "deadline2" => array(
+                         "type"          => 5, 
+                         "title"         => $txt["deadline"],
+                         "key"           => "",
+                         "value"         => is_string($deadline) ? $txt['free_date_spec_desc'] . "" . $deadline : "",
+                         "data"          => "",
+                         "display"       => !is_array($deadline) ? true : false,
+                         "desc"          => "",
+                         "attrClass"     => "",
+                         "hasPlugin"     => ""
+                     )
+                 );
+
+      return $htmlData;
+
+   }
+
+
+   // 組合資料
+
+   public static function admin_input_data_bind( $htmlData, $OriData )
+   {
+
+      $_this = new self();
+
+      $result = $htmlData;
+
+      if ( !empty($OriData) && is_array($OriData) ) 
+      {
+
+         foreach ($htmlData as &$row) 
+         {
+         
+            if ( is_array($row) ) 
+            {
+
+               $row["value"] = isset($OriData[$row["key"]]) ? $OriData[$row["key"]] : "" ;
+               
+            }
+
+         }
+
+         // 修正時改為純文字
+
+         $htmlData["account"]["type"] = 5;
+
+         // password 不顯示
+
+         $htmlData["password"]["value"] = "";
+
+         // 角色
+
+         $id = isset($OriData["id"]) ? (int)$OriData["id"] : 0 ;
+
+         $user_role = $id > 0 ? Admin_user_logic::get_user_role_by_id( $id ) : "" ;
+
+         $user_role = $_this->get_object_or_array_key( $user_role );
+
+         $htmlData["auth"]["value"] = $user_role;
+
+         // 狀態
+
+         $htmlData["status"]["value"] = $OriData["status"];
+
+         // 到期日期
+
+         $htmlData["deadline2"]["value"] = is_string($htmlData["deadline"]["data"]) ? $htmlData["deadline"]["data"] : "" ;
+
+      }
+
+      return $htmlData;
 
    }
 

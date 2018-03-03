@@ -217,7 +217,6 @@ class ProductLogic extends TestCase
 
 	}
 
-
 	public function testProductSpecHeaderDownloadFormat()
 	{
 
@@ -237,6 +236,49 @@ class ProductLogic extends TestCase
 
 		$this->assertTrue( empty($test1) );
 		$this->assertTrue( is_array($test1) );
+		$this->assertEquals($test1, array());
+
+	}
+
+	public function testProductListDataBind()
+	{
+
+		$test1 = Product_logic::product_list_data_bind( "" );
+
+		$this->assertTrue( is_array($test1) );
+
+		$test1 = Product_logic::product_list_data_bind( 0 );
+
+		$this->assertTrue( is_array($test1) );
+
+		$test1 = Product_logic::product_list_data_bind( array() );
+
+		$this->assertTrue( is_array($test1) );
+
+	}
+
+	public function testGetProductInputTemplateArray()
+	{
+
+		$test1 = Product_logic::get_product_input_template_array();
+
+		$this->assertTrue( is_array($test1) );
+
+	}
+
+	public function testProductInputDataBind()
+	{
+
+		$test1 = Product_logic::product_input_data_bind( "", "" );
+
+		$this->assertEquals($test1, "");
+
+		$test1 = Product_logic::product_input_data_bind( 0, 0 );
+
+		$this->assertEquals($test1, 0);
+
+		$test1 = Product_logic::product_input_data_bind( array(), array() );
+
 		$this->assertEquals($test1, array());
 
 	}

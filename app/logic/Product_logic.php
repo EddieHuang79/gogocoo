@@ -866,6 +866,217 @@ class Product_logic extends Basetool
 
 	}
 
+
+	// 組合列表資料
+
+	public static function product_list_data_bind( $OriData )
+	{
+
+		$_this = new self();
+
+		$txt = Web_cht::get_txt();
+
+		$result = array(
+                        "title" => array(
+                        				$txt['product_name']
+                        			),
+                        "data" => array()
+                    );
+
+		$product_extra_column_array = array();
+
+		$product_extra_column = $_this->get_product_extra_column(); 
+
+		foreach ($product_extra_column as $row) 
+		{
+
+			$product_extra_column_array[] = $row["name"];
+
+		}
+
+
+
+		foreach ($product_extra_column as $row) 
+		{
+
+			if ( isset($txt[$row['name']]) ) 
+			{
+				
+				$result["title"][] = $txt[$row['name']];
+				
+			}
+
+		}
+
+
+		$result["title"][] = $txt['safe_amount'];
+
+		$result["title"][] = $txt['action'];
+
+		if ( !empty($OriData) && is_array($OriData) ) 
+		{
+
+			foreach ($OriData as $row) 
+			{
+	
+				if ( is_array($row) ) 
+				{
+
+					$data = array(
+								"data" => array(
+												"product_name" 			=> $row["product_name"]
+											),
+								"Editlink" => "/product/" . $row["id"] . "/edit?"
+							);
+
+					foreach ($product_extra_column_array as $key) 
+					{
+						
+						$data["data"][$key] = isset( $row[$key."_txt"] ) ? $row[$key."_txt"] : $row[$key] ;
+
+					}
+
+					$data["data"]["safe_amount"] = $row["safe_amount"];
+					
+				}
+
+				$result["data"][] = $data;
+			
+			}
+
+		}
+
+		return $result;
+
+	}
+
+
+	// 取得輸入邏輯陣列
+
+	public static function get_product_input_template_array()
+	{
+
+		$_this = new self();
+
+		$txt = Web_cht::get_txt();
+
+        $parents_category = ProductCategory_logic::get_parents_category_list();
+
+		$htmlData = array(
+					"product_name" => array(
+						"type"          => 1, 
+						"title"         => $txt["product_name"],
+						"key"           => "product_name",
+						"value"         => "" ,
+						"display"       => true,
+						"desc"          => "",
+						"attrClass"     => "",
+						"hasPlugin"     => "",
+						"placeholder"   => $txt['product_name_input']
+					),
+					"qc_number" => array(
+						"type"          => 1, 
+						"title"         => $txt["qc_number"],
+						"key"           => "qc_number",
+						"value"         => "",
+						"display"       => true,
+						"desc"          => "",
+						"attrClass"     => "",
+						"hasPlugin"     => "",
+						"placeholder"   => $txt['qc_number_input']
+					),
+					"barcode" => array(
+						"type"          => 1, 
+						"title"         => $txt["barcode"],
+						"key"           => "barcode",
+						"value"         => "",
+						"display"       => true,
+						"desc"          => "",
+						"EventFunc"     => "",
+						"attrClass"     => "",
+						"hasPlugin"     => "",
+						"placeholder"   => $txt['barcode_input']
+					),
+					"category" => array(
+						"type"          => 9, 
+						"title"         => $txt["category"],
+						"key"           => "parents_category",
+						"value"         => "",
+						"data"          => $parents_category,
+						"display"       => true,
+						"desc"          => "",
+						"EventFunc"     => "",
+						"attrClass"     => "",
+						"hasPlugin"     => "",
+						"placeholder"   => "",
+						"SubMenuKey"   	=> "category",
+						"SubValue"   	=> ""
+					),
+					"keep_for_days" => array(
+						"type"          => 1, 
+						"title"         => $txt["keep_for_days"],
+						"key"           => "keep_for_days",
+						"value"         => "",
+						"display"       => true,
+						"desc"          => "",
+						"attrClass"     => "",
+						"hasPlugin"     => "",
+						"placeholder"   => $txt['keep_for_days_input']
+					),
+					"safe_amount" => array(
+						"type"          => 1, 
+						"title"         => $txt["safe_amount"],
+						"key"           => "safe_amount",
+						"value"         => "",
+						"display"       => true,
+						"desc"          => "",
+						"attrClass"     => "",
+						"hasPlugin"     => "",
+						"placeholder"   => "",
+						"placeholder"   => $txt['safe_amount_input']
+					)
+		         );
+
+		return $htmlData;
+
+	}
+
+
+	// 組合資料
+
+	public static function product_input_data_bind( $htmlData, $OriData )
+	{
+
+		$_this = new self();
+
+		$result = $htmlData;
+
+		if ( !empty($OriData) && is_array($OriData) ) 
+		{
+
+			foreach ($htmlData as &$row) 
+			{
+
+				if ( is_array($row) ) 
+				{
+
+				   $row["value"] = isset($OriData[$row["key"]]) ? $OriData[$row["key"]] : "" ;
+				   
+				}
+
+			}
+
+			$htmlData["category"]["value"] = !empty($OriData["category"]) ? ProductCategory_logic::get_parents_category_id( $OriData["category"] ) : "" ;
+
+			$htmlData["category"]["SubValue"] = !empty($OriData["category"]) ? $OriData["category"] : "" ;
+
+		}
+
+		return $htmlData;
+
+	}
+
+
 	protected static function get_product_id_by_product_name( $data )
 	{
 

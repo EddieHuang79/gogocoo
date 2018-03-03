@@ -3,44 +3,18 @@
 	@include('webbase.breadcrumb')
 </section>
 <section class="content">
+
 	@include('webbase.search_tool')
-    <div class="row">
+
+    <div class="row basicList">
         <div class="col-xs-12">
 			<div class="box">
 				<div class="box-header">
 					<h3 class="box-title">{{ $txt["admin_user_list"] }}</h3>
-					<i class="fa fa-search"></i>
+					<i class="fa fa-search" @click="SearchToolDisplay"></i>
 				</div>
 				<div class="box-body">
-					<table class="table table-bordered table-striped">
-						<thead>
-							<tr>
-								<th>{{ $txt['account'] }}</th>
-								<th>{{ $txt['real_name'] }}</th>
-								<th>{{ $txt['telephone'] }}</th>
-								<th>{{ $txt['auth'] }}</th>
-								<th>{{ $txt['status'] }}</th>
-								<th>{{ $txt['deadline'] }}</th>
-								<th>{{ $txt['action'] }}</th>
-							</tr>							
-						</thead>
-						<tbody>
-							@foreach($user as $row)
-								<tr>
-									<th>{{ $row->account }}</th>
-									<td>{{ $row->real_name }}</td>
-									<td>{{ $row->mobile }}</td>
-									<td> @if( !empty($row->auth) ) @foreach($row->auth as $role) {{$role}} <br /> @endforeach  @endif </td>
-									<td> @if( isset($active_to_text[$row->status]) ) {{ $active_to_text[$row->status] }} @endif</td>
-									<td>{{ $row->deadline }}</td>
-									<td>
-										<input type="button" class="btn btn-primary" value="{{ $txt['edit'] }}" onClick="location.href='/user/{{ $row->id }}/edit?';"/>
-										<input type="button" class="btn btn-primary extend_account_deadline" value="{{ $txt['extend_deadline'] }}" class="extend_account_deadline" account="{{ $row->account }}" userId="{{ $row->id }}"/>
-									</td>
-								</tr>
-							@endforeach													
-						</tbody>
-					</table>
+					<basic-list ref="basicList" :list="{{ $htmlJsonData }}" :txt="{{ $JsonTxt }}"></basic-list>
 				</div>
 			</div>
 		</div>
@@ -71,7 +45,6 @@
 			</div>			
 		</form>
 	</div>
-
 
 	<div class="lightbox shop_finish">
 		<label class="close_btn"> X </label>

@@ -8,6 +8,7 @@ use App\logic\Service_logic;
 use App\logic\Redis_tool;
 use App\logic\Web_cht;
 use App\logic\Basetool;
+use Illuminate\Support\Facades\Session;
 
 class ServiceController extends Basetool
 {
@@ -21,28 +22,17 @@ class ServiceController extends Basetool
 
         $_this = new self();
 
-        $service_id = isset($_GET['service_id']) ? intval($_GET['service_id']) : 0 ;
-
-        // get now page
-
-        Service_logic::get_service_id_by_url_and_save( $request->path() );
-
         // search bar setting
 
         $search_tool = array(4,5,7);
 
         $search_query = $_this->get_search_query( $search_tool, $_GET );
 
-        if ( $service_id > 0 ) 
-        {
-        
-            Redis_tool::set_search_tool( $search_tool, $service_id );
-        
-        }
 
         $service_data = Service_logic::get_service_data();
 
         $service_list = Service_logic::get_service_list( $_GET );
+
 
         $role_service = Role_logic::get_role_service();
 
@@ -50,9 +40,15 @@ class ServiceController extends Basetool
 
         $service = Service_logic::get_service_role_auth( $service, $role_service );
 
+
+        $htmlData = Service_logic::service_list_data_bind( $service );
+
+        $htmlJsonData = json_encode($htmlData);
+
+
         $assign_page = "service/service_list";
 
-        $data = compact('service', 'assign_page');
+        $data = compact('service', 'search_tool', 'assign_page', 'htmlJsonData');
 
         return view('webbase/content', $data);        
     
@@ -70,11 +66,22 @@ class ServiceController extends Basetool
  
         $assign_page = "service/service_input";
 
-        $role_list = Role_logic::get_active_role();
+        $OriData = Session::get( 'OriData' );
 
-        $parents_service = Service_logic::get_parents_service();
+        Session::forget( 'OriData' );
 
-        $data = compact('service', 'assign_page', 'role_list', 'parents_service');
+        $htmlData = Service_logic::get_service_input_template_array();
+
+        $htmlData = Service_logic::service_input_data_bind( $htmlData, $OriData );
+
+        $htmlData["action"] = "/service";
+
+        $htmlData["method"] = "post"; 
+  
+        $htmlJsonData = json_encode($htmlData);
+
+
+        $data = compact('service', 'assign_page', 'htmlJsonData');
 
         return view('webbase/content', $data);
 
@@ -138,13 +145,25 @@ class ServiceController extends Basetool
  
         $assign_page = "service/service_input";
 
-        $role_list = Role_logic::get_active_role();
+        $service = get_object_vars($service);
 
-        $parents_service = Service_logic::get_parents_service();
+        $htmlData = Service_logic::get_service_input_template_array();
 
-        $role_service = Role_logic::get_role_service( 0, $id );
+        $htmlData = Service_logic::service_input_data_bind( $htmlData, $service );
 
-        $data = compact('service', 'assign_page', 'role_list', 'parents_service', 'role_service');
+        $htmlData["action"] = "/user/" . (int)$id;
+
+        $htmlData["method"] = "patch";
+
+        $htmlJsonData = json_encode($htmlData);
+
+        // $role_list = Role_logic::get_active_role();
+
+        // $parents_service = Service_logic::get_parents_service();
+
+        // $role_service = Role_logic::get_role_service( 0, $id );
+
+        $data = compact('service', 'assign_page', 'htmlJsonData');
 
         return view('webbase/content', $data);
 

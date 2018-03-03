@@ -15,8 +15,39 @@ window.Vue = require('vue');
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
-Vue.component('example', require('./components/Example.vue'));
+if ( $(".basicForm").length > 0 ) 
+{
 
-const app = new Vue({
-    el: '#app'
-});
+	const BasicForm = new Vue({
+		el: '.basicForm',
+		components: {
+			basicForm: require('./components/BasicForm.vue')
+		}
+	});
+
+};
+
+if ( $(".basicList").length > 0 ) 
+{
+
+	const BasicList = new Vue({
+		el: '.basicList',
+		components: {
+			basicList: require('./components/BasicList.vue')
+		}
+	});
+
+};
+
+if ( $(".shopList").length > 0 ) 
+{
+
+	const shopList = new Vue({
+		el: '.shopList',
+		components: {
+			shopList: require('./components/shopList.vue'),
+			mallProductLightbox: require('./components/mallProductLightbox.vue'),
+		}
+	});
+
+};

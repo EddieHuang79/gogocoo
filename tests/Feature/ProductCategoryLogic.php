@@ -205,4 +205,47 @@ class ProductCategoryLogic extends TestCase
 
 	}
 
+	public function testProductCategoryListDataBind()
+	{
+
+		$test1 = ProductCategory_logic::product_category_list_data_bind( "" );
+
+		$this->assertTrue( is_array($test1) );
+
+		$test1 = ProductCategory_logic::product_category_list_data_bind( 0 );
+
+		$this->assertTrue( is_array($test1) );
+
+		$test1 = ProductCategory_logic::product_category_list_data_bind( array() );
+
+		$this->assertTrue( is_array($test1) );
+
+	}
+
+	public function testGetMsgInputTemplateArray()
+	{
+
+		$test1 = ProductCategory_logic::get_product_category_input_template_array();
+
+		$this->assertTrue( is_array($test1) );
+
+	}
+
+	public function testMsgInputDataBind()
+	{
+
+		$test1 = ProductCategory_logic::product_category_input_data_bind( "", "" );
+
+		$this->assertEquals($test1, "");
+
+		$test1 = ProductCategory_logic::product_category_input_data_bind( 0, 0 );
+
+		$this->assertEquals($test1, 0);
+
+		$test1 = ProductCategory_logic::product_category_input_data_bind( array(), array() );
+
+		$this->assertEquals($test1, array());
+
+	}
+
 }

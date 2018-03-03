@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\logic\Edm_logic;
 use URL;
+use Illuminate\Support\Facades\Session;
 
 class EDMController extends Controller
 {
@@ -31,9 +32,13 @@ class EDMController extends Controller
 
         $edm = Edm_logic::get_edm_list( $_GET );
  
+        $htmlData = Edm_logic::edm_list_data_bind( $edm );
+
+        $htmlJsonData = json_encode($htmlData);
+
         $assign_page = "edm/edm_list";
 
-        $data = compact('assign_page', 'edm');
+        $data = compact('assign_page', 'edm', 'htmlJsonData');
 
         return view('webbase/content', $data);
 
@@ -49,11 +54,25 @@ class EDMController extends Controller
 
         $edm = "";
 
-        $site = URL::to('/');
- 
+
+        $OriData = Session::get( 'OriData' );
+
+        Session::forget( 'OriData' );
+
+        $htmlData = Edm_logic::get_edm_input_template_array();
+
+        $htmlData = Edm_logic::edm_input_data_bind( $htmlData, $OriData );
+
+        $htmlData["action"] = "/edm";
+
+        $htmlData["method"] = "post"; 
+  
+        $htmlJsonData = json_encode($htmlData);
+
+
         $assign_page = "edm/edm_input";
 
-        $data = compact('assign_page', 'edm', 'site');
+        $data = compact('assign_page', 'htmlJsonData');
 
         return view('webbase/content', $data);
 
@@ -119,15 +138,27 @@ class EDMController extends Controller
     public function edit( $id )
     {
 
-    	$site = URL::to('/');
-
         $edm = Edm_logic::get_single_edm( (int)$id );
 
         $edm_rel = Edm_logic::get_edm_rel( (int)$id );
 
+
+        $htmlData = Edm_logic::get_edm_input_template_array();
+
+        $edm = get_object_vars($edm);
+  
+        $htmlData = Edm_logic::edm_input_data_bind( $htmlData, $edm );
+
+        $htmlData["action"] = "/edm/" . (int)$id;
+
+        $htmlData["method"] = "patch";
+
+        $htmlJsonData = json_encode($htmlData);
+
+
         $assign_page = "edm/edm_input";
 
-        $data = compact('assign_page', 'edm', 'site', 'edm_rel');
+        $data = compact('assign_page', 'htmlJsonData');
 
         return view('webbase/content', $data);
 
@@ -217,9 +248,13 @@ class EDMController extends Controller
 
         $edm = Edm_logic::get_edm_list( $_GET );
  
+        $htmlData = Edm_logic::edm_verify_list_data_bind( $edm );
+
+        $htmlJsonData = json_encode($htmlData);
+
         $assign_page = "edm/edm_verify_list";
 
-        $data = compact('assign_page', 'edm');
+        $data = compact('assign_page', 'edm', 'htmlJsonData');
 
         return view('webbase/content', $data);
 
@@ -262,9 +297,13 @@ class EDMController extends Controller
 
         $edm = Edm_logic::get_edm_list( $_GET );
  
+        $htmlData = Edm_logic::edm_cancel_list_data_bind( $edm );
+
+        $htmlJsonData = json_encode($htmlData);
+
         $assign_page = "edm/edm_cancel_list";
 
-        $data = compact('assign_page', 'edm');
+        $data = compact('assign_page', 'edm', 'htmlJsonData');
 
         return view('webbase/content', $data);
 
@@ -292,6 +331,8 @@ class EDMController extends Controller
 
     public function edm_example()
     {
+
+        Storage::makeDirectory("edm_list");
 
         $pathToFile = storage_path('app/edm_list/edm_example.txt');
 

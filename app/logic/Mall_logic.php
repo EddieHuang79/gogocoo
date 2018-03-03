@@ -445,4 +445,81 @@ class Mall_logic extends Basetool
 
 	}
 
+
+	// 組合列表資料
+
+	public static function mall_list_data_bind( $OriData )
+	{
+
+		$_this = new self();
+
+		$txt = Web_cht::get_txt();
+
+		$result = array(
+                        "title" => array(
+                        				$txt['id'],
+                        				$txt['product_name'],
+                        				$txt['product_image'],
+                        				$txt['price'],
+                        				// $txt['include_service'] . "/ " . $txt['include_service'] . "/ " . $txt['day_unit'] ,
+                        				$txt['include_service'],
+                        				$txt['public'],
+                        				$txt['start_date_input'],
+                        				$txt['end_date_input'],
+                        				$txt['action']
+                        			),
+                        "data" => array()
+                    );
+
+		if ( !empty($OriData) ) 
+		{
+
+			foreach ($OriData as $row) 
+			{
+	
+				if ( is_object($row) ) 
+				{
+
+					$include_service_data = array();
+
+					foreach ($row->include_service as $service) 
+					{
+
+						$include_service_data[] = $service["product_name"] . " / " . $service["number"] . $txt['service_unit'] . " / " . $service["date_spec"] . $txt['day_unit'] ;
+					
+					}
+
+					$data = array(
+								"data" => array(
+												"id" 					=> $row->id,
+												"product_name" 			=> $row->product_name,
+												"product_image" 		=> array(
+																				"isImage" 	=> true, 
+																				"data" 		=> $row->pic,
+																				"class" 	=> "mallImage"
+																			),
+												"price" 				=> $txt['cost_unit'] . " " . $row->cost,
+												"include_service" 		=> $include_service_data,
+												"public" 				=> $row->public_txt,
+												"start_date_input" 		=> $row->start_date_desc,
+												"end_date_input" 		=> $row->end_date_desc
+											),
+								"Editlink" 			=> "/mall/" . $row->id . "/edit?",
+								"PromoSettinglink" 	=> "/promo?mall_shop_id=" . $row->id
+							);
+					
+				}
+
+				$result["data"][] = $data;
+			
+			}
+
+
+		}
+
+		return $result;
+
+	}
+
+
 }

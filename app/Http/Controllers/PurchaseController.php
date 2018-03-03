@@ -8,6 +8,7 @@ use App\logic\Option_logic;
 use App\logic\Product_logic;
 use App\logic\Stock_logic;
 use URL;
+use Illuminate\Support\Facades\Session;
 
 class PurchaseController extends Controller
 {
@@ -28,9 +29,13 @@ class PurchaseController extends Controller
 
         $purchase_list = Purchase_logic::get_purchase_list( $purchase_data, $select_option );
 
+        $htmlData = Purchase_logic::purchase_list_data_bind( $purchase_list );
+
+        $htmlJsonData = json_encode($htmlData);
+
         $assign_page = "purchase/purchase_list";
 
-        $data = compact('assign_page', 'purchase_data', 'purchase_list', 'purchase_extra_column');
+        $data = compact('assign_page', 'purchase_data', 'purchase_list', 'htmlJsonData');
 
         return view('webbase/content', $data);
 
@@ -46,21 +51,27 @@ class PurchaseController extends Controller
 
     	$_this = new self();
 
-        $purchase = "";
-
         $site = URL::to('/');
 
-        $in_warehouse_category_data = Option_logic::get_in_warehouse_category();
 
-        $has_spec = Product_logic::is_spec_function_active();
+        $OriData = Session::get( 'OriData' );
 
-        $purchase_extra_column = Purchase_logic::get_purchase_extra_column();
+        Session::forget( 'OriData' );
 
-        $select_option = Option_logic::get_select_option( $purchase_extra_column );
+        $htmlData = Purchase_logic::get_purchase_input_template_array();
+
+        $htmlData = Purchase_logic::purchase_input_data_bind( $htmlData, $OriData );
+
+        $htmlData["action"] = "/purchase";
+
+        $htmlData["method"] = "post"; 
+  
+        $htmlJsonData = json_encode($htmlData);
+
 
         $assign_page = "purchase/purchase_input";
 
-        $data = compact('assign_page', 'purchase', 'in_warehouse_category_data', 'site', 'has_spec', 'purchase_extra_column', 'select_option');
+        $data = compact('assign_page', 'site', 'htmlJsonData');
 
         return view('webbase/content', $data);
 
@@ -106,23 +117,27 @@ class PurchaseController extends Controller
 
         $site = URL::to('/');
 
-        $in_warehouse_category_data = Option_logic::get_in_warehouse_category();
-
-        $has_spec = Product_logic::is_spec_function_active();
-
         $purchase = Purchase_logic::get_single_purchase_data( (int)$id );  
 
         $purchase = get_object_vars($purchase[0]);  
 
         $purchase["in_warehouse_number"] = str_pad($purchase["in_warehouse_number"], 8, "0", STR_PAD_LEFT);
 
-        $purchase_extra_column = Purchase_logic::get_purchase_extra_column();
 
-        $select_option = Option_logic::get_select_option( $purchase_extra_column );
+        $htmlData = Purchase_logic::get_purchase_input_template_array();
+  
+        $htmlData = Purchase_logic::purchase_input_data_bind( $htmlData, $purchase );
+
+        $htmlData["action"] = "/purchase/" . (int)$id;
+
+        $htmlData["method"] = "patch";
+
+        $htmlJsonData = json_encode($htmlData);
+
 
         $assign_page = "purchase/purchase_input";
 
-        $data = compact('assign_page', 'purchase', 'in_warehouse_category_data', 'site', 'has_spec', 'purchase_extra_column', 'select_option');
+        $data = compact('assign_page', 'site', 'htmlJsonData');
 
         return view('webbase/content', $data);
 

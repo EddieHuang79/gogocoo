@@ -8,6 +8,7 @@ use App\logic\Option_logic;
 use App\logic\Product_logic;
 use App\logic\Upload_logic;
 use URL;
+use Illuminate\Support\Facades\Session;
 
 class OrderController extends Controller
 {
@@ -30,9 +31,13 @@ class OrderController extends Controller
 
         $order_list = Order_logic::get_order_list( $order_data, $select_option );
 
+        $htmlData = Order_logic::order_list_data_bind( $order_list );
+
+        $htmlJsonData = json_encode($htmlData);
+
         $assign_page = "order/order_list";
 
-        $data = compact('assign_page', 'order_data', 'order_list', 'order_extra_column');
+        $data = compact('assign_page', 'order_data', 'order_list', 'htmlJsonData');
 
         return view('webbase/content', $data);
 
@@ -48,21 +53,25 @@ class OrderController extends Controller
 
     	$_this = new self();
 
-        $order = "";
-
         $site = URL::to('/');
 
-        $out_warehouse_category_data = Option_logic::get_out_warehouse_category();
+        $OriData = Session::get( 'OriData' );
 
-        $has_spec = Product_logic::is_spec_function_active();
+        Session::forget( 'OriData' );
 
-        $order_extra_column = Order_logic::get_order_extra_column();
+        $htmlData = Order_logic::get_order_input_template_array();
+  
+        $htmlData = Order_logic::order_input_data_bind( $htmlData, $OriData );
 
-        $select_option = Option_logic::get_select_option( $order_extra_column );
+        $htmlData["action"] = "/order/";
+
+        $htmlData["method"] = "post";
+
+        $htmlJsonData = json_encode($htmlData);
 
         $assign_page = "order/order_input";
 
-        $data = compact('assign_page', 'order', 'out_warehouse_category_data', 'site', 'has_spec', 'order_extra_column', 'select_option');
+        $data = compact('assign_page', 'site', 'htmlJsonData');
 
         return view('webbase/content', $data);
 
@@ -107,21 +116,25 @@ class OrderController extends Controller
 
         $site = URL::to('/');
 
-        $out_warehouse_category_data = Option_logic::get_out_warehouse_category();
-
-        $has_spec = Product_logic::is_spec_function_active();
-
         $order = Order_logic::get_single_order_data( (int)$id );  
 
         $order = isset($order[0]) && is_object($order[0]) ? get_object_vars($order[0]) : array();  
 
-        $order_extra_column = Order_logic::get_order_extra_column();
 
-        $select_option = Option_logic::get_select_option( $order_extra_column );
+        $htmlData = Order_logic::get_order_input_template_array();
+  
+        $htmlData = Order_logic::order_input_data_bind( $htmlData, $order );
+
+        $htmlData["action"] = "/order/" . (int)$id;
+
+        $htmlData["method"] = "patch";
+
+        $htmlJsonData = json_encode($htmlData);
+
 
         $assign_page = "order/order_input";
 
-        $data = compact('assign_page', 'order', 'out_warehouse_category_data', 'site', 'has_spec', 'order_extra_column', 'select_option');
+        $data = compact('assign_page', 'htmlJsonData', 'site');
 
         return view('webbase/content', $data);
 
@@ -180,9 +193,13 @@ class OrderController extends Controller
 
         $order_list = Order_logic::get_order_list( $order_data, $select_option );
 
+        $htmlData = Order_logic::order_list_data_bind( $order_list );
+
+        $htmlJsonData = json_encode($htmlData);
+
         $assign_page = "order/order_output";
 
-        $data = compact('assign_page', 'order_data', 'order_list', 'order_extra_column');
+        $data = compact('assign_page', 'order_data', 'order_list', 'htmlJsonData');
 
         return view('webbase/content', $data);
         

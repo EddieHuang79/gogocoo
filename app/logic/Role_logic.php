@@ -6,9 +6,26 @@ use Illuminate\Database\Eloquent\Model;
 use App\model\Role;
 use App\logic\Redis_tool;
 use Illuminate\Support\Facades\Session;
+use App\logic\Web_cht;
 
 class Role_logic extends Basetool
 {
+
+   protected $status = array();
+
+   public function __construct()
+   {
+
+      // 文字
+
+      $txt = Web_cht::get_txt();
+
+      $this->status = array(
+                     1  => $txt["enable"],
+                     2  => $txt["disable"]
+                  );
+
+   }  
 
    // 新增格式
 
@@ -294,6 +311,159 @@ class Role_logic extends Basetool
          }
 
          return $result;
+
+   }
+
+
+   // 組合列表資料
+
+   public static function role_list_data_bind( $OriData )
+   {
+
+      $_this = new self();
+
+      $txt = Web_cht::get_txt();
+
+      $result = array(
+                     "title" => array(
+                                 $txt['role_name'],
+                                 $txt['status'],
+                                 $txt['action']
+                              ),
+                     "data" => array()
+                 );
+
+      if ( !empty($OriData) && $OriData->isNotEmpty() ) 
+      {
+
+         $status_txt = $_this->status;
+
+         foreach ($OriData as $row) 
+         {
+   
+            if ( is_object($row) ) 
+            {
+
+               $data = array(
+                        "data" => array(
+                                    "role_name"          => $row->name,
+                                    "status"             => isset( $status_txt[$row->status] ) ? $status_txt[$row->status] : "",
+                                 ),
+                        "Editlink" => "/role/" . $row->id . "/edit?"
+                     );
+               
+            }
+
+            $result["data"][] = $data;
+         
+         }
+
+
+      }
+
+      return $result;
+
+   }
+
+
+   // 取得輸入邏輯陣列
+
+   public static function get_role_input_template_array()
+   {
+
+      $_this = new self();
+
+      $txt = Web_cht::get_txt();
+
+      $menu_data = Service_logic::get_active_service();
+
+      $menu_list = Service_logic::menu_format( $menu_data );
+
+      $htmlData = array(
+                     "name" => array(
+                         "type"          => 1, 
+                         "title"         => $txt["role_name"],
+                         "key"           => "name",
+                         "value"         => "" ,
+                         "display"       => true,
+                         "desc"          => "",
+                         "attrClass"     => "",
+                         "hasPlugin"     => "",
+                         "placeholder"   => $txt["role_input"]
+                     ),
+                     "auth" => array(
+                         "type"          => 13, 
+                         "title"         => $txt["auth"],
+                         "key"           => "auth[]",
+                         "value"         => "",
+                         "data"          => $menu_list,
+                         "display"       => true,
+                         "desc"          => "",
+                         "attrClass"     => "",
+                         "hasPlugin"     => ""
+                     ),
+                     "status" => array(
+                         "type"          => 3,
+                         "title"         => $txt["status"],
+                         "key"           => "active",
+                         "value"         => "",
+                         "data"          => array(
+                                             1 => $txt["enable"],
+                                             2 => $txt["disable"]
+                                          ),
+                         "display"       => true,
+                         "desc"          => "",
+                         "attrClass"     => "",
+                         "hasPlugin"     => ""
+                     )
+                 );
+
+      return $htmlData;
+
+   }
+
+
+   // 組合資料
+
+   public static function role_input_data_bind( $htmlData, $OriData )
+   {
+
+      $_this = new self();
+
+      $result = $htmlData;
+
+      if ( !empty($OriData) && is_array($OriData) ) 
+      {
+
+         foreach ($htmlData as &$row) 
+         {
+         
+            if ( is_array($row) ) 
+            {
+
+               $row["value"] = isset($OriData[$row["key"]]) ? $OriData[$row["key"]] : "" ;
+               
+            }
+
+         }
+
+
+         $id = isset($OriData["id"]) ? (int)$OriData["id"] : 0 ;
+
+         $role_service_data = Role_logic::get_role_service( $id );
+
+         $role_service = Service_logic::role_auth_format( $role_service_data );
+
+         $htmlData["auth"]["value"] = $role_service ;
+
+
+         // 狀態
+
+         $htmlData["status"]["value"] = isset($OriData["status"]) ? $OriData["status"] : "" ;
+
+      }
+
+      return $htmlData;
 
    }
 

@@ -537,4 +537,170 @@ class AdminUserLogic extends TestCase
 
 	}
 
+	public function testInviteCodeEncode()
+	{
+
+		$test1 = Admin_user_logic::invite_code_encode( "" );
+
+		$this->assertTrue( empty($test1) );
+		$this->assertEquals($test1, "");
+
+		$test1 = Admin_user_logic::invite_code_encode( 0 );
+
+		$this->assertTrue( empty($test1) );
+		$this->assertEquals($test1, "");
+
+		$test1 = Admin_user_logic::invite_code_encode( array() );
+
+		$this->assertTrue( empty($test1) );
+		$this->assertEquals($test1, "");
+
+	}
+
+	public function testInviteCodeDecode()
+	{
+
+		$test1 = Admin_user_logic::invite_code_decode( "" );
+
+		$this->assertTrue( empty($test1) );
+		$this->assertEquals($test1, "");
+
+		$test1 = Admin_user_logic::invite_code_decode( 0 );
+
+		$this->assertTrue( empty($test1) );
+		$this->assertEquals($test1, "");
+
+		$test1 = Admin_user_logic::invite_code_decode( array() );
+
+		$this->assertTrue( empty($test1) );
+		$this->assertEquals($test1, "");
+
+	}
+
+	public function testInviteRecord()
+	{
+
+		$test1 = Admin_user_logic::invite_record( "", "" );
+
+		$this->assertTrue( empty($test1) );
+		$this->assertEquals($test1, false);
+
+		$test1 = Admin_user_logic::invite_record( 0, 0 );
+
+		$this->assertTrue( empty($test1) );
+		$this->assertEquals($test1, false);
+
+		$test1 = Admin_user_logic::invite_record( array(), array() );
+
+		$this->assertTrue( empty($test1) );
+		$this->assertEquals($test1, false);
+
+	}
+
+	public function testSendInviteCodeProcess()
+	{
+
+		$test1 = Admin_user_logic::send_invite_code_process( "", "", "" );
+
+		$this->assertTrue( empty($test1) );
+		$this->assertEquals($test1, false);
+
+		$test1 = Admin_user_logic::send_invite_code_process( 0, 0, 0 );
+
+		$this->assertTrue( empty($test1) );
+		$this->assertEquals($test1, false);
+
+		$test1 = Admin_user_logic::send_invite_code_process( array(), array(), array() );
+
+		$this->assertTrue( empty($test1) );
+		$this->assertEquals($test1, false);
+
+	}
+
+	public function testCheckInviteQualifications()
+	{
+
+		$test1 = Admin_user_logic::check_invite_qualifications( "", "" );
+
+		$this->assertTrue( empty($test1) );
+		$this->assertEquals($test1, false);
+
+		$test1 = Admin_user_logic::check_invite_qualifications( 0, 0 );
+
+		$this->assertTrue( empty($test1) );
+		$this->assertEquals($test1, false);
+
+		$test1 = Admin_user_logic::check_invite_qualifications( array(), array() );
+
+		$this->assertTrue( empty($test1) );
+		$this->assertEquals($test1, false);
+
+	}
+
+	public function testUserListDataBind()
+	{
+
+		$test1 = Admin_user_logic::user_list_data_bind( "" );
+
+		$this->assertTrue( is_array($test1) );
+
+		$test1 = Admin_user_logic::user_list_data_bind( 0 );
+
+		$this->assertTrue( is_array($test1) );
+
+		$test1 = Admin_user_logic::user_list_data_bind( array() );
+
+		$this->assertTrue( is_array($test1) );
+
+	}
+
+	public function testGetBuySpecData()
+	{
+
+		$test1 = Admin_user_logic::get_buy_spec_data( "" );
+
+		$this->assertTrue( empty($test1) );
+		$this->assertTrue( is_array($test1) );
+		$this->assertEquals($test1, array());
+
+		$test1 = Admin_user_logic::get_buy_spec_data( 0 );
+
+		$this->assertTrue( empty($test1) );
+		$this->assertTrue( is_array($test1) );
+		$this->assertEquals($test1, array());
+
+		$test1 = Admin_user_logic::get_buy_spec_data( array() );
+
+		$this->assertTrue( empty($test1) );
+		$this->assertTrue( is_array($test1) );
+		$this->assertEquals($test1, array());
+
+	}
+
+	public function testGetAdminInputTemplateArray()
+	{
+
+		$test1 = Admin_user_logic::get_admin_input_template_array();
+
+		$this->assertTrue( is_array($test1) );
+
+	}
+
+	public function testAdminInputDataBind()
+	{
+
+		$test1 = Admin_user_logic::admin_input_data_bind( "", "" );
+
+		$this->assertEquals($test1, "");
+
+		$test1 = Admin_user_logic::admin_input_data_bind( 0, 0 );
+
+		$this->assertEquals($test1, 0);
+
+		$test1 = Admin_user_logic::admin_input_data_bind( array(), array() );
+
+		$this->assertEquals($test1, array());
+
+	}
+
 }

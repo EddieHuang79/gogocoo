@@ -232,7 +232,7 @@ class Msg_logic extends Basetool
 				{
 
 					$row->role_id = isset($role_data[$row->role_id]) ? $role_data[$row->role_id] : $txt["all_role"] ; 
-					$row->public_txt = $row->public > 0 ? $txt["yes"] : $txt["no"] ;
+					$row->public_txt = $row->public === 1 ? $txt["yes"] : $txt["no"] ;
 					$row->show_type = isset($show_type[$row->show_type]) ? $show_type[$row->show_type] : "" ;
 					$row->msg_type = isset($msg_type[$row->msg_type]) ? $msg_type[$row->msg_type] : "" ;
 
@@ -371,7 +371,7 @@ class Msg_logic extends Basetool
 
 	// 新增一般訊息
 
-	public static function add_normal_msg( $subject, $content, $user_id = 0 )
+	public static function add_normal_msg( $subject, $content, $user_id = 0, $show_type = 1  )
 	{
 
 		$result = false;
@@ -384,7 +384,7 @@ class Msg_logic extends Basetool
 							"content" 		=> $content,
 							"role_id" 		=> 0,
 							"user_id" 		=> $user_id,
-							"show_type" 	=> 2,
+							"show_type" 	=> $show_type,
 							"msg_type" 		=> 1,
 							"public" 		=> 1,
 							"start_date" 	=> date("Y-m-d H:i:s"),
@@ -406,7 +406,7 @@ class Msg_logic extends Basetool
 
 	// 新增系統訊息
 
-	public static function add_notice_msg( $subject, $content, $user_id = 0 )
+	public static function add_notice_msg( $subject, $content, $user_id = 0, $show_type = 1 )
 	{
 
 		$result = false;
@@ -419,7 +419,7 @@ class Msg_logic extends Basetool
 							"content" 		=> $content,
 							"role_id" 		=> 0,
 							"user_id" 		=> $user_id,
-							"show_type" 	=> 2,
+							"show_type" 	=> $show_type,
 							"msg_type" 		=> 2,
 							"public" 		=> 1,
 							"start_date" 	=> date("Y-m-d H:i:s"),
@@ -435,6 +435,222 @@ class Msg_logic extends Basetool
 		}
 
 		return $result;
+
+	}
+
+
+	// 組合列表資料
+
+	public static function msg_list_data_bind( $OriData )
+	{
+
+		$_this = new self();
+
+		$txt = Web_cht::get_txt();
+
+		$result = array(
+                        "title" => array(
+                        				$txt['id'],
+                        				$txt['subject'],
+                        				$txt['content'],
+                        				$txt['notice_role'],
+                        				$txt['show_type'],
+                        				$txt['msg_type'],
+                        				$txt['is_public'],
+                        				$txt['start_date'],
+                        				$txt['end_date'],
+                        				$txt['create_time'],
+                        				$txt['update_time'],
+                        				$txt['action']
+                        			),
+                        "data" => array()
+                    );
+
+		if ( !empty($OriData) && $OriData->isNotEmpty() ) 
+		{
+
+			foreach ($OriData as $row) 
+			{
+	
+				if ( is_object($row) ) 
+				{
+
+					$data = array(
+								"data" => array(
+												"id" 					=> $row->id,
+												"subject" 				=> $row->subject,
+												"content" 				=> $row->content,
+												"notice_role" 			=> $row->role_id,
+												"show_type" 			=> $row->show_type,
+												"msg_type" 				=> $row->msg_type,
+												"is_public" 			=> $row->public_txt,
+												"start_date" 			=> $row->start_date,
+												"end_date" 				=> $row->end_date,
+												"create_time" 			=> $row->created_at,
+												"update_time" 			=> $row->updated_at
+											),
+								"Editlink" 	=> $row->public !== 1 ? "/msg/" . $row->id . "/edit?'" : "" ,
+								"Clonelink" => "/msg_clone?msg_id=" . $row->id
+							);
+
+				}
+
+				$result["data"][] = $data;
+			
+			}
+
+
+		}
+
+		return $result;
+
+	}
+
+
+	// 取得輸入邏輯陣列
+
+	public static function get_msg_input_template_array()
+	{
+
+		$_this = new self();
+
+		$txt = Web_cht::get_txt();
+
+		$msg_option = $_this->get_msg_option(); 
+
+		$htmlData = array(
+					"subject" => array(
+						"type"          => 1, 
+						"title"         => $txt["subject"],
+						"key"           => "subject",
+						"value"         => "" ,
+						"display"       => true,
+						"desc"          => "",
+						"attrClass"     => "",
+						"hasPlugin"     => "",
+						"placeholder"   => ""
+					),
+					"content" => array(
+						"type"          => 1, 
+						"title"         => $txt["content"],
+						"key"           => "content",
+						"value"         => "",
+						"display"       => true,
+						"desc"          => "",
+						"attrClass"     => "",
+						"hasPlugin"     => "",
+						"placeholder"   => ""
+					),
+					"notice_role" => array(
+						"type"          => 2, 
+						"title"         => $txt["notice_role"],
+						"key"           => "role_id",
+						"value"         => "",
+						"data"          => $msg_option["role_data"],
+						"display"       => true,
+						"desc"          => "",
+						"EventFunc"     => "",
+						"attrClass"     => "",
+						"hasPlugin"     => "",
+						"placeholder"   => "",
+						"required"      => false
+					),
+					"show_type" => array(
+						"type"          => 2, 
+						"title"         => $txt["show_type"],
+						"key"           => "show_type",
+						"value"         => "",
+						"data"          => $msg_option["show_type"],
+						"display"       => true,
+						"desc"          => "",
+						"EventFunc"     => "",
+						"attrClass"     => "",
+						"hasPlugin"     => "",
+						"placeholder"   => ""
+					),
+					"msg_type" => array(
+						"type"          => 2, 
+						"title"         => $txt["msg_type"],
+						"key"           => "msg_type",
+						"value"         => "",
+						"data"          => $msg_option["msg_type"],
+						"display"       => true,
+						"desc"          => "",
+						"attrClass"     => "",
+						"hasPlugin"     => ""
+					),
+					"status" => array(
+						"type"          => 3,
+						"title"         => $txt["status"],
+						"key"           => "public",
+						"value"         => "",
+						"data"         	=> array(
+												1 => $txt["yes"],
+												2 => $txt["no"]
+											),
+						"display"       => true,
+						"desc"          => "",
+						"attrClass"     => "",
+						"hasPlugin"     => ""
+					),
+                    "start_date" => array(
+                        "type"          => 1, 
+                        "title"         => $txt["notice_range"] . "-" . $txt["start_date"],
+                        "key"           => "start_date",
+                        "value"         => "",
+                        "display"       => true,
+                        "attrClass"     => "",
+                        "hasPlugin"     => "DateTimePicker"
+                    ),
+                    "end_date" => array(
+                        "type"          => 1, 
+                        "title"         => $txt["notice_range"] . "-" . $txt["end_date"],
+                        "key"           => "end_date",
+                        "value"         => "",
+                        "display"       => true,
+                        "attrClass"     => "",
+                        "hasPlugin"     => "DateTimePicker"
+                    )
+		         );
+
+		return $htmlData;
+
+	}
+
+
+	// 組合資料
+
+	public static function msg_input_data_bind( $htmlData, $OriData )
+	{
+
+		$_this = new self();
+
+		$result = $htmlData;
+
+		if ( !empty($OriData) && is_array($OriData) ) 
+		{
+
+			foreach ($htmlData as &$row) 
+			{
+
+				if ( is_array($row) ) 
+				{
+
+				   $row["value"] = isset($OriData[$row["key"]]) ? $OriData[$row["key"]] : "" ;
+				   
+				}
+
+			}
+
+			$htmlData["notice_role"]["value"] = !empty($OriData["notice_role"]) ? $OriData["notice_role"] : "" ;
+
+			$htmlData["notice_role"]["show_type"] = !empty($OriData["show_type"]) ? $OriData["show_type"] : "" ;
+
+			$htmlData["notice_role"]["msg_type"] = !empty($OriData["msg_type"]) ? $OriData["msg_type"] : "" ;
+
+		}
+
+		return $htmlData;
 
 	}
 

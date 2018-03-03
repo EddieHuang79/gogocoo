@@ -9,6 +9,22 @@ use Illuminate\Support\Facades\Session;
 class Service_logic extends Basetool
 {
 
+   protected $status = array();
+
+   public function __construct()
+   {
+
+      // 文字
+
+      $txt = Web_cht::get_txt();
+
+      $this->status = array(
+                     1  => $txt["enable"],
+                     2  => $txt["disable"]
+                  );
+
+   }
+
    // 新增格式
 
    public static function insert_format( $data )
@@ -323,7 +339,18 @@ class Service_logic extends Basetool
    public static function get_parents_service()
    {
 
-      return Service::get_parents_service();
+      $result = array();
+
+      $data = Service::get_parents_service();
+
+      foreach ($data as $row) 
+      {
+      
+         $result[$row->id] = $row->name;
+
+      }
+
+      return $result;
 
    }
 
@@ -541,5 +568,197 @@ class Service_logic extends Basetool
       return $result;
 
    }
+
+
+   // 組合列表資料
+
+   public static function service_list_data_bind( $OriData )
+   {
+
+      $_this = new self();
+
+      $txt = Web_cht::get_txt();
+
+      $result = array(
+                     "title" => array(
+                                 $txt['service_name'],
+                                 $txt['link'],
+                                 $txt['parents_service'],
+                                 $txt['auth'],
+                                 $txt['status'],
+                                 $txt['sort'],
+                                 $txt['action']
+                              ),
+                     "data" => array()
+                 );
+
+      if ( !empty($OriData) && $OriData->isNotEmpty() ) 
+      {
+
+         $status_txt = $_this->status;
+
+         foreach ($OriData as $row) 
+         {
+   
+            if ( is_object($row) ) 
+            {
+
+               $data = array(
+                        "data" => array(
+                                    "role_name"                => $row->name,
+                                    "link"                     => $row->link,
+                                    "parents_service"          => $row->parents_service,
+                                    "auth"                     => $row->auth,
+                                    "status"                   => isset( $status_txt[$row->status] ) ? $status_txt[$row->status] : "",
+                                    "sort"                     => $row->sort
+                                 ),
+                        "Editlink" => "/service/" . $row->id . "/edit?"
+                     );
+               
+            }
+
+            $result["data"][] = $data;
+         
+         }
+
+
+      }
+
+      return $result;
+
+   }
+
+
+  // 取得輸入邏輯陣列
+
+  public static function get_service_input_template_array()
+  {
+
+    $_this = new self();
+
+    $txt = Web_cht::get_txt();
+
+    $parents_service = $_this->get_parents_service();
+
+    $role_list = Role_logic::get_active_role();
+
+    $role_list = Role_logic::filter_admin_role($role_list);
+
+    $htmlData = array(
+                   "service_name" => array(
+                       "type"          => 1, 
+                       "title"         => $txt["service_name"],
+                       "key"           => "name",
+                       "value"         => "" ,
+                       "display"       => true,
+                       "desc"          => "",
+                       "attrClass"     => "",
+                       "hasPlugin"     => "",
+                       "placeholder"   => $txt["service_name_input"]
+                   ),
+                   "link" => array(
+                       "type"          => 1, 
+                       "title"         => $txt["link"],
+                       "key"           => "link",
+                       "value"         => "",
+                       "display"       => true,
+                       "desc"          => "",
+                       "attrClass"     => "",
+                       "hasPlugin"     => "",
+                       "placeholder"   => $txt["link_input"],
+                       "required"      => false
+                   ),
+                   "parents_service" => array(
+                       "type"          => 2, 
+                       "title"         => $txt["parents_service"],
+                       "key"           => "parents_id",
+                       "value"         => "",
+                       "data"          => $parents_service,
+                       "display"       => true,
+                       "desc"          => "",
+                       "EventFunc"     => "",
+                       "attrClass"     => "",
+                       "hasPlugin"     => "",
+                       "placeholder"   => "",
+                       "required"      => false
+                   ),
+                   "auth" => array(
+                       "type"          => 6, 
+                       "title"         => $txt["auth"],
+                       "key"           => "auth[]",
+                       "value"         => "",
+                       "data"          => $role_list,
+                       "display"       => true,
+                       "desc"          => "",
+                       "attrClass"     => "",
+                       "hasPlugin"     => ""
+                   ),
+                   "status" => array(
+                      "type"          => 3,
+                      "title"         => $txt["status"],
+                      "key"           => "active",
+                      "value"         => "",
+                      "display"       => true,
+                      "desc"          => "",
+                      "attrClass"     => "",
+                      "hasPlugin"     => "",
+                      "data"          => array(
+                                            1 => $txt["enable"],
+                                            2 => $txt["disable"]
+                                          ),
+                   )
+               );
+
+    return $htmlData;
+
+  }
+
+
+  // 組合資料
+
+  public static function service_input_data_bind( $htmlData, $OriData )
+  {
+
+    $_this = new self();
+
+    $result = $htmlData;
+
+    if ( !empty($OriData) && is_array($OriData) ) 
+    {
+
+       foreach ($htmlData as &$row) 
+       {
+       
+          if ( is_array($row) ) 
+          {
+
+             $row["value"] = isset($OriData[$row["key"]]) ? $OriData[$row["key"]] : "" ;
+             
+          }
+
+       }
+
+       $role_service = Role_logic::get_role_service( 0, $OriData["id"] );
+
+       $auth = array();
+
+       foreach ($role_service as $key => $value) 
+       {
+       
+          $auth[] = $key;
+
+       }
+
+       $htmlData["parents_service"]["value"] = !empty($OriData["parents_id"]) ? $OriData["parents_id"] : "" ;
+
+       $htmlData["auth"]["value"] = $auth;
+
+       $htmlData["status"]["value"] = $OriData["status"];
+
+    }
+
+    return $htmlData;
+
+  }
 
 }

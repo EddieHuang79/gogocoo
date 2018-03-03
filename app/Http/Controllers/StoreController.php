@@ -24,8 +24,6 @@ class StoreController extends Basetool
     public function index(lain $lain)
     {
 
-        Shop_logic::get_extend_deadline_option();
-
         // get now page
 
         // Service_logic::get_service_id_by_url_and_save( $request->path() );
@@ -36,11 +34,19 @@ class StoreController extends Basetool
 
         // Redis_tool::set_search_tool( $search_tool );
 
+        $txt = Web_cht::get_txt();
+
+        $JsonTxt = json_encode($txt);
+
         $store = Store_logic::get_store_info( $_GET );
+
+        $htmlJsonData = Store_logic::store_list_data_bind( $store );
+
+        $htmlJsonData = json_encode($htmlJsonData);
 
         $assign_page = "store/store_list";
 
-        $data = compact('assign_page', 'store');
+        $data = compact('assign_page', 'store', 'JsonTxt', 'htmlJsonData');
 
         return view('webbase/content', $data);
 
@@ -57,38 +63,34 @@ class StoreController extends Basetool
 
         $txt = Web_cht::get_txt();
 
-        $store = "";
-
-        $store_type = Option_logic::get_store_data();
-
-        $assign_page = "store/store_input";
-
+        // $store_type = Option_logic::get_store_data();
 
         // 檢查店鋪創立狀況
 
         $store_status = Store_logic::get_store_cnt();
 
-        $buy_spec_data = array();
+        // $buy_spec_data = array();
 
-        if ( !empty($store_status["buy_spec_data"]) ) 
-        {
+        // if ( !empty($store_status["buy_spec_data"]) ) 
+        // {
 
-            foreach ($store_status["buy_spec_data"] as $index => $spec_data) 
-            {
+        //     foreach ($store_status["buy_spec_data"] as $index => $spec_data) 
+        //     {
 
-                $buy_spec_data[$index] = $spec_data.$txt["buy_date_spec_desc"].date("Y-m-d", strtotime("+".$spec_data." days"));
+        //         $buy_spec_data[$index] = $spec_data.$txt["buy_date_spec_desc"].date("Y-m-d", strtotime("+".$spec_data." days"));
 
-            }
+        //     }
 
-        }
+        // }
 
-        $deadline = !empty($store_status['free']) ? date("Y-m-d", strtotime("+30 days")) : $buy_spec_data ;
+        // $deadline = !empty($store_status['free']) ? date("Y-m-d", strtotime("+30 days")) : $buy_spec_data ;
         
         // 第一間店舖的資訊
 
-        $store_info = Store_logic::get_store_info();
+        // $store_info = Store_logic::get_store_info();
 
-        $store_info = isset($store_info[0]) ? $store_info[0] : new \stdClass() ;
+        // $store_info = isset($store_info[0]) ? $store_info[0] : new \stdClass() ;
+
 
         $ErrorMsg = Session::get('ErrorMsg');
 
@@ -98,7 +100,22 @@ class StoreController extends Basetool
 
         Session::forget('OriData');
 
-        $data = compact('assign_page', 'store', 'store_type', 'store_status', 'store_info', 'deadline', 'ErrorMsg', 'OriData');
+
+        $htmlData = Store_logic::get_store_input_template_array();
+
+        $htmlData = Store_logic::store_input_data_bind( $htmlData, $OriData );
+
+        $htmlData["action"] = "/store";
+
+        $htmlData["method"] = "post"; 
+  
+        $htmlJsonData = json_encode($htmlData);
+
+
+
+        $assign_page = "store/store_input";
+
+        $data = compact('assign_page', 'store_status', 'ErrorMsg', 'OriData', 'htmlJsonData');
 
         return view('webbase/content', $data);
 
@@ -190,17 +207,30 @@ class StoreController extends Basetool
 
         $store_status = array("left" => 1);
 
-        $edit = 1;
-
         $store = Store_logic::get_single_store( (int)$id ); 
+
+        $store = get_object_vars($store); 
 
         // 第一間店舖的資訊
 
         $store_info = Store_logic::get_store_info( array("store_id" => (int)$id) );
 
+
+        $htmlData = Store_logic::get_store_input_template_array();
+
+        $htmlData = Store_logic::store_input_data_bind( $htmlData, $store );
+
+        $htmlData["action"] = "/store/" . (int)$id;
+
+        $htmlData["method"] = "patch";
+
+
+        $htmlJsonData = json_encode($htmlData);
+
+
         $assign_page = "store/store_input";
 
-        $data = compact('assign_page', 'store', 'store_info', 'store_status', 'edit');
+        $data = compact('assign_page', 'store', 'store_info', 'store_status', 'htmlJsonData');
 
         return view('webbase/content', $data);
 
@@ -289,6 +319,32 @@ class StoreController extends Basetool
         $result = Store_logic::extend_store_deadline( $user_id, $date_spec );
 
         echo json_encode($result);
+
+        exit();
+
+    }
+
+
+    /**
+     * Change Store
+     */
+    public function get_child_store()
+    {
+
+        $parents_store = isset($_POST["parents_store"]) ? intval($_POST["parents_store"]) : 0 ;
+
+        $store_type_array = array();
+
+        $store_type = Option_logic::get_store_data();
+
+        foreach ($store_type[$parents_store]["data"] as $index => $row) 
+        {
+
+            $store_type_array[$index] = $row["name"];
+
+        }
+
+        echo json_encode($store_type_array);
 
         exit();
 

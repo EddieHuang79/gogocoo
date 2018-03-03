@@ -553,4 +553,294 @@ class Store_logic extends Basetool
 
 	}
 
+
+    // 財產列表資料
+
+    public static function store_list_data_bind( $OriData )
+    {
+
+      $_this = new self();
+
+      $txt = Web_cht::get_txt();
+
+      $result = array(
+                      "title" => array(
+                              $txt['store_name'],
+                              $txt['store_type'],
+                              $txt['store_code'],
+                              $txt['create_time'],
+                              $txt['deadline'],
+                              $txt['action']
+                            ),
+                      "data" => array()
+                  );
+
+      $txt = Web_cht::get_txt();
+
+      if ( !empty($OriData) && $OriData->isNotEmpty() ) 
+      {
+
+        foreach ($OriData as $row) 
+        {
+    
+			$data = array(
+				"data" => array(
+				        "store_name"             => $row->store_name,
+				        "store_type"             => $row->store_type_name ,
+				        "store_code"             => $row->store_code,
+				        "create_time"            => $row->created_at,
+				        "deadline"            	 => $row->deadline
+				      ),
+				"Editlink" => "/store/" . $row->id . "/edit?",
+				"ExtendBtn" => true
+			  );
+
+			$result["data"][] = $data;
+        
+        }
+
+
+      }
+
+      return $result;
+
+    }
+
+
+	// 取得輸入邏輯陣列
+
+	public static function get_store_input_template_array()
+	{
+
+		$_this = new self();
+
+		$txt = Web_cht::get_txt();
+
+
+		$store_type_array = array();
+
+        $store_type = Option_logic::get_store_data();
+
+        foreach ($store_type as $index => $row) 
+        {
+
+        	$store_type_array[$index] = $row["name"];
+
+        }
+
+        // 檢查店鋪創立狀況
+
+        $store_status = Store_logic::get_store_cnt();
+
+        $buy_spec_data = array();
+
+        if ( !empty($store_status["buy_spec_data"]) ) 
+        {
+
+            foreach ($store_status["buy_spec_data"] as $index => $spec_data) 
+            {
+
+                $buy_spec_data[$index] = $spec_data.$txt["buy_date_spec_desc"].date("Y-m-d", strtotime("+".$spec_data." days"));
+
+            }
+
+        }
+
+        $deadline = !empty($store_status['free']) ? date("Y-m-d", strtotime("+30 days")) : $buy_spec_data ;
+        
+        // 第一間店舖的資訊
+
+        $store_info = Store_logic::get_store_info();
+
+        $store_info = isset($store_info[0]) ? $store_info[0] : new \stdClass() ;
+
+
+		$htmlData = array(
+					"store_name" => array(
+						"type"          => 1, 
+						"title"         => $txt["store_name"],
+						"key"           => "StoreName",
+						"value"         => "" ,
+						"display"       => true,
+						"desc"          => "",
+						"attrClass"     => "",
+						"hasPlugin"     => "",
+						"placeholder"   => $txt['store_name_input']
+					),
+					"store_code" => array(
+						"type"          => 1, 
+						"title"         => $txt["store_code"],
+						"key"           => "store_code",
+						"value"         => "",
+						"display"       => true,
+						"desc"          => "",
+						"attrClass"     => "",
+						"hasPlugin"     => "",
+						"placeholder"   => $txt['store_code_input']
+					),
+					"store_code_txt" => array(
+						"type"          => 12, 
+						"title"         => $txt["store_code"],
+						"key"           => "",
+						"value"         => "",
+						"display"       => false,
+						"desc"          => "",
+						"attrClass"     => "",
+						"hasPlugin"     => "",
+						"placeholder"   => ""
+					),
+					"store_type_select" => array(
+						"type"          => 9, 
+						"title"         => $txt["store_type"],
+						"key"           => "parents_store_type",
+						"value"         => "",
+						"data"         	=> $store_type_array,
+						"display"       => empty($store_status["free"]) && empty($store) ? true : false,
+						"desc"          => "",
+						"EventFunc"     => "",
+						"attrClass"     => "",
+						"hasPlugin"     => "",
+						"placeholder"   => "",
+						"SubMenuKey"   	=> "store_type_id",
+						"SubValue"   	=> ""
+					),
+					"store_type" => array(
+						"type"          => 12, 
+						"title"         => $txt["store_type"],
+						"key"           => "parents_category",
+						"value"         => $store_info->store_type_name,
+						"display"       => empty($store_status["free"]) && empty($store) ? false : true,
+						"desc"          => "",
+						"EventFunc"     => "",
+						"attrClass"     => "",
+						"hasPlugin"     => "",
+						"placeholder"   => ""
+					),
+					"store_type_id" => array(
+						"type"          => 11, 
+						"title"         => "",
+						"key"           => "store_type_id",
+						"value"         => $store_info->store_type,
+						"display"       => empty($store_status["free"]) && empty($store) ? false : true,
+						"desc"          => "",
+						"attrClass"     => "",
+						"hasPlugin"     => "",
+						"placeholder"   => ""
+					),
+					"deadline" => array(
+						"type"          => 12, 
+						"title"         => $txt["deadline"],
+						"key"           => "",
+						"value"         => isset($store_status["free"]) && $store_status["free"] > 0 ? $txt['free_date_spec_desc'] . " " . $deadline : "",
+						"display"       => isset($store_status["free"]) && $store_status["free"] > 0 ? true : false,
+						"desc"          => "",
+						"attrClass"     => "",
+						"hasPlugin"     => "",
+						"placeholder"   => ""
+					),
+					"date_spec" => array(
+						"type"          => 2, 
+						"title"         => $txt["deadline"],
+						"key"           => "date_spec",
+						"value"         => "",
+						"data"         	=> $deadline,
+						"display"       => isset($store_status["free"]) && $store_status["free"] > 0 ? false : true,
+						"desc"          => "",
+						"attrClass"     => "",
+						"hasPlugin"     => "",
+						"placeholder"   => ""
+					)
+		         );
+
+		return $htmlData;
+
+	}
+
+
+	// 組合資料
+
+	public static function store_input_data_bind( $htmlData, $OriData )
+	{
+
+		$_this = new self();
+
+		$result = $htmlData;
+
+		$store_type_data = Option_logic::get_store_data();
+
+		$store_status = Store_logic::get_store_cnt();
+
+		if ( !empty($OriData) && is_array($OriData) ) 
+		{
+
+			foreach ($htmlData as &$row) 
+			{
+
+				if ( is_array($row) ) 
+				{
+
+				   $row["value"] = isset($OriData[$row["key"]]) ? $OriData[$row["key"]] : "" ;
+				   
+				}
+
+			}
+
+			$htmlData["store_name"]["value"] = !empty($OriData["store_name"]) ? $OriData["store_name"] : "" ;
+
+			$htmlData["store_type_select"]["value"] = !empty($OriData["store_type"]) ? $_this->get_parents_store_type( $store_type_data, $OriData["store_type"] )  : "" ;
+
+			$htmlData["store_type_select"]["SubValue"] = !empty($OriData["store_type"]) ? $OriData["store_type"] : "" ;
+			
+			$htmlData["store_type_id"]["value"] = !empty($OriData["store_type"]) ? $OriData["store_type"] : "" ;
+			
+			$htmlData["store_code"]["display"] = false ;
+			
+			$htmlData["store_code_txt"]["display"] = true ;
+
+			$htmlData["store_code_txt"]["value"] = !empty($OriData["store_code"]) ? $OriData["store_code"] : "" ;
+
+			$htmlData["date_spec"]["display"] = false ;
+
+		}
+
+		return $htmlData;
+
+	}
+
+
+	public static function get_parents_store_type( $store_type_data, $store_type )
+	{
+
+		$result = 0;
+
+		if ( !empty($store_type_data) && is_array($store_type_data) && !empty($store_type) && is_int($store_type) ) 
+		{
+
+	        foreach ($store_type_data as $index => $child) 
+	        {
+
+	        	foreach ($child["data"] as $childIndex => $childValue) 
+	        	{
+	        		
+	        		if (  (int)$childIndex === (int)$store_type ) 
+	        		{
+	        			
+	        			$result = $index;
+
+	        			break 2;
+	        			
+	        		}
+
+	        	}
+
+	        }
+
+			
+		}
+
+		return $result;
+
+	}
+
+
 }

@@ -1536,43 +1536,29 @@ class Shop_logic extends Basetool
     }
 
 
-    // 取得列表邏輯陣列
+    // 組合列表資料
 
-    public static function get_shop_record_list_template_array()
+    public static function shop_record_list_data_bind( $OriData )
     {
 
       $_this = new self();
 
       $txt = Web_cht::get_txt();
 
-          $htmlData = array(
-                          "title" => array(
-                                  $txt['mall_order_number'],
-                                  $txt['product_name'],
-                                  $txt['include_service'],
-                                  $txt['number'],
-                                  $txt['price'],
-                                  $txt['ecoupon_discount'],
-                                  $txt['total'],
-                                  $txt['paid_at'],
-                                  $txt['status']
-                                ),
-                          "data" => array()
-                      );
-
-      return $htmlData;
-
-    }
-
-
-    // 組合列表資料
-
-    public static function shop_record_list_data_bind( $htmlData, $OriData )
-    {
-
-      $_this = new self();
-
-      $result = $htmlData;
+      $result = array(
+                      "title" => array(
+                              $txt['mall_order_number'],
+                              $txt['product_name'],
+                              $txt['include_service'],
+                              $txt['number'],
+                              $txt['price'],
+                              $txt['ecoupon_discount'],
+                              $txt['total'],
+                              $txt['paid_at'],
+                              $txt['status']
+                            ),
+                      "data" => array()
+                  );
 
       $txt = Web_cht::get_txt();
 
@@ -1614,32 +1600,6 @@ class Shop_logic extends Basetool
       }
 
       return $result;
-
-    }
-
-
-    // 取得財產列表邏輯陣列
-
-    public static function get_property_list_template_array()
-    {
-
-      $_this = new self();
-
-      $txt = Web_cht::get_txt();
-
-          $htmlData = array(
-                          "title" => array(
-                                  $txt['property_name'],
-                                  $txt['property_type'],
-                                  $txt['property_content'],
-                                  $txt['property_status'],
-                                  $txt['property_use_time'],
-                                  $txt['remark']
-                                ),
-                          "data" => array()
-                      );
-
-      return $htmlData;
 
     }
 
@@ -1723,12 +1683,24 @@ class Shop_logic extends Basetool
 
     // 財產列表資料
 
-    public static function shop_property_list_data_bind( $htmlData, $OriData )
+    public static function shop_property_list_data_bind( $OriData )
     {
 
       $_this = new self();
 
-      $result = $htmlData;
+      $txt = Web_cht::get_txt();
+
+      $result = array(
+                      "title" => array(
+                              $txt['property_name'],
+                              $txt['property_type'],
+                              $txt['property_content'],
+                              $txt['property_status'],
+                              $txt['property_use_time'],
+                              $txt['remark']
+                            ),
+                      "data" => array()
+                  );
 
       $txt = Web_cht::get_txt();
 

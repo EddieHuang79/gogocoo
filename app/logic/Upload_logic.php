@@ -746,4 +746,87 @@ class Upload_logic extends Basetool
 
 	}
 
+
+	// 取得輸入邏輯陣列
+
+	public static function get_product_upload_input_template_array()
+	{
+
+		$_this = new self();
+
+		$txt = Web_cht::get_txt();
+
+
+        $htmlData = array(       
+                        "product_upload" => array(
+                            "type"          => 8, 
+                            "title"         => $txt["product_upload"],
+                            "key"           => "user_product_upload",
+                            "value"         => "",
+                            "display"       => true,
+                            "hasPlugin"     => "",
+                            "Samplelink"    => "/product_upload_format_download"
+                        )
+                    );
+
+		return $htmlData;
+
+	}
+
+
+	// 取得輸入邏輯陣列
+
+	public static function get_purchase_upload_input_template_array()
+	{
+
+		$_this = new self();
+
+		$txt = Web_cht::get_txt();
+
+
+        $htmlData = array(       
+                        "purchase_upload" => array(
+                            "type"          => 8, 
+                            "title"         => $txt["purchase_upload"],
+                            "key"           => "user_purchase_upload",
+                            "value"         => "",
+                            "display"       => true,
+                            "hasPlugin"     => "",
+                            "Samplelink"    => "/purchase_upload_format_download"
+                        )
+                    );
+
+		return $htmlData;
+
+	}
+
+
+	// 取得輸入邏輯陣列
+
+	public static function get_order_upload_input_template_array()
+	{
+
+		$_this = new self();
+
+		$txt = Web_cht::get_txt();
+
+
+        $htmlData = array(       
+                        "order_upload" => array(
+                            "type"          => 8, 
+                            "title"         => $txt["order_upload"],
+                            "key"           => "user_order_upload",
+                            "value"         => "",
+                            "display"       => true,
+                            "hasPlugin"     => "",
+                            "Samplelink"    => "/order_upload_format_download"
+                        )
+                    );
+
+		return $htmlData;
+
+	}
+
+
+
 }

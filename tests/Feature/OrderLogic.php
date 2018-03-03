@@ -463,4 +463,64 @@ class OrderLogic extends TestCase
 
 	}
 
+	public function testOrderListDataBind()
+	{
+
+		$test1 = Order_logic::order_list_data_bind( "" );
+
+		$this->assertTrue( is_array($test1) );
+
+		$test1 = Order_logic::order_list_data_bind( 0 );
+
+		$this->assertTrue( is_array($test1) );
+
+		$test1 = Order_logic::order_list_data_bind( array() );
+
+		$this->assertTrue( is_array($test1) );
+
+	}
+
+	public function testOrderVerifyListDataBind()
+	{
+
+		$test1 = Order_logic::order_verify_list_data_bind( "" );
+
+		$this->assertTrue( is_array($test1) );
+
+		$test1 = Order_logic::order_verify_list_data_bind( 0 );
+
+		$this->assertTrue( is_array($test1) );
+
+		$test1 = Order_logic::order_verify_list_data_bind( array() );
+
+		$this->assertTrue( is_array($test1) );
+
+	}
+
+	public function testGetOrderInputTemplateArray()
+	{
+
+		$test1 = Order_logic::get_order_input_template_array();
+
+		$this->assertTrue( is_array($test1) );
+
+	}
+
+	public function testOrderInputDataBind()
+	{
+
+		$test1 = Order_logic::order_input_data_bind( "", "" );
+
+		$this->assertEquals($test1, "");
+
+		$test1 = Order_logic::order_input_data_bind( 0, 0 );
+
+		$this->assertEquals($test1, 0);
+
+		$test1 = Order_logic::order_input_data_bind( array(), array() );
+
+		$this->assertEquals($test1, array());
+
+	}
+
 }

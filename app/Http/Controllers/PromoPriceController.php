@@ -27,9 +27,13 @@ class PromoPriceController extends Controller
 
         $promo = Promo_logic::get_promo_price( $id ); 
 
+        $htmlData = Promo_logic::promo_list_data_bind( $promo );
+
+        $htmlJsonData = json_encode($htmlData);
+
         $assign_page = "promo/promo_list";
 
-        $data = compact('assign_page', 'promo', 'id');
+        $data = compact('assign_page', 'promo', 'id', 'htmlJsonData');
 
         return view('webbase/content', $data);
 
@@ -60,9 +64,21 @@ class PromoPriceController extends Controller
 
         }
 
+
+        $htmlData = Promo_logic::get_promo_input_template_array();
+
+        $htmlData = Promo_logic::promo_input_data_bind( $htmlData, $OriData );
+
+        $htmlData["action"] = "/promo";
+
+        $htmlData["method"] = "post"; 
+  
+        $htmlJsonData = json_encode($htmlData);
+
+
         $assign_page = "promo/promo_input";
 
-        $data = compact('assign_page', 'mall_shop_id', 'ErrorMsg', 'OriData');
+        $data = compact('assign_page', 'mall_shop_id', 'ErrorMsg', 'OriData', 'htmlJsonData');
 
         return view('webbase/content', $data);
 
@@ -105,19 +121,26 @@ class PromoPriceController extends Controller
 
             $data = json_decode($e->getMessage() ,true);
 
-            $data["start_date"] = date("Y-m-d", strtotime($data["start_date"]));
+            if ( isset($data["start_date"]) && isset($data["end_date"]) ) 
+            {
 
-            $data["end_date"] = date("Y-m-d", strtotime($data["end_date"]));
+                $data["start_date"] = date("Y-m-d", strtotime($data["start_date"]));
 
-            Session::put( 'OriData', $data );
+                $data["end_date"] = date("Y-m-d", strtotime($data["end_date"]));
 
-            Session::put( 'ErrorMsg', 1 );
+                Session::put( 'OriData', $data );
+
+                Session::put( 'ErrorMsg', 1 );
+                    
+            }
 
             return back();
 
         }
 
-        return redirect("/promo?mall_shop_id=".$data['mall_shop_id']);
+        $mall_shop_id = isset( $data["mall_shop_id"] ) ? $data["mall_shop_id"] : 0 ;
+
+        return redirect("/promo?mall_shop_id=".$mall_shop_id);
 
     }
 
@@ -143,9 +166,21 @@ class PromoPriceController extends Controller
 
         $promo = Promo_logic::get_single_promo_data( (int)$id );  
 
+        $promo = get_object_vars($promo); 
+
+        $htmlData = Promo_logic::get_promo_input_template_array();
+  
+        $htmlData = Promo_logic::promo_input_data_bind( $htmlData, $promo );
+
+        $htmlData["action"] = "/promo/" . (int)$id;
+
+        $htmlData["method"] = "patch";
+
+        $htmlJsonData = json_encode($htmlData);
+
         $assign_page = "promo/promo_input";
 
-        $data = compact('assign_page', 'promo');
+        $data = compact('assign_page', 'htmlJsonData');
 
         return view('webbase/content', $data);
 

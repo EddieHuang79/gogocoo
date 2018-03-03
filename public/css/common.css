@@ -413,7 +413,7 @@ img {
 	display: none;
 }*/
 
-.ecoupon_rule{
+.ecoupon_rule, .mall_shop_id{
 	border: 1px solid #F00;
 	padding: 5px;
 	margin: 5px;
@@ -422,4 +422,8 @@ img {
 .mall_child_product{
 	width: 85% !important;
 	margin: 0px auto;
+}
+
+.mallImage{
+	width: 100px;
 }

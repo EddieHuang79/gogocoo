@@ -613,7 +613,7 @@ class Ecoupon_logic extends Basetool
                             "title"         => $txt["ecoupon_precent"],
                             "key"           => "ecoupon_content_type1",
                             "value"         => "",
-                            "display"       => false,
+                            "display"       => true,
                             "desc"          => $txt["ecoupon_type1_desc"],
                             "attrClass"     => "hide ecouponType ecouponType1",
                             "hasPlugin"     => ""
@@ -623,7 +623,7 @@ class Ecoupon_logic extends Basetool
                             "title"         => $txt["ecoupon_value"],
                             "key"           => "ecoupon_content_type2",
                             "value"         => "",
-                            "display"       => false,
+                            "display"       => true,
                             "desc"          => $txt["ecoupon_type2_desc"],
                             "attrClass"     => "hide ecouponType ecouponType2",
                             "hasPlugin"     => ""
@@ -633,7 +633,7 @@ class Ecoupon_logic extends Basetool
                             "title"         => $txt["ecoupon_content"],
                             "key"           => "ecoupon_rule",
                             "value"         => "",
-                            "display"       => false,
+                            "display"       => true,
                             "desc"          => $txt["ecoupon_type3_desc"],
                             "child"         => array(
                                                     array(
@@ -753,6 +753,10 @@ class Ecoupon_logic extends Basetool
                             "title"         => "",
                             "key"           => "active",
                             "value"         => "",
+	                        "data"          => array(
+													1 => $txt["enable"],
+													2 => $txt["disable"]
+												),
                             "display"       => true,
                             "desc"          => "",
                             "attrClass"     => "",
@@ -848,16 +852,16 @@ class Ecoupon_logic extends Basetool
 	}
 
 
-	// 取得列表邏輯陣列
+	// 組合列表資料
 
-	public static function get_ecoupon_list_template_array()
+	public static function ecoupon_list_data_bind( $OriData )
 	{
 
 		$_this = new self();
 
 		$txt = Web_cht::get_txt();
 
-        $htmlData = array(
+		$result = array(
                         "title" => array(
                         				$txt['id'],
                         				$txt['ecoupon_name'],
@@ -877,20 +881,6 @@ class Ecoupon_logic extends Basetool
                         			),
                         "data" => array()
                     );
-
-		return $htmlData;
-
-	}
-
-
-	// 組合列表資料
-
-	public static function ecoupon_list_data_bind( $htmlData, $OriData )
-	{
-
-		$_this = new self();
-
-		$result = $htmlData;
 
 		if ( !empty($OriData) && $OriData->isNotEmpty() ) 
 		{
@@ -954,7 +944,7 @@ class Ecoupon_logic extends Basetool
 			// 撈取待發送的Ecoupon
 
 			$active_ecoupon = $_this->get_active_ecoupon( $send_type );
-
+			
 			foreach ($active_ecoupon as $row) 
 			{
 
@@ -1392,7 +1382,6 @@ class Ecoupon_logic extends Basetool
 			}
 
 		}
-
 
 		return $result;
 

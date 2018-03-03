@@ -352,4 +352,131 @@ class ProductCategory_logic extends Basetool
 
 	}
 
+
+	// 組合列表資料
+
+	public static function product_category_list_data_bind( $OriData )
+	{
+
+		$_this = new self();
+
+		$txt = Web_cht::get_txt();
+
+		$result = array(
+		             "title" => array(
+		                         $txt['parents_category'],
+		                         $txt['product_category_name'],
+		                         $txt['action']
+		                      ),
+		             "data" => array()
+		         );
+
+		if ( !empty($OriData) && $OriData->isNotEmpty() ) 
+		{
+
+			foreach ($OriData as $row) 
+			{
+
+				if ( is_object($row) ) 
+				{
+
+				   $data = array(
+				            "data" => array(
+				                        "parents_category"          		=> $row->parents_name,
+				                        "product_category_name"          	=> $row->name
+				                     ),
+				            "Editlink" 		=> $row->shop_id > 0 ? "/product_category/" . $row->id . "/edit?" : "",
+				            "actionWord" 	=> $row->shop_id > 0 ? "" : $txt['system_default_category']
+				         );
+				   
+				}
+
+				$result["data"][] = $data;
+
+			}
+
+
+		}
+
+		return $result;
+
+	}
+
+
+	// 取得輸入邏輯陣列
+
+	public static function get_product_category_input_template_array()
+	{
+
+		$_this = new self();
+
+		$txt = Web_cht::get_txt();
+
+		$parents_category_list = $_this->get_parents_category_list();
+
+		$htmlData = array(
+					"parents_category" => array(
+						"type"          => 2, 
+						"title"         => $txt["parents_category"],
+						"data"          => $parents_category_list,
+						"key"           => "parents_category",
+						"value"         => "" ,
+						"display"       => true,
+						"desc"          => "",
+						"attrClass"     => "",
+						"hasPlugin"     => "",
+						"placeholder"   => "",
+						"required"      => false
+					),
+					"product_category_name" => array(
+						"type"          => 1, 
+						"title"         => $txt["product_category_name"],
+						"key"           => "name",
+						"value"         => "",
+						"display"       => true,
+						"desc"          => "",
+						"attrClass"     => "",
+						"hasPlugin"     => "",
+						"placeholder"   => ""
+					)
+		         );
+
+		return $htmlData;
+
+	}
+
+
+	// 組合資料
+
+	public static function product_category_input_data_bind( $htmlData, $OriData )
+	{
+
+		$_this = new self();
+
+		$result = $htmlData;
+
+		if ( !empty($OriData) && is_array($OriData) ) 
+		{
+
+			foreach ($htmlData as &$row) 
+			{
+
+				if ( is_array($row) ) 
+				{
+
+				   $row["value"] = isset($OriData[$row["key"]]) ? $OriData[$row["key"]] : "" ;
+				   
+				}
+
+			}
+
+			$htmlData["parents_category"]["value"] = !empty($OriData["parents_id"]) ? $OriData["parents_id"] : "" ;
+
+		}
+
+		return $htmlData;
+
+	}
+
+
 }

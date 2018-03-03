@@ -73,9 +73,7 @@ class ShopController extends Controller
 
         $shop_record = Shop_logic::shop_record();
 
-        $htmlData = Shop_logic::get_shop_record_list_template_array();
-
-        $htmlData = Shop_logic::shop_record_list_data_bind( $htmlData, $shop_record["result"] );
+        $htmlData = Shop_logic::shop_record_list_data_bind( $shop_record["result"] );
 
         $htmlJsonData = json_encode($htmlData);
 
@@ -158,15 +156,13 @@ class ShopController extends Controller
 
         $property_list = Shop_logic::get_property_list();
 
-        $htmlData = Shop_logic::get_property_list_template_array();
-
-        $htmlData = Shop_logic::shop_property_list_data_bind( $htmlData, $property_list );
+        $htmlData = Shop_logic::shop_property_list_data_bind( $property_list );
 
         $htmlJsonData = json_encode($htmlData);
 
         $assign_page = "shop/property_list";
 
-        $data = compact('assign_page', 'JsonTxt', 'htmlJsonData');
+        $data = compact('assign_page', 'JsonTxt', 'htmlJsonData', 'property_list');
 
         return view('webbase/content', $data);
 

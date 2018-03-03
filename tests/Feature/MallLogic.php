@@ -287,4 +287,21 @@ class MallLogic extends TestCase
 
 	}
 
+	public function testMallListDataBind()
+	{
+
+		$test1 = Mall_logic::mall_list_data_bind( "" );
+
+		$this->assertTrue( is_array($test1) );
+
+		$test1 = Mall_logic::mall_list_data_bind( 0 );
+
+		$this->assertTrue( is_array($test1) );
+
+		$test1 = Mall_logic::mall_list_data_bind( array() );
+
+		$this->assertTrue( is_array($test1) );
+
+	}
+
 }

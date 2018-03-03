@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\logic\Product_logic;
 use App\logic\ProductCategory_logic;
+use Illuminate\Support\Facades\Session;
 
 class ProductController extends Controller
 {
@@ -21,13 +22,15 @@ class ProductController extends Controller
 
         $product_data = Product_logic::get_product_data();
 
-        $product_extra_column = Product_logic::get_product_extra_column(); 
-
         $product_list = Product_logic::get_product_list( $product_data, $select_option );
+
+        $htmlData = Product_logic::product_list_data_bind( $product_list );
+
+        $htmlJsonData = json_encode($htmlData);
 
         $assign_page = "product/product_list";
 
-        $data = compact('assign_page', 'product_data', 'product_list', 'product_extra_column');
+        $data = compact('assign_page', 'product_data', 'product_list', 'htmlJsonData');
 
         return view('webbase/content', $data);
 
@@ -41,23 +44,23 @@ class ProductController extends Controller
     public function create()
     {
 
-        $product_spec_column = Product_logic::get_product_spec_column(); 
+        $OriData = Session::get( 'OriData' );
 
-        $has_spec = !empty($product_spec_column) ? 1 : 0 ;
+        Session::forget( 'OriData' );
 
-        $product = "";
+        $htmlData = Product_logic::get_product_input_template_array();
 
-        $product_spec = ""; 
- 
+        $htmlData = Product_logic::product_input_data_bind( $htmlData, $OriData );
+
+        $htmlData["action"] = "/product";
+
+        $htmlData["method"] = "post"; 
+  
+        $htmlJsonData = json_encode($htmlData);
+
         $assign_page = "product/product_input";
 
-        $product_extra_column = Product_logic::get_product_extra_column(); 
-
-        $select_option["category"] = ProductCategory_logic::get_parents_category_list();
-
-        $all_category = ProductCategory_logic::get_all_category_list();
-
-        $data = compact('assign_page', 'product', 'product_spec', 'product_extra_column', 'product_spec_column', 'has_spec','select_option', 'all_category');
+        $data = compact('assign_page', 'htmlJsonData');
 
         return view('webbase/content', $data);
 
@@ -114,23 +117,24 @@ class ProductController extends Controller
 
         $product = Product_logic::get_single_product( $id );  
 
-        $product = get_object_vars($product);  
+        $product = get_object_vars($product); 
 
-        $product_extra_column = Product_logic::get_product_extra_column(); 
 
-        $product_spec_column = Product_logic::get_product_spec_column(); 
+        $htmlData = Product_logic::get_product_input_template_array();
+  
+        $htmlData = Product_logic::product_input_data_bind( $htmlData, $product );
 
-        $has_spec = !empty($product_spec_column) ? 1 : 0 ;
+        $htmlData["action"] = "/product/" . (int)$id;
 
-        $product_spec = $has_spec == 1 ? Product_logic::get_product_spec( $id ) : "" ; 
+        $htmlData["method"] = "patch";
 
-        $select_option["category"] = ProductCategory_logic::get_parents_category_list();
 
-        $all_category = ProductCategory_logic::get_all_category_list();
+        $htmlJsonData = json_encode($htmlData);
+
 
         $assign_page = "product/product_input";
 
-        $data = compact('assign_page', 'product', 'product_spec', 'product_extra_column', 'product_spec_column', 'has_spec', 'select_option', 'all_category');
+        $data = compact('assign_page', 'htmlJsonData');
 
         return view('webbase/content', $data);
 

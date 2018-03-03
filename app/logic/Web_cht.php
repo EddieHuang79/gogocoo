@@ -389,6 +389,12 @@ class Web_cht
                               'property_status3'            => '已使用',           
                               'property_status4'            => '尚未使用',           
                               'property_status5'            => '已使用',           
+                              'mobile_input'                => '請輸入手機',           
+                              'ori_product_name_input'      => '原始商品名稱',
+                              'service_name_input'          => '請輸入服務名稱',
+                              'link_input'                  => '請輸入連結',
+                              'mall_shop_id_desc'           => '請輸入相關的商城產品編號',
+                              'role_input'                  => '請輸入角色名稱',
                         );
 
    public static function get_txt()
