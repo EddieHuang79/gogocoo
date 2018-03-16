@@ -671,7 +671,7 @@ class Ecoupon_logic extends Basetool
                             "key"           => "parents_store_type",
                             "value"         => "",
                             "data"          => $store_type_array,
-                            "display"       => false,
+                            "display"       => true,
                             "desc"          => $txt["ecoupon_match_category_desc"],
                             "attrClass"     => "hide matchType matchType3",
                             "hasPlugin"     => ""
@@ -682,7 +682,7 @@ class Ecoupon_logic extends Basetool
                             "key"           => "match_id[]",
                             "value"         => "",
                             "data"          => "",
-                            "display"       => false,
+                            "display"       => true,
                             "desc"          => $txt["ecoupon_match_type4_desc"],
                             "attrClass"     => "hide matchType matchType4",
                             "hasPlugin"     => ""

@@ -9,624 +9,624 @@ use Illuminate\Support\Facades\Session;
 class Service_logic extends Basetool
 {
 
-   protected $status = array();
+  protected $status = array();
 
-   public function __construct()
-   {
+  public function __construct()
+  {
 
-      // 文字
+    // 文字
 
-      $txt = Web_cht::get_txt();
+    $txt = Web_cht::get_txt();
 
-      $this->status = array(
-                     1  => $txt["enable"],
-                     2  => $txt["disable"]
-                  );
+    $this->status = array(
+                   1  => $txt["enable"],
+                   2  => $txt["disable"]
+                );
 
-   }
+  }
 
-   // 新增格式
+  // 新增格式
 
-   public static function insert_format( $data )
-   {
+  public static function insert_format( $data )
+  {
+       
+    $_this = new self();
+
+    $result = array();
+
+    if ( !empty($data) && is_array($data) ) 
+    {
+
+       $result = array(
+                      "name"          => isset($data["name"]) ? $_this->strFilter($data["name"]) : "",
+                      "link"          => isset($data["link"]) ? trim($data["link"]) : "",
+                      "parents_id"    => isset($data["parents_id"]) ? intval($data["parents_id"]) : 0,
+                      "status"        => isset($data["active"]) ? intval($data["active"]) : 0,
+                      "sort"          => 0,
+                      "created_at"    => date("Y-m-d H:i:s"),
+                      "updated_at"    => date("Y-m-d H:i:s")
+                   );
+
+    }
+
+    return $result;
+
+  }
+
+
+  // 修改格式
+
+  public static function update_format( $data )
+  {
+
+    $_this = new self();
+
+    $result = array();
+
+    if ( !empty($data) && is_array($data) ) 
+    {
+
+       $result = array(
+                      "name"          => isset($data["name"]) ? $_this->strFilter($data["name"]) : "",
+                      "link"          => isset($data["link"]) ? trim($data["link"]) : "",
+                      "parents_id"    => isset($data["parents_id"]) ? intval($data["parents_id"]) : 0,
+                      "status"        => isset($data["active"]) ? intval($data["active"]) : 0,
+                      "updated_at"    => date("Y-m-d H:i:s")
+                   );
+
+    }
+
+    return $result;
+
+  }
+
+
+  // 取得權限
+
+  public static function get_service_role_auth( $data, $rel_data )
+  {
+
+    $result = array();
+
+    $auth = array();
+
+    if ( !empty($data) && !empty($rel_data) ) 
+    {
+
+       foreach ($rel_data as $row) 
+       {
+
+          if ( is_object($row) ) 
+          {
+             
+             $auth[$row->service_id][] = $row->role_name;
+          
+          }
          
-      $_this = new self();
+       }
 
-      $result = array();
+       foreach ($data as $key => &$row) 
+       {
 
-      if ( !empty($data) && is_array($data) ) 
-      {
+          if ( is_object($row) ) 
+          {
 
-         $result = array(
-                        "name"          => isset($data["name"]) ? $_this->strFilter($data["name"]) : "",
-                        "link"          => isset($data["link"]) ? trim($data["link"]) : "",
-                        "parents_id"    => isset($data["parents_id"]) ? intval($data["parents_id"]) : 0,
-                        "status"        => isset($data["active"]) ? intval($data["active"]) : 0,
-                        "sort"          => 0,
-                        "created_at"    => date("Y-m-d H:i:s"),
-                        "updated_at"    => date("Y-m-d H:i:s")
-                     );
+             $row->auth = isset($auth[$row->id]) ? $auth[$row->id] : array() ;
 
-      }
+          }
 
-      return $result;
+       }
 
-   }
+       $result = $data;
 
+    }
 
-   // 修改格式
+    return $result;
 
-   public static function update_format( $data )
-   {
+  }  
 
-      $_this = new self();
 
-      $result = array();
+  // 主選單格式
 
-      if ( !empty($data) && is_array($data) ) 
-      {
+  public static function menu_format( $data )
+  {
 
-         $result = array(
-                        "name"          => isset($data["name"]) ? $_this->strFilter($data["name"]) : "",
-                        "link"          => isset($data["link"]) ? trim($data["link"]) : "",
-                        "parents_id"    => isset($data["parents_id"]) ? intval($data["parents_id"]) : 0,
-                        "status"        => isset($data["active"]) ? intval($data["active"]) : 0,
-                        "updated_at"    => date("Y-m-d H:i:s")
-                     );
+    $result = array();
 
-      }
+    if ( !empty($data) ) 
+    {
 
-      return $result;
+       foreach ($data as $row) 
+       {
 
-   }
+          if ( is_object($row) ) 
+          {
 
+             if ($row->parents_id == 0) 
+             {
+                $result[$row->id] = array(
+                                  "id"     => $row->id,
+                                  "name"   => $row->name,
+                                  "link"   => $row->link,
+                                  "child"  => array()
+                               );
+             }
 
-   // 取得權限
+             if ($row->parents_id > 0 && isset($result[$row->parents_id]) ) 
+             {
+                $result[$row->parents_id]["child"][$row->id] = array(
+                                                       "id"     => $row->id,
+                                                       "name"   => $row->name,
+                                                       "link"   => $row->link,
+                                                    );             
+             }
 
-   public static function get_service_role_auth( $data, $rel_data )
-   {
+          }
 
-      $result = array();
+       }
 
-      $auth = array();
+    }
 
-      if ( !empty($data) && !empty($rel_data) ) 
-      {
+    return $result;
 
-         foreach ($rel_data as $row) 
-         {
+  }
 
-            if ( is_object($row) ) 
-            {
-               
-               $auth[$row->service_id][] = $row->role_name;
-            
-            }
-           
-         }
 
-         foreach ($data as $key => &$row) 
-         {
+  // 取的父服務名稱
 
-            if ( is_object($row) ) 
-            {
+  public static function get_parents_name( $data, $all_service )
+  {
 
-               $row->auth = isset($auth[$row->id]) ? $auth[$row->id] : array() ;
+    $result = array();
 
-            }
+    if ( !empty($data) && !empty($all_service) ) 
+    {
 
-         }
+       foreach ($all_service as $row) 
+       {
 
-         $result = $data;
+          if ( is_object($row) ) 
+          {
 
-      }
+             $result[$row->id] = $row->name;
 
-      return $result;
+          }
+          
+       }
 
-   }  
+       foreach ($data as &$row) 
+       {
 
+          if ( is_object($row) ) 
+          {
+             
+             $row->parents_service = $row->parents_id > 0 && isset($result[$row->parents_id]) ? $result[$row->parents_id] : "無" ;
+       
+          }
 
-   // 主選單格式
+       }
 
-   public static function menu_format( $data )
-   {
+       $result = $data;
 
-      $result = array();
+    }
 
-      if ( !empty($data) ) 
-      {
+    return $result;
 
-         foreach ($data as $row) 
-         {
+  } 
 
-            if ( is_object($row) ) 
-            {
 
-               if ($row->parents_id == 0) 
-               {
-                  $result[$row->id] = array(
-                                    "id"     => $row->id,
-                                    "name"   => $row->name,
-                                    "link"   => $row->link,
-                                    "child"  => array()
-                                 );
-               }
+  // 角色權限格式
 
-               if ($row->parents_id > 0 && isset($result[$row->parents_id]) ) 
-               {
-                  $result[$row->parents_id]["child"][$row->id] = array(
-                                                         "id"     => $row->id,
-                                                         "name"   => $row->name,
-                                                         "link"   => $row->link,
-                                                      );             
-               }
+  public static function role_auth_format( $data )
+  {
 
-            }
+    $result = array();
 
-         }
+    if ( !empty($data) ) 
+    {
 
-      }
+       foreach ($data as $key => $value)
+       {
 
-      return $result;
+          if ( is_object($value) ) 
+          {
 
-   }
+             $result[] = $value->service_id;
 
+          }
 
-   // 取的父服務名稱
+       }
 
-   public static function get_parents_name( $data, $all_service )
-   {
+    }
 
-      $result = array();
+    return $result;
 
-      if ( !empty($data) && !empty($all_service) ) 
-      {
+  }
 
-         foreach ($all_service as $row) 
-         {
 
-            if ( is_object($row) ) 
-            {
+  // 權限確認
 
-               $result[$row->id] = $row->name;
+  public static function auth_check( $service_id, $service_data )
+  {
 
-            }
-            
-         }
+    $result = false;
 
-         foreach ($data as &$row) 
-         {
+    $auth_id = array();
 
-            if ( is_object($row) ) 
-            {
-               
-               $row->parents_service = $row->parents_id > 0 && isset($result[$row->parents_id]) ? $result[$row->parents_id] : "無" ;
-         
-            }
+    if ( !empty($service_id) && is_int($service_id) && !empty($service_data) && is_array($service_data) ) 
+    {
 
-         }
+       foreach ($service_data as $parents_id => $parents_data) 
+       {
+          
+          $auth_id[] = $parents_id;
 
-         $result = $data;
+          foreach ($parents_data["child"] as $child_id => $child_data)
+          {
+             $auth_id[] = $child_id;
+          }
 
-      }
+       }
 
-      return $result;
+       $result = in_array($service_id, $auth_id) ? true : false ;
 
-   } 
+    }
 
+    return $result;
 
-   // 角色權限格式
+  }
 
-   public static function role_auth_format( $data )
-   {
 
-      $result = array();
+  // 取得服務
 
-      if ( !empty($data) ) 
-      {
+  public static function get_service( $id )
+  {
 
-         foreach ($data as $key => $value)
-         {
+    $result = new \stdClass;
 
-            if ( is_object($value) ) 
-            {
+    if ( !empty($id) && is_int($id) ) 
+    {
 
-               $result[] = $value->service_id;
+       $result = Service::get_service($id);
 
-            }
+    }
 
-         }
+    return $result;
 
-      }
+  }
 
-      return $result;
 
-   }
+  // 取得啟用中的服務
 
+  public static function get_active_service()
+  {
 
-   // 權限確認
+    return Service::get_active_service();
 
-   public static function auth_check( $service_id, $service_data )
-   {
+  }
 
-      $result = false;
 
-      $auth_id = array();
+  // 取得服務資料
 
-      if ( !empty($service_id) && is_int($service_id) && !empty($service_data) && is_array($service_data) ) 
-      {
+  public static function get_service_data()
+  {
 
-         foreach ($service_data as $parents_id => $parents_data) 
-         {
-            
-            $auth_id[] = $parents_id;
+    return Service::get_service_data();
 
-            foreach ($parents_data["child"] as $child_id => $child_data)
-            {
-               $auth_id[] = $child_id;
-            }
+  }
 
-         }
 
-         $result = in_array($service_id, $auth_id) ? true : false ;
+  // 取得服務列表
 
-      }
+  public static function get_service_list( $param = array() )
+  {
 
-      return $result;
+    $_this = new self();
 
-   }
+    $option = array(
+                "service_id"   => !empty($param["role_id"]) ? $_this->get_service_id_by_role(intval($param["role_id"])) : "",
+                "service_name" => !empty($param["service_name"]) ? $_this->strFilter($param["service_name"]) : "",
+                "status"       => !empty($param["status"]) ? intval($param["status"]) : ""
+             );
 
+    return Service::get_service_list( $option );
 
-   // 取得服務
+  }
 
-   public static function get_service( $id )
-   {
 
-      $result = new \stdClass;
+  // 取得父服務
 
-      if ( !empty($id) && is_int($id) ) 
-      {
+  public static function get_parents_service()
+  {
 
-         $result = Service::get_service($id);
+    $result = array();
 
-      }
+    $data = Service::get_parents_service();
 
-      return $result;
+    foreach ($data as $row) 
+    {
+    
+       $result[$row->id] = $row->name;
 
-   }
+    }
 
+    return $result;
 
-   // 取得啟用中的服務
+  }
 
-   public static function get_active_service()
-   {
 
-      return Service::get_active_service();
+  // 主選單
 
-   }
+  public static function menu_list( $data )
+  {
 
+    $result = new \stdClass;
 
-   // 取得服務資料
+    if ( !empty($data) ) 
+    {
 
-   public static function get_service_data()
-   {
+       $result = Service::menu_list($data);
 
-      return Service::get_service_data();
+    }
 
-   }
+    return $result;
 
+  }
 
-   // 取得服務列表
 
-   public static function get_service_list( $param = array() )
-   {
+  // 新增服務
 
-      $_this = new self();
+  public static function add_service( $data )
+  {
 
-      $option = array(
-                  "service_id"   => !empty($param["role_id"]) ? $_this->get_service_id_by_role(intval($param["role_id"])) : "",
-                  "service_name" => !empty($param["service_name"]) ? $_this->strFilter($param["service_name"]) : "",
-                  "status"       => !empty($param["status"]) ? intval($param["status"]) : ""
+    $result = false;
+
+    if ( !empty($data) && is_array($data) && !empty($data["name"]) ) 
+    {
+
+       $result = Service::add_service( $data );
+    
+    }
+
+    return $result;
+
+  }
+
+
+  // 修改服務
+
+  public static function edit_service( $data, $service_id )
+  {
+
+    $result = false;
+
+    if ( !empty($data) && is_array($data) && !empty($service_id) && is_int($service_id) ) 
+    {
+
+       Service::edit_service($data, $service_id);
+
+       $result = true;
+    
+    }
+
+    return $result;
+
+  }
+
+
+  // 取得該角色擁有的服務
+
+  public static function get_service_id_by_role( $role_id )
+  {
+
+    $result = array();
+
+    if ( !empty($role_id) && is_int($role_id) ) 
+    {
+
+       $data = Service::get_service_id_by_role( $role_id );
+
+       foreach ($data as $row) 
+       {
+
+          if (is_object($row)) 
+          {
+
+             $result[] = $row->service_id;
+
+          }
+       
+       }
+
+    }
+
+    return $result;
+
+  }
+
+
+  // 以網址取得服務
+
+  public static function get_service_id_by_url_and_save( $url )
+  {
+
+    $result = false;
+
+    if ( !empty($url) ) 
+    {
+
+       $url = "/".$url;
+
+       $service_id = Service::get_service_id_by_url_and_save( $url )
+                               ->mapWithKeys(function ($item) {
+                                   return [$item->id];
+                               });
+
+       Session::put("service_id", $service_id[0]);
+    
+       $result = true;
+
+    }
+
+    return $result;
+
+  }
+
+
+  // 取得未發佈的服務
+
+  public static function get_unpublic_service_data()
+  {
+
+    return Service::get_unpublic_service_data();
+
+  }
+
+
+  // 發布服務
+
+  public static function public_service( $data )
+  {
+
+    $result = false;
+
+    if ( !empty($data) && is_array($data) ) 
+    {
+
+       $service_id = intval($data["service_id"]);
+
+       $data = array(
+                   "public" => 1
+                );
+
+       Service::edit_service($data, $service_id);
+
+       $result = true;
+
+    }
+
+    return $result;
+
+  }
+
+
+  // 麵包屑
+
+  public static function breadcrumb( $service_id, $service_data )
+  {
+
+    $result = array();
+
+    $child_parents = array();
+
+    $targer_parents_id = 0 ;
+
+    if ( !empty($service_id) && is_int($service_id) && !empty($service_data) && is_array($service_data) ) 
+    {
+
+       foreach ($service_data as $parents_id => $parents_data) 
+       {
+          
+          foreach ($parents_data["child"] as $child_id => $child_data)
+          {
+
+             $child_parents[$parents_id][] = $child_id;
+          
+          }
+
+       }
+
+       foreach ($child_parents as $parents_id => $child) 
+       {
+
+          if ( in_array($service_id, $child) ) 
+          {
+
+             $targer_parents_id = $parents_id;
+
+          }
+
+       }
+
+       if ( $targer_parents_id > 0 ) 
+       {
+
+          $result[] = array(
+                         "name" => $service_data[$targer_parents_id]["name"],
+                         "link" => $service_data[$targer_parents_id]["link"]
+                      );
+
+          $result[] = array(
+                         "name" => $service_data[$targer_parents_id]["child"][$service_id]["name"],
+                         "link" => $service_data[$targer_parents_id]["child"][$service_id]["link"]
+                      );
+
+       }
+
+    }
+
+    return $result;
+
+  }
+
+
+  // 組合列表資料
+
+  public static function service_list_data_bind( $OriData )
+  {
+
+    $_this = new self();
+
+    $txt = Web_cht::get_txt();
+
+    $result = array(
+                   "title" => array(
+                               $txt['service_name'],
+                               $txt['link'],
+                               $txt['parents_service'],
+                               $txt['auth'],
+                               $txt['status'],
+                               $txt['sort'],
+                               $txt['action']
+                            ),
+                   "data" => array()
                );
 
-      return Service::get_service_list( $option );
+    if ( !empty($OriData) && $OriData->isNotEmpty() ) 
+    {
 
-   }
+       $status_txt = $_this->status;
 
+       foreach ($OriData as $row) 
+       {
 
-   // 取得父服務
+          if ( is_object($row) ) 
+          {
 
-   public static function get_parents_service()
-   {
+             $data = array(
+                      "data" => array(
+                                  "role_name"                => $row->name,
+                                  "link"                     => $row->link,
+                                  "parents_service"          => $row->parents_service,
+                                  "auth"                     => $row->auth,
+                                  "status"                   => isset( $status_txt[$row->status] ) ? $status_txt[$row->status] : "",
+                                  "sort"                     => $row->sort
+                               ),
+                      "Editlink" => "/service/" . $row->id . "/edit?"
+                   );
+             
+          }
 
-      $result = array();
+          $result["data"][] = $data;
+       
+       }
 
-      $data = Service::get_parents_service();
 
-      foreach ($data as $row) 
-      {
-      
-         $result[$row->id] = $row->name;
+    }
 
-      }
+    return $result;
 
-      return $result;
-
-   }
-
-
-   // 主選單
-
-   public static function menu_list( $data )
-   {
-
-      $result = new \stdClass;
-
-      if ( !empty($data) ) 
-      {
-
-         $result = Service::menu_list($data);
-
-      }
-
-      return $result;
-
-   }
-
-
-   // 新增服務
-
-   public static function add_service( $data )
-   {
-
-      $result = false;
-
-      if ( !empty($data) && is_array($data) && !empty($data["name"]) ) 
-      {
-
-         $result = Service::add_service( $data );
-      
-      }
-
-      return $result;
-
-   }
-
-
-   // 修改服務
-
-   public static function edit_service( $data, $service_id )
-   {
-
-      $result = false;
-
-      if ( !empty($data) && is_array($data) && !empty($service_id) && is_int($service_id) ) 
-      {
-
-         Service::edit_service($data, $service_id);
-
-         $result = true;
-      
-      }
-
-      return $result;
-
-   }
-
-
-   // 取得該角色擁有的服務
-
-   public static function get_service_id_by_role( $role_id )
-   {
-
-      $result = array();
-
-      if ( !empty($role_id) && is_int($role_id) ) 
-      {
-
-         $data = Service::get_service_id_by_role( $role_id );
-
-         foreach ($data as $row) 
-         {
-
-            if (is_object($row)) 
-            {
-
-               $result[] = $row->service_id;
-
-            }
-         
-         }
-
-      }
-
-      return $result;
-
-   }
-
-
-   // 以網址取得服務
-
-   public static function get_service_id_by_url_and_save( $url )
-   {
-
-      $result = false;
-
-      if ( !empty($url) ) 
-      {
-
-         $url = "/".$url;
-
-         $service_id = Service::get_service_id_by_url_and_save( $url )
-                                 ->mapWithKeys(function ($item) {
-                                     return [$item->id];
-                                 });
-
-         Session::put("service_id", $service_id[0]);
-      
-         $result = true;
-
-      }
-
-      return $result;
-
-   }
-
-
-   // 取得未發佈的服務
-
-   public static function get_unpublic_service_data()
-   {
-
-      return Service::get_unpublic_service_data();
-
-   }
-
-
-   // 發布服務
-
-   public static function public_service( $data )
-   {
-
-      $result = false;
-
-      if ( !empty($data) && is_array($data) ) 
-      {
-
-         $service_id = intval($data["service_id"]);
-
-         $data = array(
-                     "public" => 1
-                  );
-
-         Service::edit_service($data, $service_id);
-
-         $result = true;
-
-      }
-
-      return $result;
-
-   }
-
-
-   // 麵包屑
-
-   public static function breadcrumb( $service_id, $service_data )
-   {
-
-      $result = array();
-
-      $child_parents = array();
-
-      $targer_parents_id = 0 ;
-
-      if ( !empty($service_id) && is_int($service_id) && !empty($service_data) && is_array($service_data) ) 
-      {
-
-         foreach ($service_data as $parents_id => $parents_data) 
-         {
-            
-            foreach ($parents_data["child"] as $child_id => $child_data)
-            {
-
-               $child_parents[$parents_id][] = $child_id;
-            
-            }
-
-         }
-
-         foreach ($child_parents as $parents_id => $child) 
-         {
-
-            if ( in_array($service_id, $child) ) 
-            {
-
-               $targer_parents_id = $parents_id;
-
-            }
-
-         }
-
-         if ( $targer_parents_id > 0 ) 
-         {
-
-            $result[] = array(
-                           "name" => $service_data[$targer_parents_id]["name"],
-                           "link" => $service_data[$targer_parents_id]["link"]
-                        );
-
-            $result[] = array(
-                           "name" => $service_data[$targer_parents_id]["child"][$service_id]["name"],
-                           "link" => $service_data[$targer_parents_id]["child"][$service_id]["link"]
-                        );
-
-         }
-
-      }
-
-      return $result;
-
-   }
-
-
-   // 組合列表資料
-
-   public static function service_list_data_bind( $OriData )
-   {
-
-      $_this = new self();
-
-      $txt = Web_cht::get_txt();
-
-      $result = array(
-                     "title" => array(
-                                 $txt['service_name'],
-                                 $txt['link'],
-                                 $txt['parents_service'],
-                                 $txt['auth'],
-                                 $txt['status'],
-                                 $txt['sort'],
-                                 $txt['action']
-                              ),
-                     "data" => array()
-                 );
-
-      if ( !empty($OriData) && $OriData->isNotEmpty() ) 
-      {
-
-         $status_txt = $_this->status;
-
-         foreach ($OriData as $row) 
-         {
-   
-            if ( is_object($row) ) 
-            {
-
-               $data = array(
-                        "data" => array(
-                                    "role_name"                => $row->name,
-                                    "link"                     => $row->link,
-                                    "parents_service"          => $row->parents_service,
-                                    "auth"                     => $row->auth,
-                                    "status"                   => isset( $status_txt[$row->status] ) ? $status_txt[$row->status] : "",
-                                    "sort"                     => $row->sort
-                                 ),
-                        "Editlink" => "/service/" . $row->id . "/edit?"
-                     );
-               
-            }
-
-            $result["data"][] = $data;
-         
-         }
-
-
-      }
-
-      return $result;
-
-   }
+  }
 
 
   // 取得輸入邏輯陣列

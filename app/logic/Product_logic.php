@@ -980,7 +980,7 @@ class Product_logic extends Basetool
 						"key"           => "qc_number",
 						"value"         => "",
 						"display"       => true,
-						"desc"          => "",
+						"desc"          => $txt['qc_number_desc'],
 						"attrClass"     => "",
 						"hasPlugin"     => "",
 						"placeholder"   => $txt['qc_number_input']
@@ -991,7 +991,7 @@ class Product_logic extends Basetool
 						"key"           => "barcode",
 						"value"         => "",
 						"display"       => true,
-						"desc"          => "",
+						"desc"          => $txt['barcode_desc'],
 						"EventFunc"     => "",
 						"attrClass"     => "",
 						"hasPlugin"     => "",

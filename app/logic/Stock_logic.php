@@ -413,8 +413,8 @@ class Stock_logic extends Basetool
 
 			foreach ($OriData as $row) 
 			{
-	
-				if ( is_object($row) ) 
+
+				if ( is_array($row) ) 
 				{
 
 					$data = array(
@@ -464,7 +464,7 @@ class Stock_logic extends Basetool
 			foreach ($OriData as $row) 
 			{
 	
-				if ( is_object($row) ) 
+				if ( is_array($row) ) 
 				{
 
 					$data = array(
@@ -515,7 +515,7 @@ class Stock_logic extends Basetool
 			foreach ($OriData as $row) 
 			{
 	
-				if ( is_object($row) ) 
+				if ( is_array($row) ) 
 				{
 
 					$data = array(
@@ -566,7 +566,7 @@ class Stock_logic extends Basetool
 			foreach ($OriData as $row) 
 			{
 	
-				if ( is_object($row) ) 
+				if ( is_array($row) ) 
 				{
 
 					$data = array(

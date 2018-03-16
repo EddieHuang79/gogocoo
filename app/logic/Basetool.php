@@ -45,10 +45,17 @@ abstract class Basetool
 
     	$result = array();
 
-    	foreach ($data as $key => $value) 
-    	{
-    		$result[] = intval($key);
-    	}
+        if ( !empty($data) ) 
+        {
+
+            foreach ($data as $key => $value) 
+            {
+            
+                $result[] = intval($key);
+            
+            }
+            
+        }
 
     	return $result;
 

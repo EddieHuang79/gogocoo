@@ -263,7 +263,7 @@ class Autoload extends Basetool
 
         Session::forget( 'ErrorMsg' );
 
-        $data = compact('ErrorMsg', 'OriData');
+        $data = compact('ErrorMsg');
 
         $view->with($data);
 

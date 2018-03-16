@@ -349,13 +349,22 @@ class Shop_logic extends Basetool
 
               $sub_total = $_this->get_sub_total( $mall_product );
 
+              $count_discount_price = array(
+                                        "discount_price" => 0
+                                      );
+
               // 折價券驗證
 
-              $test_ecoupon = Ecoupon_logic::test_ecoupon_code( $data["Ecoupon_code"] );
+              if ( !empty($data["Ecoupon_code"]) ) 
+              {
 
-              // 取得折扣負項
+                $test_ecoupon = Ecoupon_logic::test_ecoupon_code( $data["Ecoupon_code"] );
 
-              $count_discount_price = Ecoupon_logic::get_ecoupon_discount_price( $test_ecoupon["data"]["type"], $test_ecoupon["data"]["ecoupon_content"], $sub_total );
+                // 取得折扣負項
+
+                $count_discount_price = Ecoupon_logic::get_ecoupon_discount_price( $test_ecoupon["data"]["type"], $test_ecoupon["data"]["ecoupon_content"], $sub_total );
+                
+              }
 
               $total = $sub_total + $count_discount_price["discount_price"] ;
 
@@ -392,26 +401,31 @@ class Shop_logic extends Basetool
 
               $record_data = $_this->get_single_record_data( $record_id );
 
-              // 註銷已使用的折價券
+              if ( !empty($data["Ecoupon_code"]) ) 
+              {
 
-              Ecoupon_logic::inactive_ecoupon_use_status( $data["Ecoupon_code"] );
+                // 註銷已使用的折價券
 
-              // 寫入使用記錄
+                Ecoupon_logic::inactive_ecoupon_use_status( $data["Ecoupon_code"] );
 
-              $use_data_array = array(
-                                  "record_id"         => $record_id,
-                                  "ecoupon_use_id"    => $test_ecoupon["data"]["ecoupon_use_id"],
-                                  "store_id"          => $test_ecoupon["data"]["store_id"],            
-                                  "discount"          => $count_discount_price["discount_price"]            
-                                );
+                // 寫入使用記錄
 
-              $use_data = Ecoupon_logic::insert_record_format( $use_data_array );
+                $use_data_array = array(
+                                    "record_id"         => $record_id,
+                                    "ecoupon_use_id"    => $test_ecoupon["data"]["ecoupon_use_id"],
+                                    "store_id"          => $test_ecoupon["data"]["store_id"],            
+                                    "discount"          => $count_discount_price["discount_price"]            
+                                  );
 
-              Ecoupon_logic::add_ecoupon_use_record( $use_data );
+                $use_data = Ecoupon_logic::insert_record_format( $use_data_array );
+
+                Ecoupon_logic::add_ecoupon_use_record( $use_data );
+
+              }
 
               // 付款金額大於0，呼叫金流付款
 
-              if ( $mall_product["status"] === 0 ) 
+              if ( $mall_product["total"] > 0 ) 
               {
 
                   $option = array(

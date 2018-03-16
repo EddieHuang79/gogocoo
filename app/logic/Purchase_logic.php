@@ -47,6 +47,15 @@ class Purchase_logic extends Basetool
 
 			$product_id = isset($data["product_id"]) ? intval($data["product_id"]) : 0 ;
 
+			if ( empty($product_id) ) 
+			{
+				
+				$tmp = Product_logic::get_product_data( array( array("product_name", "like", "%".$data['product_name']."%") ) );
+				
+				$product_id = isset($tmp[0]->id) ? $tmp[0]->id : 0 ;
+
+			}
+
 			if ( !empty($product_id) )  
 			{
 
@@ -725,7 +734,8 @@ class Purchase_logic extends Basetool
 						"EventFunc"     => "",
 						"attrClass"     => "",
 						"hasPlugin"     => "DatePicker",
-						"placeholder"   => $txt['in_warehouse_date_input']
+						"placeholder"   => $txt['in_warehouse_date_input'],
+						"required"   	=> false
 					),
 					"in_warehouse_category" => array(
 						"type"          => 2, 

@@ -181,7 +181,7 @@ class Store_logic extends Basetool
 		     
 			$result = array(
 			            "store_name"        => isset($data["StoreName"]) ? $_this->strFilter($data["StoreName"]) : "",
-			            "store_code"        => isset($data["StoreCode"]) && !empty($data["StoreCode"]) ? strtoupper($_this->strFilter($data["StoreCode"])) : Admin_user_logic::get_rand_string(),
+			            "store_code"        => isset($data["store_code"]) && !empty($data["store_code"]) ? strtoupper($_this->strFilter($data["store_code"])) : Admin_user_logic::get_rand_string(),
 			            "store_type"     	=> isset($data["store_type_id"]) ? intval($data["store_type_id"]) : "",
 			            "user_id"     		=> isset($_this->user_id) ? intval($_this->user_id) : "",
 			            "is_free"    		=> isset($data["is_free"]) ? intval($data["is_free"]) : 1,
@@ -676,7 +676,8 @@ class Store_logic extends Basetool
 						"desc"          => "",
 						"attrClass"     => "",
 						"hasPlugin"     => "",
-						"placeholder"   => $txt['store_code_input']
+						"placeholder"   => $txt['store_code_input'],
+						"required"		=> false
 					),
 					"store_code_txt" => array(
 						"type"          => 12, 

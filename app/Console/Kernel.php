@@ -13,6 +13,7 @@ use App\Mail\InviteCode;
 use Mail;
 use App\logic\Ecoupon_logic;
 use App\logic\Store_logic;
+use App\logic\Admin_user_logic;
 
 class Kernel extends ConsoleKernel
 {

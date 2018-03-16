@@ -6,6 +6,7 @@ use App\model\Order;
 use App\logic\Option_logic;
 use App\logic\Stock_logic;
 use App\logic\Msg_logic;
+use App\logic\Product_logic;
 use Illuminate\Support\Facades\Session;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -78,6 +79,7 @@ class Order_logic extends Basetool
 									'is_preorder',            // 是否為預購
 									'preorder_hint'           // 預購提示
 							);
+
 
 	public function __construct()
 	{
@@ -169,6 +171,15 @@ class Order_logic extends Basetool
 			$spec_id = isset($data["spec_id"]) ? intval($data["spec_id"]) : 0 ;
 
 			$product_id = isset($data["product_id"]) ? intval($data["product_id"]) : 0 ;
+
+			if ( empty($product_id) ) 
+			{
+				
+				$tmp = Product_logic::get_product_data( array( array("product_name", "like", "%".$data['product_name']."%") ) );
+				
+				$product_id = isset($tmp[0]->id) ? $tmp[0]->id : 0 ;
+
+			}
 
 	        if ( !empty($product_id) ) 
 	        {
@@ -1309,7 +1320,7 @@ class Order_logic extends Basetool
 					"out_warehouse_category" => array(
 						"type"          => 2, 
 						"title"         => $txt["out_warehouse_category"],
-						"key"           => "out_warehouse_category",
+						"key"           => "category",
 						"value"         => "",
 						"data"          => $out_warehouse_category_data,
 						"display"       => true,
@@ -1336,14 +1347,14 @@ class Order_logic extends Basetool
 					),
 					"ori_product_name" => array(
 						"type"          => 1, 
-						"title"         => $txt["ori_product_name"],
+						"title"         => $txt["remark"],
 						"key"           => "ori_product_name",
 						"value"         => "",
 						"display"       => true,
 						"desc"          => "",
 						"attrClass"     => "",
 						"hasPlugin"     => "",
-						"placeholder"   => $txt["ori_product_name_input"]
+						"placeholder"   => $txt["remark_input"]
 					)
 		         );
 

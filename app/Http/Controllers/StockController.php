@@ -60,7 +60,7 @@ class StockController extends Controller
 
         $stock_data = $data['data'];
 
-        $htmlData = Stock_logic::stock_lack_list_data_bind( $stock_list );
+        $htmlData = Stock_logic::stock_immediate_list_data_bind( $stock_list );
 
         $htmlJsonData = json_encode($htmlData);
 

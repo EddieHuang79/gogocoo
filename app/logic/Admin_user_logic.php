@@ -1232,13 +1232,18 @@ class Admin_user_logic extends Basetool
 
          }
 
-         // 修正時改為純文字
+         if ( isset($OriData["id"]) ) 
+         {
 
-         $htmlData["account"]["type"] = 5;
+            // 修正時改為純文字
 
-         // password 不顯示
+            $htmlData["account"]["type"] = 5;
 
-         $htmlData["password"]["value"] = "";
+            // password 不顯示
+
+            $htmlData["password"]["value"] = "";
+            
+         }
 
          // 角色
 
