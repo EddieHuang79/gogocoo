@@ -409,17 +409,17 @@ $(".fa-search").on("click", Search_tool_display);
 $(".add_block").on("click", add_block);
 $(document).on("click", ".remove", remove_block);
 
-// $("li.treeview").on("click", function(e){
+$("#start_date").datetimepicker({
+								minDate: new Date(),
+								dateFormat: 'yy/mm/dd', 
+								timeFormat: 'HH:mm:ss'
+							});
 
-// 	$("li.treeview").find("ul").hide();
-// 	$("li.treeview").find("i.fa-angle-down").addClass("fa-angle-left");
-// 	$("li.treeview").find("i.fa-angle-down").removeClass("fa-angle-down");
-
-// 	$(this).find("ul").toggle();
-// 	$(this).find("i.fa-angle-left").addClass("fa-angle-down");
-// 	$(this).find("i.fa-angle-left").removeClass("fa-angle-left");
-
-// });
+$("#end_date").datetimepicker({
+								minDate: new Date(),
+								dateFormat: 'yy/mm/dd', 
+								timeFormat: 'HH:mm:ss'
+							});
 
 if ( $(".search_tool").find("[name='date']").length > 0 ) 
 {

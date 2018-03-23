@@ -50,11 +50,16 @@ class ShopController extends Controller
     public static function shop_buy_process()
     {
 
-        // Record_logic::write_log( "test", json_encode($_POST) );
+        Record_logic::write_log( "test", json_encode($_POST) );
 
         $redirectURL = Shop_logic::shop_buy_insert( $_POST );
 
-        return redirect( $redirectURL );
+        if ( !empty($redirectURL) ) 
+        {
+           
+            return redirect( $redirectURL );
+            
+        }
 
     }
 

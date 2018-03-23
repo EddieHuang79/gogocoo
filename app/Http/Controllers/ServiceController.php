@@ -151,17 +151,11 @@ class ServiceController extends Basetool
 
         $htmlData = Service_logic::service_input_data_bind( $htmlData, $service );
 
-        $htmlData["action"] = "/user/" . (int)$id;
+        $htmlData["action"] = "/service/" . (int)$id;
 
         $htmlData["method"] = "patch";
 
         $htmlJsonData = json_encode($htmlData);
-
-        // $role_list = Role_logic::get_active_role();
-
-        // $parents_service = Service_logic::get_parents_service();
-
-        // $role_service = Role_logic::get_role_service( 0, $id );
 
         $data = compact('service', 'assign_page', 'htmlJsonData');
 

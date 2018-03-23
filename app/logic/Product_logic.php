@@ -983,7 +983,8 @@ class Product_logic extends Basetool
 						"desc"          => $txt['qc_number_desc'],
 						"attrClass"     => "",
 						"hasPlugin"     => "",
-						"placeholder"   => $txt['qc_number_input']
+						"placeholder"   => $txt['qc_number_input'],
+                        "required"      => false
 					),
 					"barcode" => array(
 						"type"          => 1, 
@@ -995,7 +996,8 @@ class Product_logic extends Basetool
 						"EventFunc"     => "",
 						"attrClass"     => "",
 						"hasPlugin"     => "",
-						"placeholder"   => $txt['barcode_input']
+						"placeholder"   => $txt['barcode_input'],
+                        "required"      => false
 					),
 					"category" => array(
 						"type"          => 9, 
@@ -1021,7 +1023,8 @@ class Product_logic extends Basetool
 						"desc"          => "",
 						"attrClass"     => "",
 						"hasPlugin"     => "",
-						"placeholder"   => $txt['keep_for_days_input']
+						"placeholder"   => $txt['keep_for_days_input'],
+                        "required"      => false
 					),
 					"safe_amount" => array(
 						"type"          => 1, 

@@ -181,9 +181,13 @@ class RegisterController extends Controller
         
         }
 
-        $path = $user_id > 0 ? "/admin_index" : "/register" ;
+        $result = array(
+                        "path"  => $user_id > 0 ? "/admin_index" : "/register",
+                        "error" => !empty($err) ? true : false,
+                        "msg"   => !empty($err) ? $err : ""
+                    );
 
-        $result = json_encode(array("path" => $path));
+        $result =  json_encode($result);
 
         return $result;
 

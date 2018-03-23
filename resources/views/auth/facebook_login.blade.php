@@ -49,6 +49,8 @@ var facebook_login = function(user_data){
 },
 statusChangeCallback = function(response){
 
+	console.log(response);
+
 	if (response.status === 'connected') {
 		FB.api('/me', function(response) {
 			facebook_login(response);

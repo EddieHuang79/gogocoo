@@ -74,9 +74,34 @@ var GoogleAuth,
             cache: false,
             data: "param="+JSON.stringify(user_data)+"&way=2",
             success : function(response){
-              
+
               var result = JSON.parse( response );
-              location.href = result.path;      
+
+              if ( result.error === false ) 
+              {
+
+                  location.href = result.path;      
+
+              }
+              else
+              {
+
+                  $(".error").remove();
+
+                  var html = "";
+
+                  result.msg.forEach( function(e){
+
+                      html += "<div class='error'>" + e + "</div>";
+
+                  });
+
+                  $( html ).insertBefore(".has-feedback:first");
+
+                  return false;
+
+              }
+
             
             }
 

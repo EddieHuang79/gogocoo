@@ -740,7 +740,7 @@ class Purchase_logic extends Basetool
 					"in_warehouse_category" => array(
 						"type"          => 2, 
 						"title"         => $txt["in_warehouse_category"],
-						"key"           => "in_warehouse_category",
+						"key"           => "category",
 						"value"         => "",
 						"data"         	=> $in_warehouse_category_data,
 						"display"       => true,

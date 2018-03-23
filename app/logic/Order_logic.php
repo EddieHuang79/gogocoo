@@ -1315,7 +1315,8 @@ class Order_logic extends Basetool
 						"EventFunc"     => "",
 						"attrClass"     => "",
 						"hasPlugin"     => "DatePicker",
-						"placeholder"   => $txt["out_warehouse_date_input"]
+						"placeholder"   => $txt["out_warehouse_date_input"],
+                        "required"      => false
 					),
 					"out_warehouse_category" => array(
 						"type"          => 2, 
@@ -1354,7 +1355,8 @@ class Order_logic extends Basetool
 						"desc"          => "",
 						"attrClass"     => "",
 						"hasPlugin"     => "",
-						"placeholder"   => $txt["remark_input"]
+						"placeholder"   => $txt["remark_input"],
+                        "required"      => false
 					)
 		         );
 

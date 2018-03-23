@@ -439,17 +439,10 @@ class Shop_logic extends Basetool
                             );
 
                   $_this->Call_Payment( $option );
+
+                  $result = "";
                 
               }
-              else
-              {
-
-                  // 免費的狀況，暫時不判斷首購，直接導去記錄頁
-
-                  return "/buy_record";
-
-              }
-
 
           } 
           catch (\Exception $e) 
@@ -461,8 +454,6 @@ class Shop_logic extends Basetool
                       );
             
               Record_logic::write_log( "ShopError", json_encode($data) );
-
-              return "/buy_record";
 
           }
 
@@ -1070,7 +1061,7 @@ class Shop_logic extends Basetool
 
         //訂單的商品資料
         array_push(Ecpay::i()->Send['Items'], array('Name' => $data["mall_product_name"], 'Price' => (int)$data["Price"],
-                   'Currency' => "元", 'Quantity' => (int)$data["Quantity"], 'URL' => "dedwed"));
+                   'Currency' => "元", 'Quantity' => (int)$data["Quantity"], 'URL' => ""));
 
         //Go to ECPay
         echo "緑界頁面導向中...";
@@ -1569,7 +1560,8 @@ class Shop_logic extends Basetool
                               $txt['ecoupon_discount'],
                               $txt['total'],
                               $txt['paid_at'],
-                              $txt['status']
+                              $txt['status'],
+                              $txt['action']
                             ),
                       "data" => array()
                   );
