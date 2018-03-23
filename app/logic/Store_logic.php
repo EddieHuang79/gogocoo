@@ -591,8 +591,9 @@ class Store_logic extends Basetool
 				        "create_time"            => $row->created_at,
 				        "deadline"            	 => $row->deadline
 				      ),
-				"Editlink" => "/store/" . $row->id . "/edit?",
-				"ExtendBtn" => true
+				"Editlink" 		=> "/store/" . $row->id . "/edit?",
+				"ExtendBtn" 	=> true,
+				"id" 			=> $row->id
 			  );
 
 			$result["data"][] = $data;

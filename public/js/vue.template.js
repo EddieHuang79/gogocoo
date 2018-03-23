@@ -428,7 +428,7 @@ var basicForm = {
 								</td>\
 								<td>\
 									<input v-if="item2.Editlink" type="button" class="btn btn-primary" :value="txt.edit" @click="linkTo(item2.Editlink)"/>\
-									<input v-if="item2.ExtendBtn" type="button" class="btn btn-primary extend_account_deadline" :value="txt.extend_deadline" @click="extend_account_deadline( item2.id, item2.account )"/>\
+									<input v-if="item2.ExtendBtn" type="button" class="btn btn-primary extend_account_deadline" :value="txt.extend_deadline" @click="extend_account_deadline( item2 )"/>\
 									<input v-if="item2.Clonelink" type="button" class="btn btn-primary" :value="txt.clone" @click="linkTo(item2.Clonelink)"/>\
 									<input v-if="item2.PromoSettinglink" type="button" class="btn btn-primary" :value="txt.promo_price_setting" @click="linkTo(item2.PromoSettinglink)"/>\
 									<div v-if="item2.actionWord">{{ item2.actionWord }}</div>\
@@ -448,10 +448,10 @@ var basicForm = {
 
 			},
 
-			extend_account_deadline: function(id, account){
+			extend_account_deadline: function( item ){
 				
-				$(".popup_option").find(".account").text(account);
-				$("[name='user_id']").val(id);
+				$(".popup_option").find(".account").text( item.data.store_name );
+				$("[name='user_id']").val( item.id );
 
 				$.ajax({
 					url: "/get_extend_deadline_option",
