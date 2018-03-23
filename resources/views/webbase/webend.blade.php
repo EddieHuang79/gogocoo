@@ -56,7 +56,7 @@
 	
 	<script type="text/javascript" src="{{ URL::asset('js/vue.min.js') }}"></script>
 	<!-- <script src="https://unpkg.com/vue"></script> -->
-	<script type="text/javascript" src="{{ URL::asset('js/vue.template.js') }}"></script>
+	<script type="text/javascript" src="{{ URL::asset('js/vue.template.js?ver=1.1') }}"></script>
 	<script type="text/javascript" src="{{ URL::asset('js/vue.main.js') }}"></script>
 
 	</body>
