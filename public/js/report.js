@@ -89,7 +89,7 @@ var	month_order_view = function(){
 			            type: 'bar'
 			        },
 			        title: {
-			            text: '每日出入庫狀況'
+			            text: '每月出入庫狀況'
 			        },
 			        xAxis: [{
 			            categories: [

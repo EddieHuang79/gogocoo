@@ -52,7 +52,7 @@
 
 	<script type="text/javascript" src="{{ URL::asset('js/common.js') }}"></script>
 	
-	<script type="text/javascript" src="{{ URL::asset('js/report.js') }}"></script>
+	<script type="text/javascript" src="{{ URL::asset('js/report.js?ver=1.1') }}"></script>
 	
 	<script type="text/javascript" src="{{ URL::asset('js/vue.min.js') }}"></script>
 	<!-- <script src="https://unpkg.com/vue"></script> -->

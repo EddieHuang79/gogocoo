@@ -3,9 +3,10 @@
 
 <script>
 // 324760437959558 test
+// 1119977651436429 last version
 window.fbAsyncInit = function() {
 	FB.init({
-		appId      : '1119977651436429',
+		appId      : '454488054893684',
 		cookie     : true,
 		xfbml      : true,
 		version    : 'v2.9'
@@ -26,7 +27,7 @@ window.fbAsyncInit = function() {
   var js, fjs = d.getElementsByTagName(s)[0];
   if (d.getElementById(id)) return;
   js = d.createElement(s); js.id = id;
-  js.src = "//connect.facebook.net/zh_TW/sdk.js#xfbml=1&version=v2.9&appId=1119977651436429";
+  js.src = "//connect.facebook.net/zh_TW/sdk.js#xfbml=1&version=v2.9&appId=454488054893684";
   fjs.parentNode.insertBefore(js, fjs);
 }(document, 'script', 'facebook-jssdk'));
 
