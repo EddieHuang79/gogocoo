@@ -132,6 +132,8 @@ class ProductCategoryController extends Controller
 
         $data = ProductCategory_logic::update_main_format( $_POST );
 
+        $data["parents_id"] = (int)$id === (int)$data["parents_id"] ? 0 : $data["parents_id"] ;
+
         ProductCategory_logic::edit_product_category( $data, $product_category_id );
 
         return redirect("/product_category");
